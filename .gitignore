@@ -1,0 +1,5 @@
+.vscode
+build
+*.out
+libs
+test.cpp
