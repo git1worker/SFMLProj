@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.15)
 project(SFMLProj)
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=address")
 
+
 add_executable(test.out src/test.cpp)
 
 add_executable(${PROJECT_NAME}
@@ -12,6 +13,7 @@ add_executable(${PROJECT_NAME}
     src/Obj.cpp
     src/Label.cpp
     src/DebugInfo.cpp
+    src/Background.cpp
 )
 
 find_package(SFML REQUIRED COMPONENTS system window graphics)

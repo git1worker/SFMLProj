@@ -1,9 +1,11 @@
 #include "Button.hpp"
 #include <stdio.h>
 
+int Button::counter = 0;
 
 Button::Button(sf::RenderWindow *window, sf::Font& font, const float x, const float y, std::wstring stri) : window(window), Geologica(font), str(stri)
 {   
+    ++counter;
     this->x = x;
     this->y = y;
     width = 150, height = 50;
@@ -13,7 +15,7 @@ Button::Button(sf::RenderWindow *window, sf::Font& font, const float x, const fl
     rect->setFillColor(sf::Color(160, 160, 160));
     rect->setOutlineThickness(2);
     rect->setOutlineColor(sf::Color(100, 100, 100));
-    text = std::make_unique<Label>(window, font, stri, rect->getOrigin().x + rect->getGlobalBounds().left, rect->getOrigin().y + rect->getGlobalBounds().top, 25, 500);
+    text = std::make_unique<Label>(window, font, stri, rect->getOrigin().x + rect->getGlobalBounds().left, rect->getOrigin().y + rect->getGlobalBounds().top, Label::Align::Center, 25, 500);
     
     // printf("\n%f %f %f %f\n", rect->getGlobalBounds().left, rect->getGlobalBounds().top, rect->getGlobalBounds().width, rect->getGlobalBounds().height);
     // printf("%f %f %f %f\n\n", text.getGlobalBounds().left, text.getGlobalBounds().top, text.getGlobalBounds().width, text.getGlobalBounds().height);
@@ -48,13 +50,13 @@ bool Button::isHovered()
 
 void Button::SetHovered()
 {
-    rect->setFillColor(sf::Color(170, 170, 170));
+    rect->setFillColor(sf::Color(170, 170, 170, 100));
     hovered = true;
 }
 
 void Button::ResetHovered()
 {   
-    rect->setFillColor(sf::Color(160, 160, 160));
+    rect->setFillColor(sf::Color(160, 160, 160, 100));
     hovered = false;
 }
 

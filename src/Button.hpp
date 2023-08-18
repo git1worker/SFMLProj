@@ -13,6 +13,7 @@
 class Button : public Obj
 {
 public:
+    
     Button(sf::RenderWindow* window, sf::Font &font, const float x = 500, const float y = 500, std::wstring str = L"Button");
     
     sf::RectangleShape &getRect();
@@ -29,6 +30,8 @@ public:
     void ChangeText(std::wstring t);
 
 private:
+    static int counter;
+    
     bool hovered = false;
     bool wasClicked = false;
     std::unique_ptr<sf::RectangleShape> rect;
@@ -39,3 +42,4 @@ private:
     sf::Font &Geologica;
 
 };
+

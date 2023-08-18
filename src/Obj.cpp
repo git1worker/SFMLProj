@@ -4,3 +4,7 @@ Obj::Obj()
 {
 
 }
+
+void Obj::Update()
+{
+}

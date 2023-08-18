@@ -15,6 +15,15 @@ using std::make_unique;
 using std::shared_ptr;
 using sf::Vector2f;
 
+namespace Windows{
+    enum Windows{
+        MainW,
+        Game1,
+        Game2,
+        Game3,
+        Game4,
+    };
+};
 
 class Button;
 class Obj;
@@ -30,6 +39,9 @@ public:
     void Update();
     bool getActive() { return isActive; }
     void Drawing();
+    void UpdateFps(float fps);
+
+    
 
 private:
 
@@ -37,16 +49,24 @@ private:
     void EventMouseButtonPressed(sf::Event& event);
     void EventMouseButtonReleased(sf::Event& event);
     void EventKeyPressed(sf::Event& event);
+    void HandleButton(Button * btn);
+    void InitMainWindow();
+    void InitWindow1();
+    void InitWindow2();
+    void InitWindow3();
+    void InitWindow4();
+    void CheckSwitch();
 
+    
+
+    int currentWindow = Windows::MainW;
     bool isActive = true;
+    bool switchWindow = false;
     sf::Event event;
     std::vector<std::shared_ptr<Obj>> ObjVector;
-    sf::VertexArray V_A;
     sf::Font Geologica;
     std::shared_ptr<sf::RenderWindow> window;
-    sf::Event::MouseMoveEvent mouse;
     sf::Texture texture;
-    std::shared_ptr<Button> newButt;
-    std::shared_ptr<Label> title;
     std::unique_ptr<DebugInfo> debugInfo;
+
 };
