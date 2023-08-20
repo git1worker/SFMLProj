@@ -30,7 +30,6 @@ int main()
         MyGame->Polling();
         MyGame->Update();
         MyGame->Drawing();
-        
             
     }
     return 0;
