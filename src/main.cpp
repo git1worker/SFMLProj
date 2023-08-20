@@ -12,12 +12,11 @@ using std::endl;
 
 int main()
 {
-    std::unique_ptr<Gamew> MyGame = std::make_unique<Gamew>(Gamew());
+    std::unique_ptr<Gamew> MyGame = std::make_unique<Gamew>();
     sf::Clock clock;
     sf::Time elapsedTime;
     float fps;
     std::chrono::system_clock::time_point start = std::chrono::system_clock::now();
-
 
     MyGame->Init();
     while (MyGame->getActive())

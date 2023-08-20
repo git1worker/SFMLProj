@@ -34,6 +34,42 @@ void Label::UpdateMaxWidth(const float w)
     AlignToCenter();
 }
 
+void Label::SetAnimation(Anims type)
+{
+    this->animType = type;
+    
+}
+
+void Label::Update()
+{
+    switch (animType)
+    {
+    case Anims::AppearanceDecay:
+        DoAppearanceDecay();
+        break;
+    
+    default:
+        break;
+    }
+}
+
+void Label::DoAppearanceDecay(){
+    if (animStart) {
+        animStart = false;
+        animOpacity = 0;
+        animStop = false;
+    }
+    if (!animStop){
+        //std::cout << 231 << std::endl;
+        text.setFillColor(sf::Color(text.getFillColor().r, text.getFillColor().g, text.getFillColor().b, animOpacity++));
+        if (animOpacity == 255) animStop = true;
+    }
+    else if (animStop){
+        text.setFillColor(sf::Color(text.getFillColor().r, text.getFillColor().g, text.getFillColor().b, animOpacity--));
+        if (animOpacity == 0) deleteIt = true;
+    }
+}
+
 void Label::AlignToCenter()
 {
     std::wstring newStr;
@@ -49,9 +85,11 @@ void Label::AlignToCenter()
         }
         else newStr.push_back(L'\n'), newStr.push_back(*it), i = 2;
     }
-    text.setString(newStr);
-    text.setOrigin(sf::Vector2f(text.getGlobalBounds().width/2, (text.getCharacterSize() - text.getGlobalBounds().height) + text.getGlobalBounds().height/2));
-    text.setPosition(sf::Vector2f(x, y));
+    if (!text.getString().isEmpty()){
+        text.setString(newStr);
+        text.setOrigin(sf::Vector2f(text.getGlobalBounds().width/2, (text.getCharacterSize() - text.getGlobalBounds().height) + text.getGlobalBounds().height/2));
+        text.setPosition(sf::Vector2f(x, y));
+    }
 }
 
 void Label::AlignToLeft()
@@ -69,12 +107,13 @@ void Label::AlignToLeft()
         }
         else newStr.push_back(L'\n'), newStr.push_back(*it), i = 2;
     }
-    text.setString(newStr);
-    text.setOrigin(sf::Vector2f(0, 0));
-    text.setPosition(sf::Vector2f(x, y));
+    if (!text.getString().isEmpty()){
+        text.setString(newStr);
+        text.setOrigin(sf::Vector2f(0, 0));
+        text.setPosition(sf::Vector2f(x, y));
+    }
+    
 }
-
-
 
 void Label::Draw()
 {

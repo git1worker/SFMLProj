@@ -3,12 +3,19 @@
 #include <SFML/Graphics.hpp>
 #include <random>
 
+#ifndef DEBUG
+#define DEBUG                                           \
+    {                                                   \
+        std::cout << "Line: " << __LINE__ << std::endl; \
+    }
+#endif // DEBUG
+
 class Background : public Obj
 {
 public:
-    Background(sf::RenderWindow* window, sf::Font &font);
+    Background(sf::RenderWindow* window, sf::Font &font, bool isStatic = false);
     void SetGradient(sf::Color lUp, sf::Color rUp, sf::Color rDown, sf::Color lDown);
-    void SetStatic(sf::Color color);
+    void SetSingleColor(sf::Color color);
     void SetRandomGradient();
     void Draw() override;
     void Update() override;
@@ -17,12 +24,12 @@ private:
 
     void GenerateRandom();
 
-    bool isStatic = false;
+    sf::Clock delay;
+    bool isStatic;
     std::random_device rd;
     sf::RenderWindow* window;
     sf::Font &Geologica;
     sf::VertexArray V_A;
-    sf::RectangleShape backgroundColor;
-    sf::Color rUp, lUp, rDown, lDown, singleColor;
+    sf::Color rUp, lUp, rDown, lDown;
     int min = 60, max = 255;
 };

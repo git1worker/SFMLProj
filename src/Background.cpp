@@ -3,10 +3,11 @@
 
 using sf::Vector2f;
 
-Background::Background(sf::RenderWindow *window, sf::Font &font) : window(window), Geologica(font)
+Background::Background(sf::RenderWindow *window, sf::Font &font, bool isStatic) : window(window), Geologica(font), isStatic(isStatic)
 {   
     V_A.setPrimitiveType(sf::Quads);
-    GenerateRandom();
+    if (!isStatic)
+        GenerateRandom();
     V_A.append(sf::Vertex(Vector2f(0, 0), lUp));
     V_A.append(sf::Vertex(Vector2f(0, window->getSize().y), rUp));
     V_A.append(sf::Vertex(Vector2f(window->getSize().x, window->getSize().y), rDown));
@@ -16,7 +17,10 @@ Background::Background(sf::RenderWindow *window, sf::Font &font) : window(window
 void Background::SetGradient(sf::Color lUp, sf::Color rUp, sf::Color rDown, sf::Color lDown)
 {
     this->lUp = lUp, this->rUp = rUp, this->rDown = rDown, this->lDown = lDown;
-    
+    V_A[0] = (sf::Vertex(Vector2f(0, 0), lUp));
+    V_A[1] = (sf::Vertex(Vector2f(0, window->getSize().y), rUp));
+    V_A[2] = (sf::Vertex(Vector2f(window->getSize().x, window->getSize().y), rDown));
+    V_A[3] = (sf::Vertex(Vector2f(window->getSize().x, 0), lDown));
 }
 
 void Background::SetRandomGradient(){
@@ -28,26 +32,26 @@ void Background::SetRandomGradient(){
 
 void Background::Update(){
     if (!isStatic){
+        if (delay.getElapsedTime().asMilliseconds() < 100) return;
+        delay.restart();
         std::mt19937 gen(rd());
-        int r, g, b;
+        int change;
         std::uniform_int_distribution<int> dis(-1, 1);
         sf::Color* tmpArr[4] {&lUp, &rUp, &rDown, &lDown};
         for (int i = 0; i < 4; ++i){
-            r = dis(gen);
-            g = dis(gen);
-            b = dis(gen);
-            if (tmpArr[i]->r + r > max || tmpArr[i]->r + r < min)
-                tmpArr[i]->r -= r;
+            change = dis(gen);
+            if (tmpArr[i]->r + change > max || tmpArr[i]->r + change < min)
+                tmpArr[i]->r -= change;
             else 
-                tmpArr[i]->r += r;
-            if (tmpArr[i]->g + g > max || tmpArr[i]->g + g < min)
-                tmpArr[i]->g -= g;
+                tmpArr[i]->r += change;
+            if (tmpArr[i]->g + change > max || tmpArr[i]->g +change < min)
+                tmpArr[i]->g -= change;
             else 
-                tmpArr[i]->g += g;
-            if (tmpArr[i]->b + b > max || tmpArr[i]->b + b < min)
-                tmpArr[i]->b -= b;
+                tmpArr[i]->g += change;
+            if (tmpArr[i]->b + change > max || tmpArr[i]->b + change < min)
+                tmpArr[i]->b -= change;
             else 
-                tmpArr[i]->b += b;
+                tmpArr[i]->b += change;
             V_A[i].color = *(tmpArr[i]);
         }
     }
@@ -68,16 +72,16 @@ void Background::GenerateRandom()
 
 void Background::Draw()
 {   
-    if (!isStatic)
-        window->draw(V_A);
-    else
-        window->draw(backgroundColor);
+    window->draw(V_A);
 }
 
-void Background::SetStatic(sf::Color color)
+void Background::SetSingleColor(sf::Color color)
 {   
-    singleColor = color;
     isStatic = true;
-    backgroundColor.setSize(sf::Vector2f(window->getSize().x, window->getSize().y));
-    backgroundColor.setFillColor(color);
+    V_A.append(sf::Vertex(Vector2f(0, 0), color));
+    V_A.append(sf::Vertex(Vector2f(0, window->getSize().y), color));
+    V_A.append(sf::Vertex(Vector2f(window->getSize().x, window->getSize().y), color));
+    V_A.append(sf::Vertex(Vector2f(window->getSize().x, 0), color));
 }
+
+

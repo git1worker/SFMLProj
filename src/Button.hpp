@@ -8,7 +8,12 @@
 #include <functional>
 #include <string>
 
-#define DEBUG {std::cout << "Line: " << __LINE__ << std::endl; }
+#ifndef DEBUG
+#define DEBUG                                           \
+    {                                                   \
+        std::cout << "Line: " << __LINE__ << std::endl; \
+    }
+#endif // DEBUG
 
 class Button : public Obj
 {

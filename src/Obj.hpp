@@ -7,6 +7,7 @@ public:
     virtual void Draw() = 0;
     virtual void Update();
     virtual ~Obj() = default;
+    bool DeleteIt() {return deleteIt;}
 
     enum Names{
         DebugInfo,
@@ -19,9 +20,11 @@ public:
         titleW2,
         titleW3,
         titleW4,
+        textBox1MainW
     };
     Names name;
 protected:
     
+    bool deleteIt = false;
     float x, y, width, height;
 };

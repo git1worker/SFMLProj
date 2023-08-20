@@ -50,7 +50,7 @@ bool Button::isHovered()
 
 void Button::SetHovered()
 {
-    rect->setFillColor(sf::Color(170, 170, 170, 100));
+    rect->setFillColor(sf::Color(180, 180, 180, 100));
     hovered = true;
 }
 

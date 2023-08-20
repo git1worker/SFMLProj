@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include "Label.hpp"
 #include "Background.hpp"
+#include <string.h>
 
 using std::cerr;
 using std::cout;
@@ -12,27 +13,30 @@ Gamew::Gamew()
 {
 }
 
-void Gamew::UpdateFps(float fps)
+Gamew::~Gamew()
 {
-    debugInfo->UpdateFps(fps);
 }
+
+void Gamew::UpdateFps(float fps) { debugInfo->UpdateFps(fps); }
 
 void Gamew::Init(const std::wstring title, const int Style, const int width, const int height)
 {
     window = std::make_shared<sf::RenderWindow>(sf::VideoMode(width, height), title, Style);
     window->setFramerateLimit(60);
-    if (!Geologica.loadFromFile("../assets/fonts/Geologica.ttf"))
+    if (!Geologica.loadFromFile("../assets/fonts/Geologica-Regular.ttf"))
         cerr << "Failed to load font.\n", exit(1);
-    if (!texture.loadFromFile("../assets/img/button.png"))
-    {
-        cerr << "Failed to load texture.\n", exit(1);
-    }
+
     sf::Image icon;
     if (icon.loadFromFile("../assets/img/icon.png"))
     {
         window->setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
     }
     InitMainWindow();
+    if (!cursorArrow.loadFromSystem(sf::Cursor::Arrow) || !cursorText.loadFromSystem(sf::Cursor::Text))
+    {
+        cerr << "Failed to load cursor.\n", exit(1);
+    }
+    window->setMouseCursor(cursorArrow);
 
     this->debugInfo = make_unique<DebugInfo>(window.get(), Geologica, &event);
     debugInfo->name = Obj::DebugInfo;
@@ -56,48 +60,46 @@ void Gamew::Polling()
     }
 }
 
-void Gamew::Update()
-{
-    CheckSwitch();
-    for (const auto &i : ObjVector)
-    {
-        i->Update();
-    }
-    debugInfo->Update();
-}
-
-void Gamew::Drawing()
-{
-    window->clear(sf::Color::White);
-    for (const auto &i : ObjVector)
-        i->Draw();
-
-    // cout << fps << endl;
-    debugInfo->Draw();
-    window->display();
-}
-
 void Gamew::EventMouseMoved(sf::Event &event)
 {
+    TextBoxContains = false;
     for (const auto &i : ObjVector)
     {
+
         if (auto *b = dynamic_cast<Button *>(i.get()); b && b->getRect().getGlobalBounds().contains(sf::Vector2f((float)event.mouseMove.x, (float)event.mouseMove.y)))
         {
             b->SetHovered();
         }
         else if (b && b->isHovered() && !b->getRect().getGlobalBounds().contains(sf::Vector2f((float)event.mouseMove.x, (float)event.mouseMove.y)))
             b->ResetHovered();
+        if (auto *b = dynamic_cast<TextBox *>(i.get()); b && b->getRect().getGlobalBounds().contains(sf::Vector2f((float)event.mouseMove.x, (float)event.mouseMove.y)))
+        {
+            if (!cursorSetted)
+            {
+                window->setMouseCursor(cursorText);
+                cursorSetted = true;
+            }
+            TextBoxContains = true;
+        }
+    }
+    if (cursorSetted && !TextBoxContains)
+    {
+        window->setMouseCursor(cursorArrow);
+        cursorSetted = false;
     }
 }
 
 void Gamew::EventMouseButtonPressed(sf::Event &event)
 {
+    selectedTextBox = nullptr;
     for (const auto &i : ObjVector)
     {
         if (auto *b = dynamic_cast<Button *>(i.get()); b && b->getRect().getGlobalBounds().contains(sf::Vector2f((float)event.mouseButton.x, (float)event.mouseButton.y)))
-        {
             HandleButton(b);
-        }
+        
+        else if (auto *b = dynamic_cast<TextBox *>(i.get()); b && b->getRect().getGlobalBounds().contains(sf::Vector2f((float)event.mouseButton.x, (float)event.mouseButton.y)))
+            selectedTextBox = b;
+        
     }
 }
 
@@ -106,20 +108,23 @@ void Gamew::EventMouseButtonReleased(sf::Event &event)
     for (const auto &i : ObjVector)
     {
         if (auto *b = dynamic_cast<Button *>(i.get()); b && b->getWasClicked())
-        {
             b->Release();
-        }
+        
     }
 }
 
 void Gamew::EventKeyPressed(sf::Event &event)
 {
-    if (event.key.code == sf::Keyboard::Escape){
+
+    if (event.key.code == sf::Keyboard::Escape)
+    {
         if (!switchWindow && currentWindow == 0)
             window->close(), isActive = false;
         else if (!switchWindow && currentWindow != Windows::MainW)
             switchWindow = true, currentWindow = 0;
     }
+    else if (selectedTextBox != nullptr)
+        HandleTextBox();
 }
 
 void Gamew::HandleButton(Button *btn)
@@ -155,10 +160,85 @@ void Gamew::HandleButton(Button *btn)
     }
 }
 
+void Gamew::HandleTextBox()
+{
+    if (event.key.code >= sf::Keyboard::A && event.key.code <= sf::Keyboard::Z)
+    {
+        if (event.key.shift)
+            selectedTextBox->AppendLetter((wchar_t)(L'A' + event.key.code));
+        else
+            selectedTextBox->AppendLetter((wchar_t)(L'a' + event.key.code));
+    }
+    else if (event.key.code >= sf::Keyboard::Num0 && event.key.code <= sf::Keyboard::Num9)
+    {
+        selectedTextBox->AppendLetter((wchar_t)(L'0' + event.key.code - sf::Keyboard::Num0));
+    }
+    else if (event.key.code == sf::Keyboard::Space)
+    {
+        selectedTextBox->AppendLetter(L' ');
+    }
+    else if (event.key.code == sf::Keyboard::SemiColon)
+    {
+        selectedTextBox->AppendLetter(L';');
+    }
+    else if (event.key.code == sf::Keyboard::Quote)
+    {
+        selectedTextBox->AppendLetter(L'\'');
+    }
+    else if (event.key.code == sf::Keyboard::Comma)
+    {
+        selectedTextBox->AppendLetter(L',');
+    }
+    else if (event.key.code == sf::Keyboard::Period)
+    {
+        selectedTextBox->AppendLetter(L'.');
+    }
+    else if (event.key.code == sf::Keyboard::Slash)
+    {
+        selectedTextBox->AppendLetter(L'/');
+    }
+    else if (event.key.code == sf::Keyboard::BackSpace)
+    {
+        selectedTextBox->DelLetter();
+    }
+}
+
+void Gamew::Update()
+{
+    CheckSwitchWindows();
+    for (std::vector<std::shared_ptr<Obj>>::iterator it = ObjVector.begin(); it != ObjVector.end(); ++it)
+    {
+        if (auto *b = dynamic_cast<TextBox *>((*it).get())){
+            if (b == selectedTextBox)
+                b->Update();
+        } 
+        else
+        {
+            (*it)->Update();
+        }
+        if ((*it)->DeleteIt())
+            ObjToDelete.emplace_back(it);
+    }
+    CheckObjToDelete();
+    debugInfo->Update();
+}
+
+void Gamew::Drawing()
+{
+    window->clear(sf::Color::White);
+    for (std::vector<std::shared_ptr<Obj>>::iterator it = ObjVector.begin(); it != ObjVector.end(); ++it)
+        (*it)->Draw();
+
+    // cout << fps << endl;
+    debugInfo->Draw();
+    window->display();
+}
+
 void Gamew::InitMainWindow()
 {
+    currentWindow = Windows::MainW;
     // Background
-    auto bg = std::make_shared<Background>(window.get(), Geologica);
+    auto bg = std::make_shared<Background>(window.get(), Geologica, true);
     bg->SetGradient(sf::Color(153, 153, 255), sf::Color(0, 102, 204), sf::Color(192, 192, 192), sf::Color(224, 224, 224));
     ObjVector.emplace_back(bg);
 
@@ -174,7 +254,7 @@ void Gamew::InitMainWindow()
     {
         if (i > 0)
             currentX += buttonWidth + padding;
-        auto b = std::make_shared<Button>(window.get(), Geologica, currentX + 150 / 2, 200, std::wstring(std::wstring(L"Игра ") + std::to_wstring(i + 1)));
+        auto b = std::make_shared<Button>(window.get(), Geologica, currentX + 150 / 2, 200, std::wstring(std::wstring(L"Уровень ") + std::to_wstring(i + 1)));
         ObjVector.emplace_back(b);
         b->getRect().setFillColor(sf::Color(b->getRect().getFillColor().r, b->getRect().getFillColor().g, b->getRect().getFillColor().b, 100));
     }
@@ -182,43 +262,48 @@ void Gamew::InitMainWindow()
     ObjVector.at(3)->name = Obj::butt2MainW;
     ObjVector.at(4)->name = Obj::butt3MainW;
     ObjVector.at(5)->name = Obj::butt4MainW;
-    currentWindow = Windows::MainW;
+
+    // TextBox
+    ObjVector.emplace_back(std::make_shared<TextBox>(window.get(), Geologica, window->getSize().x / 2, window->getSize().y / 2, 30, 200, 3));
+    ObjVector.at(6)->name = Obj::textBox1MainW;
 }
 
 void Gamew::InitWindow1()
 {
-    auto bg = std::make_shared<Background>(window.get(), Geologica);
-    bg->SetStatic(sf::Color::White);
-    ObjVector.emplace_back(bg);
+    auto tmp1 = std::make_shared<Background>(window.get(), Geologica);
+    tmp1->SetSingleColor(sf::Color::White);
+    ObjVector.emplace_back(tmp1);
 
-    ObjVector.emplace_back(std::make_shared<Label>(window.get(), Geologica, L"Уровень 1", window->getSize().x / 2, window->getSize().y / 12, Label::Align::Center, 60, 400));
-    ObjVector.at(1)->name = Obj::titleW1;
-    
+    auto tmp2 = std::make_shared<Label>(window.get(), Geologica, L"Уровень 1", window->getSize().x / 2, window->getSize().y / 12, Label::Align::Center, 55, 600);
+    ObjVector.emplace_back(tmp2);
+    tmp2->name = Obj::titleW1;
+    tmp2->SetAnimation(Label::Anims::AppearanceDecay);
+
     currentWindow = Windows::Game1;
 }
 
 void Gamew::InitWindow2()
 {
-    ObjVector.emplace_back(std::make_shared<Label>(window.get(), Geologica, L"Уровень 2", window->getSize().x / 2, window->getSize().y / 12, Label::Align::Center, 60, 400));
+    ObjVector.emplace_back(std::make_shared<Label>(window.get(), Geologica, L"Уровень 2", window->getSize().x / 2, window->getSize().y / 12, Label::Align::Center, 55, 600));
     ObjVector.at(0)->name = Obj::titleW2;
     currentWindow = Windows::Game2;
 }
 
 void Gamew::InitWindow3()
 {
-    ObjVector.emplace_back(std::make_shared<Label>(window.get(), Geologica, L"Уровень 3", window->getSize().x / 2, window->getSize().y / 12, Label::Align::Center, 60, 400));
+    ObjVector.emplace_back(std::make_shared<Label>(window.get(), Geologica, L"Уровень 3", window->getSize().x / 2, window->getSize().y / 12, Label::Align::Center, 55, 600));
     ObjVector.at(0)->name = Obj::titleW3;
     currentWindow = Windows::Game3;
 }
 
 void Gamew::InitWindow4()
 {
-    ObjVector.emplace_back(std::make_shared<Label>(window.get(), Geologica, L"Уровень 4", window->getSize().x / 2, window->getSize().y / 12, Label::Align::Center, 60, 400));
+    ObjVector.emplace_back(std::make_shared<Label>(window.get(), Geologica, L"Уровень 4", window->getSize().x / 2, window->getSize().y / 12, Label::Align::Center, 55, 600));
     ObjVector.at(0)->name = Obj::titleW4;
     currentWindow = Windows::Game4;
 }
 
-void Gamew::CheckSwitch()
+void Gamew::CheckSwitchWindows()
 {
     if (switchWindow)
     {
@@ -245,4 +330,11 @@ void Gamew::CheckSwitch()
         }
         switchWindow = false;
     }
+}
+
+void Gamew::CheckObjToDelete()
+{
+    for (const auto i : ObjToDelete)
+        ObjVector.erase(i);
+    ObjToDelete.clear();
 }

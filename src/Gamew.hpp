@@ -4,8 +4,17 @@
 #include <memory>
 #include <vector>
 #include "DebugInfo.hpp"
+#include "TextBox.hpp"
 
-#define DEBUG {std::cout << "Line: " << __LINE__ << std::endl; }
+#include <X11/cursorfont.h>
+#include <X11/Xlib.h>
+
+#ifndef DEBUG
+#define DEBUG                                           \
+    {                                                   \
+        std::cout << "Line: " << __LINE__ << std::endl; \
+    }
+#endif // DEBUG
 
 using std::unique_ptr;
 using std::vector;
@@ -33,7 +42,7 @@ class Gamew
 {
 public:
     Gamew();
-
+    ~Gamew();
     void Init(const std::wstring title = L"Gamew", const int Style = sf::Style::Close , const int width = 1200, const int height = 800);
     void Polling();
     void Update();
@@ -50,15 +59,17 @@ private:
     void EventMouseButtonReleased(sf::Event& event);
     void EventKeyPressed(sf::Event& event);
     void HandleButton(Button * btn);
+    void HandleTextBox();
     void InitMainWindow();
     void InitWindow1();
     void InitWindow2();
     void InitWindow3();
     void InitWindow4();
-    void CheckSwitch();
-
+    void CheckSwitchWindows();
+    void CheckObjToDelete();
     
-
+    
+    vector<std::vector<std::shared_ptr<Obj>>::iterator> ObjToDelete;
     int currentWindow = Windows::MainW;
     bool isActive = true;
     bool switchWindow = false;
@@ -66,7 +77,15 @@ private:
     std::vector<std::shared_ptr<Obj>> ObjVector;
     sf::Font Geologica;
     std::shared_ptr<sf::RenderWindow> window;
-    sf::Texture texture;
     std::unique_ptr<DebugInfo> debugInfo;
+    TextBox* selectedTextBox = nullptr;
 
+    sf::WindowHandle handle;
+    Display* xDisplay;
+    Cursor xCursor;
+    Window xWindow;
+    bool cursorSetted = false;
+    bool TextBoxContains;
+
+    sf::Cursor cursorArrow, cursorText;
 };
