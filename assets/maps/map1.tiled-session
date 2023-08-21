@@ -1,0 +1,41 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "TilesetLvl1.tsx",
+    "expandedProjectPaths": [
+        "."
+    ],
+    "file.lastUsedOpenFilter": "All Files (*)",
+    "fileStates": {
+        "TilesetLvl1.tsx": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1,
+            "scaleInEditor": 4
+        },
+        "untitled.xml": {
+            "scale": 0.5,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 877,
+                "y": 121
+            }
+        }
+    },
+    "last.imagePath": "/home/ilya/Desktop/ProjectsLinux/SFMLProj/assets/img/tiles",
+    "map.height": 75,
+    "map.lastUsedFormat": "tmx",
+    "map.width": 120,
+    "openFiles": [
+        "untitled.xml",
+        "TilesetLvl1.tsx"
+    ],
+    "project": "map1.tiled-project",
+    "recentFiles": [
+        "untitled.xml",
+        "TilesetLvl1.tsx"
+    ],
+    "tileset.lastUsedFormat": "tsx",
+    "tileset.type": 1
+}

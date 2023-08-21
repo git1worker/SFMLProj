@@ -271,7 +271,7 @@ void Gamew::InitMainWindow()
 void Gamew::InitWindow1()
 {
     auto tmp1 = std::make_shared<Background>(window.get(), Geologica);
-    tmp1->SetSingleColor(sf::Color::White);
+    tmp1->SetTexture("../assets/img/background1.jpg");
     ObjVector.emplace_back(tmp1);
 
     auto tmp2 = std::make_shared<Label>(window.get(), Geologica, L"Уровень 1", window->getSize().x / 2, window->getSize().y / 12, Label::Align::Center, 55, 600);
@@ -284,22 +284,34 @@ void Gamew::InitWindow1()
 
 void Gamew::InitWindow2()
 {
+    auto tmp1 = std::make_shared<Background>(window.get(), Geologica);
+    tmp1->SetTexture("../assets/img/background2.jpg");
+    ObjVector.emplace_back(tmp1);
+
     ObjVector.emplace_back(std::make_shared<Label>(window.get(), Geologica, L"Уровень 2", window->getSize().x / 2, window->getSize().y / 12, Label::Align::Center, 55, 600));
-    ObjVector.at(0)->name = Obj::titleW2;
+    ObjVector.at(1)->name = Obj::titleW2;
     currentWindow = Windows::Game2;
 }
 
 void Gamew::InitWindow3()
-{
+{   
+    auto tmp1 = std::make_shared<Background>(window.get(), Geologica);
+    tmp1->SetTexture("../assets/img/background3.jpg");
+    ObjVector.emplace_back(tmp1);
+
     ObjVector.emplace_back(std::make_shared<Label>(window.get(), Geologica, L"Уровень 3", window->getSize().x / 2, window->getSize().y / 12, Label::Align::Center, 55, 600));
-    ObjVector.at(0)->name = Obj::titleW3;
+    ObjVector.at(1)->name = Obj::titleW3;
     currentWindow = Windows::Game3;
 }
 
 void Gamew::InitWindow4()
-{
+{   
+    auto tmp1 = std::make_shared<Background>(window.get(), Geologica);
+    tmp1->SetTexture("../assets/img/background4.jpg");
+    ObjVector.emplace_back(tmp1);
+
     ObjVector.emplace_back(std::make_shared<Label>(window.get(), Geologica, L"Уровень 4", window->getSize().x / 2, window->getSize().y / 12, Label::Align::Center, 55, 600));
-    ObjVector.at(0)->name = Obj::titleW4;
+    ObjVector.at(1)->name = Obj::titleW4;
     currentWindow = Windows::Game4;
 }
 

@@ -3,10 +3,10 @@
 
 using sf::Vector2f;
 
-Background::Background(sf::RenderWindow *window, sf::Font &font, bool isStatic) : window(window), Geologica(font), isStatic(isStatic)
+Background::Background(sf::RenderWindow *window, sf::Font &font, bool isStaticGradient) : window(window), Geologica(font), isStaticGradient(isStaticGradient)
 {   
     V_A.setPrimitiveType(sf::Quads);
-    if (!isStatic)
+    if (!isStaticGradient)
         GenerateRandom();
     V_A.append(sf::Vertex(Vector2f(0, 0), lUp));
     V_A.append(sf::Vertex(Vector2f(0, window->getSize().y), rUp));
@@ -24,14 +24,14 @@ void Background::SetGradient(sf::Color lUp, sf::Color rUp, sf::Color rDown, sf::
 }
 
 void Background::SetRandomGradient(){
-    isStatic = false;
+    isStaticGradient = false;
     GenerateRandom();
     SetGradient(lUp, rUp, rDown, lDown);
 }
 
 
 void Background::Update(){
-    if (!isStatic){
+    if (!isStaticGradient){
         if (delay.getElapsedTime().asMilliseconds() < 100) return;
         delay.restart();
         std::mt19937 gen(rd());
@@ -72,16 +72,29 @@ void Background::GenerateRandom()
 
 void Background::Draw()
 {   
-    window->draw(V_A);
+    if (!isTextured)
+        window->draw(V_A);
+    else
+        window->draw(*rect);
 }
 
 void Background::SetSingleColor(sf::Color color)
 {   
-    isStatic = true;
+    isStaticGradient = true;
     V_A.append(sf::Vertex(Vector2f(0, 0), color));
     V_A.append(sf::Vertex(Vector2f(0, window->getSize().y), color));
     V_A.append(sf::Vertex(Vector2f(window->getSize().x, window->getSize().y), color));
     V_A.append(sf::Vertex(Vector2f(window->getSize().x, 0), color));
 }
 
-
+void Background::SetTexture(const std::string filename)
+{
+    isTextured = true;
+    isStaticGradient = false;
+    if (!texture.loadFromFile(filename))
+        std::cerr << "Could not load texture of background.", exit(1);
+    rect = std::make_unique<sf::RectangleShape>(sf::Vector2f(window->getSize().x, window->getSize().y));
+    rect->setTexture(&texture);
+    rect->setTextureRect(sf::IntRect(sf::Vector2i(0, 0), sf::Vector2i(window->getSize().x, window->getSize().y)));
+    std::cout << sizeof(texture) << std::endl;
+}
