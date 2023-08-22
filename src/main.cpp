@@ -18,7 +18,7 @@ int main()
     float fps;
     std::chrono::system_clock::time_point start = std::chrono::system_clock::now();
 
-    MyGame->Init(L"Gamew", sf::Style::Fullscreen);
+    MyGame->Init(L"Gamew");
     while (MyGame->getActive())
     {   
         elapsedTime = clock.restart();

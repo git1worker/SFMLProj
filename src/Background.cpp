@@ -91,10 +91,10 @@ void Background::SetTexture(const std::string filename)
 {
     isTextured = true;
     isStaticGradient = false;
-    if (!texture.loadFromFile(filename))
+    texture = std::make_unique<sf::Texture>();
+    if (!texture->loadFromFile(filename))
         std::cerr << "Could not load texture of background.", exit(1);
     rect = std::make_unique<sf::RectangleShape>(sf::Vector2f(window->getSize().x, window->getSize().y));
-    rect->setTexture(&texture);
+    rect->setTexture(texture.get());
     rect->setTextureRect(sf::IntRect(sf::Vector2i(0, 0), sf::Vector2i(window->getSize().x, window->getSize().y)));
-    std::cout << sizeof(texture) << std::endl;
 }

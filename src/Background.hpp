@@ -34,6 +34,6 @@ private:
     sf::VertexArray V_A;
     sf::Color rUp, lUp, rDown, lDown;
     int min = 60, max = 255;
-    sf::Texture texture;
+    std::unique_ptr<sf::Texture> texture;
     std::unique_ptr<sf::RectangleShape> rect;
 };

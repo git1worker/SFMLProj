@@ -18,13 +18,15 @@
             "scale": 0.5,
             "selectedLayer": 1,
             "viewCenter": {
-                "x": 877,
-                "y": 121
+                "x": 1663,
+                "y": 497
             }
         }
     },
+    "last.exportedFilePath": "/home/ilya/Desktop/ProjectsLinux/SFMLProj/assets/maps",
     "last.imagePath": "/home/ilya/Desktop/ProjectsLinux/SFMLProj/assets/img/tiles",
     "map.height": 75,
+    "map.lastUsedExportFilter": "Tiled map files (*.tmx *.xml)",
     "map.lastUsedFormat": "tmx",
     "map.width": 120,
     "openFiles": [
