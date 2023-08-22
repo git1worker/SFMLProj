@@ -6,6 +6,7 @@ project(SFMLProj)
 message(${CMAKE_SYSTEM_NAME})
 if (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
 
+
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=address -lX11")
 add_executable(test.out src/test.cpp)
 add_executable(${PROJECT_NAME}
