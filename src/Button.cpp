@@ -3,7 +3,7 @@
 
 int Button::counter = 0;
 
-Button::Button(sf::RenderWindow *window, sf::Font& font, const float x, const float y, std::wstring stri) : window(window), Geologica(font), str(stri)
+Button::Button(sf::RenderWindow *window, sf::Font& font, const float x, const float y, std::wstring stri) : str(stri), window(window), Geologica(font) 
 {   
     ++counter;
     this->x = x;

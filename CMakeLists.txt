@@ -4,11 +4,13 @@ project(SFMLProj)
 
 
 message(${CMAKE_SYSTEM_NAME})
+
 if (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
 
-
-set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=address -lX11")
 add_executable(test.out src/test.cpp)
+add_compile_options(-fsanitize=address)
+add_link_options(-fsanitize=address -lX11)
+
 add_executable(${PROJECT_NAME}
     src/main.cpp
     src/Gamew.cpp
@@ -18,6 +20,7 @@ add_executable(${PROJECT_NAME}
     src/DebugInfo.cpp
     src/Background.cpp
     src/TextBox.cpp
+    src/TileMap.cpp
 )
 find_package(SFML REQUIRED COMPONENTS system window graphics)
 target_link_libraries(${PROJECT_NAME}
@@ -29,7 +32,6 @@ target_link_libraries(${PROJECT_NAME}
 set_target_properties(${PROJECT_NAME} PROPERTIES
     CXX_STANDARD 17
     CXX_STANDARD_REQUIRED ON
-    COMPILE_OPTIONS "-fsanitize=address"
 )
 endif()
 

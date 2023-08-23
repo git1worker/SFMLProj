@@ -3,17 +3,32 @@
 #include <SFML/Graphics.hpp>
 #include "../libs/rapidxml-1.13/rapidxml.hpp"
 #include "../libs/rapidxml-1.13/rapidxml_utils.hpp"
+#include <vector>
+#include <map>
+#include <memory>
 
-class TileMap : Obj{
+#ifndef DEBUG
+#define DEBUG                                           \
+    {                                                   \
+        std::cout << "Line: " << __LINE__ << std::endl; \
+    }
+#endif // DEBUG
+
+class TileMap : public Obj{
 public:
-
+    ~TileMap();
     TileMap(sf::RenderWindow *window, std::string path);
     void Update() override;
     void Draw() override;
 
 private:
+
+    void FillMatrix(char* map);
+
+    std::map<int, std::unique_ptr<sf::Texture>> ids;
     sf::RenderWindow *window;
     std::string path;
-    rapidxml::file<> tileset, tilemap;
-    
-}
+    rapidxml::xml_document<> tileset, tilemap;
+    sf::Sprite** map_ids;
+    int heightInTiles, widthInTiles, heightTile, widthTile;
+};

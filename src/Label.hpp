@@ -42,9 +42,9 @@ private:
     bool animStart = true;
     bool animStop;
     Anims animType;
-    Align align;
     sf::RenderWindow *window;
     sf::Font &Geologica;
+    Align align;
     sf::Text text;
     float maxWidth = 200;
 };

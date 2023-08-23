@@ -27,10 +27,10 @@ private:
     void GenerateRandom();
 
     sf::Clock delay;
-    bool isStaticGradient, isTextured;
-    std::random_device rd;
     sf::RenderWindow* window;
     sf::Font &Geologica;
+    bool isStaticGradient, isTextured;
+    std::random_device rd;
     sf::VertexArray V_A;
     sf::Color rUp, lUp, rDown, lDown;
     int min = 60, max = 255;

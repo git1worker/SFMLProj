@@ -10,6 +10,7 @@ public:
     bool DeleteIt() {return deleteIt;}
 
     enum Names{
+        None,
         DebugInfo,
         titleMainW,
         butt1MainW,
@@ -20,9 +21,10 @@ public:
         titleW2,
         titleW3,
         titleW4,
-        textBox1MainW
+        textBox1MainW,
+        tileMapW1
     };
-    Names name;
+    Names name = None;
 protected:
     
     bool deleteIt = false;

@@ -78,7 +78,6 @@ void TextBox::CheckWidthText()
 {
     std::wstring newStr;
     int i = 1;
-    int beginChar = 0;
     sf::String lastStr = text.getString();
     for (auto it = lastStr.begin(); it != lastStr.end(); ++it){
         int currW = text.findCharacterPos(i).x - text.findCharacterPos(0).x;

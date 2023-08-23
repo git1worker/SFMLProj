@@ -5,9 +5,8 @@
 #include <vector>
 #include "DebugInfo.hpp"
 #include "TextBox.hpp"
+#include "TileMap.hpp"
 
-#include <X11/cursorfont.h>
-#include <X11/Xlib.h>
 
 #ifndef DEBUG
 #define DEBUG                                           \
@@ -58,6 +57,7 @@ private:
     void EventMouseButtonPressed(sf::Event& event);
     void EventMouseButtonReleased(sf::Event& event);
     void EventKeyPressed(sf::Event& event);
+    void EventMouseWheelScrolled(sf::Event& event);
     void HandleButton(Button * btn);
     void HandleTextBox();
     void InitMainWindow();
@@ -69,23 +69,19 @@ private:
     void CheckObjToDelete();
     
     
-    vector<std::vector<std::shared_ptr<Obj>>::iterator> ObjToDelete;
+    vector<std::vector<std::unique_ptr<Obj>>::iterator> ObjToDelete;
     int currentWindow = Windows::MainW;
     bool isActive = true;
     bool switchWindow = false;
     sf::Event event;
-    std::vector<std::shared_ptr<Obj>> ObjVector;
+    std::vector<std::unique_ptr<Obj>> ObjVector;
     sf::Font Geologica;
-    std::shared_ptr<sf::RenderWindow> window;
+    std::unique_ptr<sf::RenderWindow> window;
     std::unique_ptr<DebugInfo> debugInfo;
     TextBox* selectedTextBox = nullptr;
-
-    sf::WindowHandle handle;
-    Display* xDisplay;
-    Cursor xCursor;
-    Window xWindow;
+    sf::View view;
     bool cursorSetted = false;
     bool TextBoxContains;
-
     sf::Cursor cursorArrow, cursorText;
+    int screenOffsetX = 0, screenOffsetY = 0;
 };
