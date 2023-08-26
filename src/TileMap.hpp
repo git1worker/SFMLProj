@@ -18,17 +18,20 @@ class TileMap : public Obj{
 public:
     ~TileMap();
     TileMap(sf::RenderWindow *window, std::string path);
-    void Update() override;
+    void Update(int deltaX, int deltaY) override;
     void Draw() override;
+    void Zoom(int delta) override;
 
 private:
 
     void FillMatrix(char* map);
 
+    
     std::map<int, std::unique_ptr<sf::Texture>> ids;
     sf::RenderWindow *window;
     std::string path;
     rapidxml::xml_document<> tileset, tilemap;
     sf::Sprite** map_ids;
     int heightInTiles, widthInTiles, heightTile, widthTile;
+    
 };

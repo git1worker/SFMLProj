@@ -3,7 +3,7 @@
 
 using sf::Vector2f;
 
-Background::Background(sf::RenderWindow *window, sf::Font &font, bool isStaticGradient) : window(window), Geologica(font), isStaticGradient(isStaticGradient)
+Background::Background(sf::RenderWindow *window, sf::Font *font, bool isStaticGradient) : window(window), Geologica(font), isStaticGradient(isStaticGradient)
 {   
     V_A.setPrimitiveType(sf::Quads);
     if (!isStaticGradient)
@@ -28,7 +28,6 @@ void Background::SetRandomGradient(){
     GenerateRandom();
     SetGradient(lUp, rUp, rDown, lDown);
 }
-
 
 void Background::Update(){
     if (!isStaticGradient){
@@ -59,6 +58,14 @@ void Background::Update(){
     //std::cout << (int)V_A[0].color.r << std::endl; 
 }
 
+void Background::Update(int deltaX, int deltaY)
+{   
+
+    rect.setTextureRect(sf::IntRect(sf::Vector2i(rect.getTextureRect().left - deltaX, rect.getTextureRect().top - deltaY),
+    sf::Vector2i(rect.getTextureRect().width, rect.getTextureRect().height)
+    ));
+}
+
 void Background::GenerateRandom()
 {   
     std::mt19937 gen(rd());
@@ -75,7 +82,7 @@ void Background::Draw()
     if (!isTextured)
         window->draw(V_A);
     else
-        window->draw(*rect);
+        window->draw(rect);
 }
 
 void Background::SetSingleColor(sf::Color color)
@@ -91,10 +98,12 @@ void Background::SetTexture(const std::string filename)
 {
     isTextured = true;
     isStaticGradient = false;
-    texture = std::make_unique<sf::Texture>();
-    if (!texture->loadFromFile(filename))
+    texture = sf::Texture();
+    if (!texture.loadFromFile(filename))
         std::cerr << "Could not load texture of background.", exit(1);
-    rect = std::make_unique<sf::RectangleShape>(sf::Vector2f(window->getSize().x, window->getSize().y));
-    rect->setTexture(texture.get());
-    rect->setTextureRect(sf::IntRect(sf::Vector2i(0, 0), sf::Vector2i(window->getSize().x, window->getSize().y)));
+    rect = sf::RectangleShape(sf::Vector2f(window->getSize().x, window->getSize().y));
+    rect.setTexture(&texture);
+    rect.setTextureRect(sf::IntRect(sf::Vector2i(0, 0), sf::Vector2i(window->getSize().x, window->getSize().y)));
+    movable = true;
+    zoomable = true;
 }

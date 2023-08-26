@@ -9,9 +9,10 @@ class TextBox : public Obj
 {
 public:
 
-    TextBox(sf::RenderWindow *window, sf::Font &font, const float x, const float y, const unsigned int fSize = 30, const float w = 200, const float h = 60);
+    TextBox(sf::RenderWindow *window, sf::Font *font, const float x, const float y, const unsigned int fSize = 30, const float w = 200, const float h = 60);
     void Draw() override;
     void Update() override;
+    void SetDrawCursor(bool v);
     void AppendLetter(wchar_t ch);
     void DelLetter();
     void ChangeText(std::wstring t);
@@ -22,14 +23,14 @@ private:
     void CheckWidthText();
     int posCursor;
     sf::RenderWindow *window;
-    sf::Font &Geologica;
+    sf::Font *Geologica;
     sf::Text text;
     int maxWidth, h;
-    std::unique_ptr<sf::RectangleShape> rect;
-    std::unique_ptr<sf::RectangleShape> cursor;
+    sf::RectangleShape rect;
+    sf::RectangleShape cursor;
     bool showCursor = true;
     sf::Clock cursorClock;
-    bool drawCursor;
+    bool drawCursor = false;
 };
 
 

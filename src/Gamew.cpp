@@ -39,7 +39,7 @@ void Gamew::Init(const std::wstring title, const int Style, const int width, con
     }
     window->setMouseCursor(cursorArrow);
 
-    this->debugInfo = make_unique<DebugInfo>(window.get(), Geologica, &event);
+    this->debugInfo = make_unique<DebugInfo>(window.get(), &Geologica, &event);
     debugInfo->name = Obj::DebugInfo;
     view = window->getView();
 }
@@ -95,14 +95,14 @@ void Gamew::EventMouseMoved(sf::Event &event)
 
 void Gamew::EventMouseButtonPressed(sf::Event &event)
 {
-    selectedTextBox = nullptr;
     for (const auto &i : ObjVector)
-    {
+    {   
+        if (selectedTextBox) 
+            selectedTextBox->SetDrawCursor(false), selectedTextBox = nullptr;
         if (auto *b = dynamic_cast<Button *>(i.get()); b && b->getRect().getGlobalBounds().contains(sf::Vector2f((float)event.mouseButton.x + screenOffsetX, (float)event.mouseButton.y + screenOffsetY)))
             HandleButton(b);
-        
         else if (auto *b = dynamic_cast<TextBox *>(i.get()); b && b->getRect().getGlobalBounds().contains(sf::Vector2f((float)event.mouseButton.x + screenOffsetX, (float)event.mouseButton.y + screenOffsetY)))
-            selectedTextBox = b;
+            selectedTextBox = b, b->SetDrawCursor(true);
         
     }
 }
@@ -128,20 +128,25 @@ void Gamew::EventKeyPressed(sf::Event &event)
     }
     else if (selectedTextBox != nullptr)
         HandleTextBox();
+    if (event.key.code == sf::Keyboard::R){
+        std::cout << "Before view zoom: " << view.getSize().x / window->getSize().x << std::endl;
+        view.zoom(1 / (view.getSize().x / (float)window->getSize().x));
+        window->setView(view);
+        std::cout << "After view zoom: " << view.getSize().x / window->getSize().x << std::endl;
+    }
 }
 
 void Gamew::EventMouseWheelScrolled(sf::Event &event)
 {
     if (event.mouseWheelScroll.delta > 0){
-        view.move(0, 10);
-        screenOffsetY += 10;
+        view.zoom(0.9f);
         window->setView(view);
     }
     else if (event.mouseWheelScroll.delta < 0){
-        view.move(0, -10);
-        screenOffsetY -= 10;
+        view.zoom(1.1f);
         window->setView(view);
     }
+    // std::cout << "Current view zoom: " << view.getSize().x / window->getSize().x << std::endl;
 }
 
 void Gamew::HandleButton(Button *btn)
@@ -220,19 +225,27 @@ void Gamew::HandleTextBox()
     }
 }
 
+void Gamew::HandleMovement(Obj* b)
+{
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) && currentWindow != Windows::MainW)
+        b->Update(0, 5);
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) && currentWindow != Windows::MainW)
+        b->Update(5, 0);
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::S) && currentWindow != Windows::MainW)
+        b->Update(0, -5);
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) && currentWindow != Windows::MainW)
+        b->Update(-5, 0);
+}
 void Gamew::Update()
 {
     CheckSwitchWindows();
     for (std::vector<std::unique_ptr<Obj>>::iterator it = ObjVector.begin(); it != ObjVector.end(); ++it)
     {
-        if (auto *b = dynamic_cast<TextBox *>((*it).get())){
-            if (b == selectedTextBox)
-                b->Update();
-        } 
+        if ((*it)->isMovable())
+            HandleMovement((*it).get());
         else
-        {
             (*it)->Update();
-        }
+        
         if ((*it)->DeleteIt())
             ObjToDelete.emplace_back(it);
     }
@@ -243,10 +256,14 @@ void Gamew::Update()
 void Gamew::Drawing()
 {
     window->clear(sf::Color::White);
+    // Drawing inside this ---
+
     for (std::vector<std::unique_ptr<Obj>>::iterator it = ObjVector.begin(); it != ObjVector.end(); ++it)
         (*it)->Draw();
 
     debugInfo->Draw();
+
+    // -----------------------
     window->display();
 }
 
@@ -255,12 +272,12 @@ void Gamew::InitMainWindow()
     currentWindow = Windows::MainW;
     window->setView(window->getDefaultView());
     // Background
-    auto bg = std::make_unique<Background>(window.get(), Geologica, true);
+    auto bg = std::make_unique<Background>(window.get(), &Geologica, true);
     bg->SetGradient(sf::Color(153, 153, 255), sf::Color(0, 102, 204), sf::Color(192, 192, 192), sf::Color(224, 224, 224));
+    bg->name = Obj::Names::backgroundMW;
     ObjVector.emplace_back(std::move(bg));
-
     // Title
-    ObjVector.emplace_back(std::make_unique<Label>(window.get(), Geologica, L"Gamew", window->getSize().x / 2, window->getSize().y / 12, Label::Align::Center, 60, 400));
+    ObjVector.emplace_back(std::make_unique<Label>(window.get(), &Geologica, L"Gamew", window->getSize().x / 2, window->getSize().y / 12, Label::Align::Center, 60, 400));
     ObjVector.back()->name = Obj::titleMainW;
     // Buttons
     int numButtons = 4;
@@ -271,19 +288,17 @@ void Gamew::InitMainWindow()
     {
         if (i > 0)
             currentX += buttonWidth + padding;
-        auto b = std::make_unique<Button>(window.get(), Geologica, currentX + 150 / 2, 200, std::wstring(std::wstring(L"Уровень ") + std::to_wstring(i + 1)));
+        auto b = std::make_unique<Button>(window.get(), &Geologica, currentX + 150 / 2, 200, std::wstring(std::wstring(L"Уровень ") + std::to_wstring(i + 1)));
         
         b->getRect().setFillColor(sf::Color(b->getRect().getFillColor().r, b->getRect().getFillColor().g, b->getRect().getFillColor().b, 100));
         ObjVector.emplace_back(std::move(b));
-
     }
     ObjVector.at(2)->name = Obj::butt1MainW;
     ObjVector.at(3)->name = Obj::butt2MainW;
     ObjVector.at(4)->name = Obj::butt3MainW;
     ObjVector.at(5)->name = Obj::butt4MainW;
-
     // TextBox
-    ObjVector.emplace_back(std::make_unique<TextBox>(window.get(), Geologica, window->getSize().x / 2, window->getSize().y / 2, 30, 200, 3));
+    ObjVector.emplace_back(std::make_unique<TextBox>(window.get(), &Geologica, window->getSize().x / 2, window->getSize().y / 2, 30, 200, 3));
     ObjVector.back()->name = Obj::textBox1MainW;
 }
 
@@ -291,14 +306,15 @@ void Gamew::InitWindow1()
 {   
     currentWindow = Windows::Game1;
 
-    auto tmp1 = std::make_unique<Background>(window.get(), Geologica);
+    auto tmp1 = std::make_unique<Background>(window.get(), &Geologica);
     tmp1->SetTexture("../assets/img/background1.jpg");
+    tmp1->name = Obj::Names::backgroundW1;
     ObjVector.emplace_back(std::move(tmp1));
 
     ObjVector.emplace_back(std::make_unique<TileMap>(window.get(), std::string("../assets/maps/untitled.xml")));
     ObjVector.back()->name = Obj::Names::tileMapW1;
 
-    auto tmp2 = std::make_unique<Label>(window.get(), Geologica, L"Уровень 1", window->getSize().x / 2, window->getSize().y / 12, Label::Align::Center, 55, 600);
+    auto tmp2 = std::make_unique<Label>(window.get(), &Geologica, L"Уровень 1", window->getSize().x / 2, window->getSize().y / 12, Label::Align::Center, 55, 600);
     tmp2->name = Obj::titleW1;
     tmp2->SetAnimation(Label::Anims::AppearanceDecay);
     ObjVector.emplace_back(std::move(tmp2));
@@ -306,33 +322,33 @@ void Gamew::InitWindow1()
 
 void Gamew::InitWindow2()
 {
-    auto tmp1 = std::make_unique<Background>(window.get(), Geologica);
+    auto tmp1 = std::make_unique<Background>(window.get(), &Geologica);
     tmp1->SetTexture("../assets/img/background2.jpg");
     ObjVector.emplace_back(std::move(tmp1));
     
-    ObjVector.emplace_back(std::make_unique<Label>(window.get(), Geologica, L"Уровень 2", window->getSize().x / 2, window->getSize().y / 12, Label::Align::Center, 55, 600));
+    ObjVector.emplace_back(std::make_unique<Label>(window.get(), &Geologica, L"Уровень 2", window->getSize().x / 2, window->getSize().y / 12, Label::Align::Center, 55, 600));
     ObjVector.at(1)->name = Obj::titleW2;
     currentWindow = Windows::Game2;
 }
 
 void Gamew::InitWindow3()
 {   
-    auto tmp1 = std::make_unique<Background>(window.get(), Geologica);
+    auto tmp1 = std::make_unique<Background>(window.get(), &Geologica);
     tmp1->SetTexture("../assets/img/background3.jpg");
     ObjVector.emplace_back(std::move(tmp1));
 
-    ObjVector.emplace_back(std::make_unique<Label>(window.get(), Geologica, L"Уровень 3", window->getSize().x / 2, window->getSize().y / 12, Label::Align::Center, 55, 600));
+    ObjVector.emplace_back(std::make_unique<Label>(window.get(), &Geologica, L"Уровень 3", window->getSize().x / 2, window->getSize().y / 12, Label::Align::Center, 55, 600));
     ObjVector.at(1)->name = Obj::titleW3;
     currentWindow = Windows::Game3;
 }
 
 void Gamew::InitWindow4()
 {   
-    auto tmp1 = std::make_unique<Background>(window.get(), Geologica);
+    auto tmp1 = std::make_unique<Background>(window.get(), &Geologica);
     tmp1->SetTexture("../assets/img/background4.jpg");
     ObjVector.emplace_back(std::move(tmp1));
 
-    ObjVector.emplace_back(std::make_unique<Label>(window.get(), Geologica, L"Уровень 4", window->getSize().x / 2, window->getSize().y / 12, Label::Align::Center, 55, 600));
+    ObjVector.emplace_back(std::make_unique<Label>(window.get(), &Geologica, L"Уровень 4", window->getSize().x / 2, window->getSize().y / 12, Label::Align::Center, 55, 600));
     ObjVector.at(1)->name = Obj::titleW4;
     currentWindow = Windows::Game4;
 }

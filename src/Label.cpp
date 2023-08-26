@@ -1,13 +1,13 @@
 #include "Label.hpp"
 #include <iostream>
 
-Label::Label(sf::RenderWindow *window, sf::Font& font, std::wstring str, const float x, const float y, Align align, const unsigned int fSize, const float w) 
+Label::Label(sf::RenderWindow *window, sf::Font* font, std::wstring str, const float x, const float y, Align align, const unsigned int fSize, const float w) 
     : window(window), Geologica(font), align(align)
 {   
     this->x = x;
     this->y = y;
     text.setString(str);
-    text.setFont(Geologica);
+    text.setFont(*Geologica);
     text.setFillColor(sf::Color::Black);
     text.setCharacterSize(fSize);
     this->maxWidth = w;
@@ -21,6 +21,33 @@ Label::Label(sf::RenderWindow *window, sf::Font& font, std::wstring str, const f
         break;
     }
     
+}
+
+Label::Label(const Label &other) : Geologica(other.Geologica)
+{
+    this->animOpacity = other.animOpacity;
+    this->animStart = other.animStart;
+    this->animStop = other.animStop;
+    this->animType = other.animType;
+    this->text = other.text;
+    this->window = other.window;
+    this->align = other.align;
+    this->maxWidth = other.maxWidth;
+}
+
+Label &Label::operator=(const Label &other)
+{
+    this->animOpacity = other.animOpacity;
+    this->animStart = other.animStart;
+    this->animStop = other.animStop;
+    this->animType = other.animType;
+    this->text = other.text;
+    this->Geologica = other.Geologica;
+    this->window = other.window;
+    this->align = other.align;
+    this->maxWidth = other.maxWidth;
+    
+    return *this;
 }
 
 sf::Text &Label::getText()
@@ -118,6 +145,7 @@ void Label::AlignToLeft()
 void Label::Draw()
 {
     window->draw(text);
+    //std::cout << text.getString().toAnsiString() << ' ' << text.getPosition().x << std::endl;
 }
 
 void Label::ChangeText(std::wstring t)

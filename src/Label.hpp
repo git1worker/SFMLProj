@@ -24,8 +24,11 @@ public:
         None,
         AppearanceDecay
     };
+    Label() = default;
+    Label(sf::RenderWindow *window, sf::Font* font, std::wstring text, const float x, const float y, Align align = Align::Center, const unsigned int fSize = 30, const float w = 200);
+    Label(const Label& other);
+    Label& operator=(const Label& other);
 
-    Label(sf::RenderWindow *window, sf::Font &font, std::wstring text, const float x, const float y, Align align = Align::Center, const unsigned int fSize = 30, const float w = 200);
     void ChangeText(std::wstring t);
     void Draw() override;
     sf::Text &getText();
@@ -43,7 +46,7 @@ private:
     bool animStop;
     Anims animType;
     sf::RenderWindow *window;
-    sf::Font &Geologica;
+    sf::Font* Geologica;
     Align align;
     sf::Text text;
     float maxWidth = 200;

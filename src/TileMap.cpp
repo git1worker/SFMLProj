@@ -35,7 +35,19 @@ TileMap::TileMap(sf::RenderWindow *window, std::string path) : window(window), p
         map_ids[i] = new sf::Sprite[widthInTiles];
     }
     FillMatrix(map);
+    movable = true;
+    zoomable = true;
     
+}
+
+void TileMap::Update(int deltaX, int deltaY)
+{   
+
+    for (int i = 0; i < heightInTiles; ++i){
+        for (int j = 0; j < widthInTiles; ++j){
+            map_ids[i][j].setPosition(sf::Vector2f(map_ids[i][j].getPosition().x + deltaX, map_ids[i][j].getPosition().y + deltaY));
+        }
+    }
 }
 
 TileMap::~TileMap(){
@@ -45,11 +57,6 @@ TileMap::~TileMap(){
     delete [] map_ids;
 }
 
-void TileMap::Update()
-{
-
-}
-
 void TileMap::Draw()
 {   
     for (int i = 0; i < heightInTiles; ++i){
@@ -57,6 +64,11 @@ void TileMap::Draw()
             window->draw(map_ids[i][j]);
         }
     }
+}
+
+void TileMap::Zoom(int delta)
+{
+    
 }
 
 void TileMap::FillMatrix(char* map)

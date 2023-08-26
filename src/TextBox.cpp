@@ -1,6 +1,6 @@
 #include "TextBox.hpp"
 
-TextBox::TextBox(sf::RenderWindow *window, sf::Font &font, const float x, const float y, const unsigned int fSize, const float w, const float h) 
+TextBox::TextBox(sf::RenderWindow *window, sf::Font *font, const float x, const float y, const unsigned int fSize, const float w, const float h) 
     : window(window), Geologica(font)
 {
     this->x = x;
@@ -10,29 +10,29 @@ TextBox::TextBox(sf::RenderWindow *window, sf::Font &font, const float x, const 
     if (fSize > h) this->h = fSize;
 
     // Box
-    rect = std::make_unique<sf::RectangleShape>(sf::Vector2f(w, this->h));
-    rect->setOrigin(sf::Vector2f(0, 0));
-    rect->setPosition(sf::Vector2f(x, y));
-    rect->setFillColor(sf::Color(220, 220, 220, 220));
-    rect->setOutlineThickness(1);
-    rect->setOutlineColor(sf::Color(50, 50, 50));
+    rect.setSize(sf::Vector2f(w, this->h));
+    rect.setOrigin(sf::Vector2f(0, 0));
+    rect.setPosition(sf::Vector2f(x, y));
+    rect.setFillColor(sf::Color(220, 220, 220, 220));
+    rect.setOutlineThickness(1);
+    rect.setOutlineColor(sf::Color(50, 50, 50));
     // Text
-    text.setFont(Geologica);
+    text.setFont(*Geologica);
     text.setFillColor(sf::Color::Black);
     text.setOrigin(sf::Vector2f(0, 0));
     text.setCharacterSize(fSize);
     text.setPosition(x + text.getLetterSpacing(), y - text.getLineSpacing());
     // Cursor
-    cursor = std::make_unique<sf::RectangleShape>(sf::Vector2f(text.getCharacterSize()/12, text.getCharacterSize()));
-    cursor->setOrigin(sf::Vector2f(0, 0));
-    cursor->setPosition(sf::Vector2f(x, y));
-    cursor->setFillColor(sf::Color(50, 50, 50));
+    cursor.setSize(sf::Vector2f(text.getCharacterSize()/12, text.getCharacterSize()));
+    cursor.setOrigin(sf::Vector2f(0, 0));
+    cursor.setPosition(sf::Vector2f(x, y));
+    cursor.setFillColor(sf::Color(50, 50, 50));
     
 }
 
 void TextBox::Draw()
 {   
-    window->draw(*rect);
+    window->draw(rect);
     window->draw(text);
     if (drawCursor){
         if (cursorClock.getElapsedTime().asMilliseconds() > 500)
@@ -41,14 +41,18 @@ void TextBox::Draw()
             cursorClock.restart();
         }
         if (showCursor)
-            window->draw(*cursor);
-        drawCursor = false;
+            window->draw(cursor);
     }
 }
 
 void TextBox::Update()
 {
-    drawCursor = true;
+    
+}
+
+void TextBox::SetDrawCursor(bool v)
+{
+    drawCursor = v;
 }
 
 void TextBox::AppendLetter(wchar_t cr)
@@ -72,7 +76,7 @@ void TextBox::ChangeText(std::wstring t)
     CheckWidthText();
 }
 
-sf::RectangleShape &TextBox::getRect() { return *rect; }
+sf::RectangleShape &TextBox::getRect() { return rect; }
 
 void TextBox::CheckWidthText()
 {
@@ -99,7 +103,7 @@ void TextBox::CheckWidthText()
     if (!text.getString().isEmpty()){
         text.setString(newStr);
     }
-    cursor->setPosition(text.findCharacterPos(text.getString().getSize()).x, text.findCharacterPos(text.getString().getSize()).y);
+    cursor.setPosition(text.findCharacterPos(text.getString().getSize()).x, text.findCharacterPos(text.getString().getSize()).y);
 
 }
 

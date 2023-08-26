@@ -3,11 +3,16 @@
 
 class Obj {
 public:
+
     Obj();
     virtual void Draw() = 0;
     virtual void Update();
+    virtual void Update(int deltaX, int deltaY);
     virtual ~Obj() = default;
-    bool DeleteIt() {return deleteIt;}
+    virtual void Zoom(int delta);
+    bool isMovable() { return movable; }
+    bool DeleteIt() { return deleteIt; }
+    bool isZoomable() { return zoomable; }
 
     enum Names{
         None,
@@ -22,11 +27,17 @@ public:
         titleW3,
         titleW4,
         textBox1MainW,
-        tileMapW1
+        tileMapW1,
+        backgroundW1,
+        backgroundMW
     };
+
     Names name = None;
+
 protected:
     
+    bool zoomable = false;
+    bool movable = false;
     bool deleteIt = false;
     float x, y, width, height;
 };

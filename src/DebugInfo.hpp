@@ -8,7 +8,7 @@
 class DebugInfo : public Obj {
 public:
 
-    DebugInfo(sf::RenderWindow* window, sf::Font &font, sf::Event* event);
+    DebugInfo(sf::RenderWindow* window, sf::Font *font, sf::Event* event);
     void UpdateEvents(sf::Event* event);
     void UpdateFps(float fps);
     void Update();
@@ -19,8 +19,8 @@ private:
     float fps;
     std::wstringstream ss;
     sf::RenderWindow* window;
-    sf::Font &Geologica;
-    std::unique_ptr<Label> info;
+    sf::Font *Geologica;
+    Label info;
     sf::Event* event;
     float maxWidth = 200;
     sf::Event::MouseMoveEvent lastMEvent{};

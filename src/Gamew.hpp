@@ -60,6 +60,7 @@ private:
     void EventMouseWheelScrolled(sf::Event& event);
     void HandleButton(Button * btn);
     void HandleTextBox();
+    void HandleMovement(Obj* b);
     void InitMainWindow();
     void InitWindow1();
     void InitWindow2();

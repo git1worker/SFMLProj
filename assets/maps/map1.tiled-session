@@ -3,7 +3,7 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "Lvl1.tsx",
+    "activeFile": "untitled.xml",
     "expandedProjectPaths": [
         "."
     ],
@@ -26,8 +26,8 @@
             "scale": 0.75,
             "selectedLayer": 1,
             "viewCenter": {
-                "x": 667.3333333333333,
-                "y": 421.99999999999994
+                "x": 365.33333333333326,
+                "y": 231.33333333333331
             }
         }
     },
@@ -44,8 +44,8 @@
     ],
     "project": "map1.tiled-project",
     "recentFiles": [
-        "untitled.xml",
-        "Lvl1.tsx"
+        "Lvl1.tsx",
+        "untitled.xml"
     ],
     "tileset.lastUsedFilter": "Tiled tileset files (*.tsx *.xml)",
     "tileset.lastUsedFormat": "tsx",
