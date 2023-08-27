@@ -1,5 +1,5 @@
 #pragma once
-
+#include <SFML/Graphics.hpp>
 
 class Obj {
 public:
@@ -7,7 +7,7 @@ public:
     Obj();
     virtual void Draw() = 0;
     virtual void Update();
-    virtual void Update(int deltaX, int deltaY);
+    virtual void Update(sf::Vector2f &offsetRelativeCenter);
     virtual ~Obj() = default;
     virtual void Zoom(int delta);
     bool isMovable() { return movable; }

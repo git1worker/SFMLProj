@@ -23,32 +23,45 @@ Label::Label(sf::RenderWindow *window, sf::Font* font, std::wstring str, const f
     
 }
 
-Label::Label(const Label &other) : Geologica(other.Geologica)
-{
-    this->animOpacity = other.animOpacity;
-    this->animStart = other.animStart;
-    this->animStop = other.animStop;
-    this->animType = other.animType;
-    this->text = other.text;
-    this->window = other.window;
-    this->align = other.align;
-    this->maxWidth = other.maxWidth;
-}
+// Label::Label(const Label &other) : Geologica(other.Geologica)
+// {
+//     this->animOpacity = other.animOpacity;
+//     this->animStart = other.animStart;
+//     this->animStop = other.animStop;
+//     this->animType = other.animType;
+//     this->text = other.text;
+//     this->window = other.window;
+//     this->align = other.align;
+//     this->maxWidth = other.maxWidth;
+//     this->zoomable = other.zoomable;
+//     this->movable = other.movable;
+//     this->deleteIt = other.deleteIt;
+//     this->x = other.x;
+//     this->y = other.y;
+//     this->width = other.width;
+//     this->height = other.height;
+// }
 
-Label &Label::operator=(const Label &other)
-{
-    this->animOpacity = other.animOpacity;
-    this->animStart = other.animStart;
-    this->animStop = other.animStop;
-    this->animType = other.animType;
-    this->text = other.text;
-    this->Geologica = other.Geologica;
-    this->window = other.window;
-    this->align = other.align;
-    this->maxWidth = other.maxWidth;
-    
-    return *this;
-}
+// Label &Label::operator=(const Label &other)
+// {
+//     this->animOpacity = other.animOpacity;
+//     this->animStart = other.animStart;
+//     this->animStop = other.animStop;
+//     this->animType = other.animType;
+//     this->text = other.text;
+//     this->Geologica = other.Geologica;
+//     this->window = other.window;
+//     this->align = other.align;
+//     this->maxWidth = other.maxWidth;
+//     this->zoomable = other.zoomable;
+//     this->movable = other.movable;
+//     this->deleteIt = other.deleteIt;
+//     this->x = other.x;
+//     this->y = other.y;
+//     this->width = other.width;
+//     this->height = other.height;
+//     return *this;
+// }
 
 sf::Text &Label::getText()
 {
@@ -64,7 +77,6 @@ void Label::UpdateMaxWidth(const float w)
 void Label::SetAnimation(Anims type)
 {
     this->animType = type;
-    
 }
 
 void Label::Update()
@@ -74,7 +86,6 @@ void Label::Update()
     case Anims::AppearanceDecay:
         DoAppearanceDecay();
         break;
-    
     default:
         break;
     }

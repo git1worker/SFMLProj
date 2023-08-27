@@ -58,11 +58,11 @@ void Background::Update(){
     //std::cout << (int)V_A[0].color.r << std::endl; 
 }
 
-void Background::Update(int deltaX, int deltaY)
+void Background::Update(sf::Vector2f &offsetRelativeCenter)
 {   
-
-    rect.setTextureRect(sf::IntRect(sf::Vector2i(rect.getTextureRect().left - deltaX, rect.getTextureRect().top - deltaY),
-    sf::Vector2i(rect.getTextureRect().width, rect.getTextureRect().height)
+    rect.setTextureRect(sf::IntRect(
+        sf::Vector2i(-offsetRelativeCenter.x, -offsetRelativeCenter.y),
+        sf::Vector2i(rect.getTextureRect().width, rect.getTextureRect().height)
     ));
 }
 

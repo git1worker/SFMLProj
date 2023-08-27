@@ -18,7 +18,7 @@ class TileMap : public Obj{
 public:
     ~TileMap();
     TileMap(sf::RenderWindow *window, std::string path);
-    void Update(int deltaX, int deltaY) override;
+    void Update(sf::Vector2f &offsetRelativeCenter) override;
     void Draw() override;
     void Zoom(int delta) override;
 

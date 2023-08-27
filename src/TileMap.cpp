@@ -40,12 +40,14 @@ TileMap::TileMap(sf::RenderWindow *window, std::string path) : window(window), p
     
 }
 
-void TileMap::Update(int deltaX, int deltaY)
+void TileMap::Update(sf::Vector2f &offsetRelativeCenter)
 {   
 
     for (int i = 0; i < heightInTiles; ++i){
         for (int j = 0; j < widthInTiles; ++j){
-            map_ids[i][j].setPosition(sf::Vector2f(map_ids[i][j].getPosition().x + deltaX, map_ids[i][j].getPosition().y + deltaY));
+            if (widthTile * j + offsetRelativeCenter.x >= -2*widthTile && widthTile * j + offsetRelativeCenter.x <= window->getSize().x + 2*widthTile && 
+            heightTile * i + offsetRelativeCenter.y >= -2*heightTile && heightTile * i + offsetRelativeCenter.y <= window->getSize().y + 2*heightTile)
+                map_ids[i][j].setPosition(sf::Vector2f(widthTile * j + offsetRelativeCenter.x, heightTile * i + offsetRelativeCenter.y));
         }
     }
 }
@@ -61,7 +63,9 @@ void TileMap::Draw()
 {   
     for (int i = 0; i < heightInTiles; ++i){
         for (int j = 0; j < widthInTiles; ++j){
-            window->draw(map_ids[i][j]);
+            if (map_ids[i][j].getPosition().x >= -2*widthTile && map_ids[i][j].getPosition().x <= window->getSize().x + 2*widthTile &&
+            map_ids[i][j].getPosition().y >= -2*heightTile && map_ids[i][j].getPosition().y <= window->getSize().y + 2*heightTile)
+                window->draw(map_ids[i][j]);
         }
     }
 }

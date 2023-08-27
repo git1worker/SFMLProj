@@ -6,6 +6,7 @@
 #include "DebugInfo.hpp"
 #include "TextBox.hpp"
 #include "TileMap.hpp"
+#include "Player.hpp"
 
 
 #ifndef DEBUG
@@ -67,15 +68,17 @@ private:
     void InitWindow3();
     void InitWindow4();
     void CheckSwitchWindows();
-    void CheckObjToDelete();
+    void CheckToDelete();
     
     
     vector<std::vector<std::unique_ptr<Obj>>::iterator> ObjToDelete;
+    vector<std::vector<std::unique_ptr<Entity>>::iterator> EntitiesToDelete;
     int currentWindow = Windows::MainW;
     bool isActive = true;
     bool switchWindow = false;
     sf::Event event;
     std::vector<std::unique_ptr<Obj>> ObjVector;
+    std::vector<std::unique_ptr<Entity>> EntitiesVector;
     sf::Font Geologica;
     std::unique_ptr<sf::RenderWindow> window;
     std::unique_ptr<DebugInfo> debugInfo;
@@ -85,4 +88,5 @@ private:
     bool TextBoxContains;
     sf::Cursor cursorArrow, cursorText;
     int screenOffsetX = 0, screenOffsetY = 0;
+    sf::Vector2f offsetRelativeCenter{};
 };

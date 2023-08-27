@@ -21,6 +21,8 @@ add_executable(${PROJECT_NAME}
     src/Background.cpp
     src/TextBox.cpp
     src/TileMap.cpp
+    src/Player.cpp
+    src/Entity.cpp
 )
 find_package(SFML REQUIRED COMPONENTS system window graphics)
 target_link_libraries(${PROJECT_NAME}

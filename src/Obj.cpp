@@ -9,7 +9,7 @@ void Obj::Update()
 {
 }
 
-void Obj::Update(int deltaX, int deltaY)
+void Obj::Update(sf::Vector2f &offsetRelativeCenter)
 {
 }
 

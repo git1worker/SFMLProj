@@ -15,9 +15,7 @@ Button::Button(sf::RenderWindow *window, sf::Font* font, const float x, const fl
     rect.setFillColor(sf::Color(160, 160, 160));
     rect.setOutlineThickness(2);
     rect.setOutlineColor(sf::Color(100, 100, 100));
-    auto t = Label(window, font, stri, rect.getOrigin().x + rect.getGlobalBounds().left, rect.getOrigin().y + rect.getGlobalBounds().top, Label::Align::Center, 25, 500);
-    text = t;
-    std::cout << text.getText().getPosition().x << std::endl;
+    text = Label(window, font, stri, rect.getOrigin().x + rect.getGlobalBounds().left, rect.getOrigin().y + rect.getGlobalBounds().top, Label::Align::Center, 25, 500);
     // printf("\n%f %f %f %f\n", rect->getGlobalBounds().left, rect->getGlobalBounds().top, rect->getGlobalBounds().width, rect->getGlobalBounds().height);
     // printf("%f %f %f %f\n\n", text.getGlobalBounds().left, text.getGlobalBounds().top, text.getGlobalBounds().width, text.getGlobalBounds().height);
     ChangeText(str);
@@ -69,6 +67,7 @@ void Button::Draw()
 {   
     window->draw(rect);
     text.Draw();
+    
 }
 
 sf::RectangleShape &Button::getRect()

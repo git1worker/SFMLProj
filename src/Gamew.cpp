@@ -41,6 +41,7 @@ void Gamew::Init(const std::wstring title, const int Style, const int width, con
 
     this->debugInfo = make_unique<DebugInfo>(window.get(), &Geologica, &event);
     debugInfo->name = Obj::DebugInfo;
+    
     view = window->getView();
 }
 
@@ -76,7 +77,7 @@ void Gamew::EventMouseMoved(sf::Event &event)
         }
         else if (b && b->isHovered() && !b->getRect().getGlobalBounds().contains(sf::Vector2f((float)event.mouseMove.x + screenOffsetX, (float)event.mouseMove.y + screenOffsetY)))
             b->ResetHovered();
-        if (auto *b = dynamic_cast<TextBox *>(i.get()); b && b->getRect().getGlobalBounds().contains(sf::Vector2f((float)event.mouseMove.x + screenOffsetX, (float)event.mouseMove.y + screenOffsetY)))
+        else if (auto *b = dynamic_cast<TextBox *>(i.get()); b && b->getRect().getGlobalBounds().contains(sf::Vector2f((float)event.mouseMove.x + screenOffsetX, (float)event.mouseMove.y + screenOffsetY)))
         {
             if (!cursorSetted)
             {
@@ -85,6 +86,7 @@ void Gamew::EventMouseMoved(sf::Event &event)
             }
             TextBoxContains = true;
         }
+
     }
     if (cursorSetted && !TextBoxContains)
     {
@@ -228,14 +230,17 @@ void Gamew::HandleTextBox()
 void Gamew::HandleMovement(Obj* b)
 {
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) && currentWindow != Windows::MainW)
-        b->Update(0, 5);
+        offsetRelativeCenter.y += 5;
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) && currentWindow != Windows::MainW)
-        b->Update(5, 0);
+        offsetRelativeCenter.x += 5;
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::S) && currentWindow != Windows::MainW)
-        b->Update(0, -5);
+        offsetRelativeCenter.y -= 5;
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) && currentWindow != Windows::MainW)
-        b->Update(-5, 0);
+        offsetRelativeCenter.x -= 5;
+    
+    b->Update(offsetRelativeCenter);
 }
+
 void Gamew::Update()
 {
     CheckSwitchWindows();
@@ -249,7 +254,13 @@ void Gamew::Update()
         if ((*it)->DeleteIt())
             ObjToDelete.emplace_back(it);
     }
-    CheckObjToDelete();
+    for (std::vector<std::unique_ptr<Entity>>::iterator it = EntitiesVector.begin(); it != EntitiesVector.end(); ++it)
+    {
+        (*it)->Update();
+        if ((*it)->DeleteIt())
+            EntitiesToDelete.emplace_back(it);
+    }
+    CheckToDelete();
     debugInfo->Update();
 }
 
@@ -260,7 +271,8 @@ void Gamew::Drawing()
 
     for (std::vector<std::unique_ptr<Obj>>::iterator it = ObjVector.begin(); it != ObjVector.end(); ++it)
         (*it)->Draw();
-
+    for (std::vector<std::unique_ptr<Entity>>::iterator it = EntitiesVector.begin(); it != EntitiesVector.end(); ++it)
+        (*it)->Draw();
     debugInfo->Draw();
 
     // -----------------------
@@ -318,6 +330,9 @@ void Gamew::InitWindow1()
     tmp2->name = Obj::titleW1;
     tmp2->SetAnimation(Label::Anims::AppearanceDecay);
     ObjVector.emplace_back(std::move(tmp2));
+
+    auto tmp3 = std::make_unique<Player>(window.get(), Player::Types::greenAgent, sf::Vector2f(window->getSize().x / 3, window->getSize().y / 3));
+    EntitiesVector.emplace_back(std::move(tmp3));
 }
 
 void Gamew::InitWindow2()
@@ -358,6 +373,7 @@ void Gamew::CheckSwitchWindows()
     if (switchWindow)
     {
         ObjVector.clear();
+        EntitiesVector.clear();
         switch (currentWindow)
         {
         case Windows::MainW:
@@ -382,9 +398,12 @@ void Gamew::CheckSwitchWindows()
     }
 }
 
-void Gamew::CheckObjToDelete()
+void Gamew::CheckToDelete()
 {
     for (const auto i : ObjToDelete)
         ObjVector.erase(i);
     ObjToDelete.clear();
+    for (const auto i : EntitiesToDelete)
+        EntitiesVector.erase(i);
+    EntitiesToDelete.clear();
 }
