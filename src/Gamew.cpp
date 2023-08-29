@@ -130,7 +130,7 @@ void Gamew::EventKeyPressed(sf::Event &event)
     }
     else if (selectedTextBox != nullptr)
         HandleTextBox();
-    if (event.key.code == sf::Keyboard::R){
+    else if (event.key.code == sf::Keyboard::R){
         std::cout << "Before view zoom: " << view.getSize().x / window->getSize().x << std::endl;
         view.zoom(1 / (view.getSize().x / (float)window->getSize().x));
         window->setView(view);
@@ -227,30 +227,36 @@ void Gamew::HandleTextBox()
     }
 }
 
-void Gamew::HandleMovement(Obj* b)
-{
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) && currentWindow != Windows::MainW)
-        offsetRelativeCenter.y += 5;
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) && currentWindow != Windows::MainW)
-        offsetRelativeCenter.x += 5;
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::S) && currentWindow != Windows::MainW)
-        offsetRelativeCenter.y -= 5;
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) && currentWindow != Windows::MainW)
-        offsetRelativeCenter.x -= 5;
+void Gamew::HandleMovement()
+{   
     
-    b->Update(offsetRelativeCenter);
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) && currentWindow != Windows::MainW){
+        player->MovePlayerUp();
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) && currentWindow != Windows::MainW){
+        player->MovePlayerLeft();
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::S) && currentWindow != Windows::MainW){
+        player->MovePlayerDown();
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) && currentWindow != Windows::MainW){
+        player->MovePlayerRight();
+    }
+    //b->Update(offsetRelativeCenter);
 }
 
 void Gamew::Update()
 {
     CheckSwitchWindows();
+    if (player) {
+        HandleMovement();
+    }
+    
     for (std::vector<std::unique_ptr<Obj>>::iterator it = ObjVector.begin(); it != ObjVector.end(); ++it)
-    {
+    {   
         if ((*it)->isMovable())
-            HandleMovement((*it).get());
-        else
-            (*it)->Update();
-        
+            (*it)->Update(offsetRelativeCenter);
+        else (*it)->Update();
         if ((*it)->DeleteIt())
             ObjToDelete.emplace_back(it);
     }
@@ -280,7 +286,9 @@ void Gamew::Drawing()
 }
 
 void Gamew::InitMainWindow()
-{
+{   
+    // Init
+    player = nullptr;
     currentWindow = Windows::MainW;
     window->setView(window->getDefaultView());
     // Background
@@ -312,27 +320,32 @@ void Gamew::InitMainWindow()
     // TextBox
     ObjVector.emplace_back(std::make_unique<TextBox>(window.get(), &Geologica, window->getSize().x / 2, window->getSize().y / 2, 30, 200, 3));
     ObjVector.back()->name = Obj::textBox1MainW;
+
 }
 
 void Gamew::InitWindow1()
 {   
+    // Init
     currentWindow = Windows::Game1;
-
+    selectedTextBox = nullptr;
+    // Player 
+    auto tmp3 = std::make_unique<Player>(*this, Player::Types::armoredAgent, sf::Vector2f(-150, -250));
+    player = tmp3.get();
+    EntitiesVector.emplace_back(std::move(tmp3));
+    // Background
     auto tmp1 = std::make_unique<Background>(window.get(), &Geologica);
     tmp1->SetTexture("../assets/img/background1.jpg");
     tmp1->name = Obj::Names::backgroundW1;
     ObjVector.emplace_back(std::move(tmp1));
-
-    ObjVector.emplace_back(std::make_unique<TileMap>(window.get(), std::string("../assets/maps/untitled.xml")));
+    // TileMap
+    ObjVector.emplace_back(std::make_unique<TileMap>(*this, std::string("../assets/maps/untitled.xml")));
     ObjVector.back()->name = Obj::Names::tileMapW1;
-
+    // Title that appears
     auto tmp2 = std::make_unique<Label>(window.get(), &Geologica, L"Уровень 1", window->getSize().x / 2, window->getSize().y / 12, Label::Align::Center, 55, 600);
     tmp2->name = Obj::titleW1;
     tmp2->SetAnimation(Label::Anims::AppearanceDecay);
     ObjVector.emplace_back(std::move(tmp2));
-
-    auto tmp3 = std::make_unique<Player>(window.get(), Player::Types::greenAgent, sf::Vector2f(window->getSize().x / 3, window->getSize().y / 3));
-    EntitiesVector.emplace_back(std::move(tmp3));
+    
 }
 
 void Gamew::InitWindow2()

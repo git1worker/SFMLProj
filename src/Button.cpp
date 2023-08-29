@@ -6,10 +6,10 @@ int Button::counter = 0;
 Button::Button(sf::RenderWindow *window, sf::Font* font, const float x, const float y, std::wstring stri) : str(stri), window(window), Geologica(font) 
 {   
     ++counter;
-    this->x = x;
-    this->y = y;
-    width = 150, height = 50;
-    rect = sf::RectangleShape(sf::Vector2f(width, height));
+    posRect.left = x;
+    posRect.top = y;
+    posRect.width = 150, posRect.height = 50;
+    rect = sf::RectangleShape(sf::Vector2f(posRect.width, posRect.height));
     rect.setOrigin(sf::Vector2f(rect.getGlobalBounds().width/2, rect.getGlobalBounds().height/2));
     rect.setPosition(sf::Vector2f(x, y));
     rect.setFillColor(sf::Color(160, 160, 160));

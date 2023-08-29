@@ -4,8 +4,8 @@
 Label::Label(sf::RenderWindow *window, sf::Font* font, std::wstring str, const float x, const float y, Align align, const unsigned int fSize, const float w) 
     : window(window), Geologica(font), align(align)
 {   
-    this->x = x;
-    this->y = y;
+    posRect.left = x;
+    posRect.top = y;
     text.setString(str);
     text.setFont(*Geologica);
     text.setFillColor(sf::Color::Black);
@@ -22,46 +22,6 @@ Label::Label(sf::RenderWindow *window, sf::Font* font, std::wstring str, const f
     }
     
 }
-
-// Label::Label(const Label &other) : Geologica(other.Geologica)
-// {
-//     this->animOpacity = other.animOpacity;
-//     this->animStart = other.animStart;
-//     this->animStop = other.animStop;
-//     this->animType = other.animType;
-//     this->text = other.text;
-//     this->window = other.window;
-//     this->align = other.align;
-//     this->maxWidth = other.maxWidth;
-//     this->zoomable = other.zoomable;
-//     this->movable = other.movable;
-//     this->deleteIt = other.deleteIt;
-//     this->x = other.x;
-//     this->y = other.y;
-//     this->width = other.width;
-//     this->height = other.height;
-// }
-
-// Label &Label::operator=(const Label &other)
-// {
-//     this->animOpacity = other.animOpacity;
-//     this->animStart = other.animStart;
-//     this->animStop = other.animStop;
-//     this->animType = other.animType;
-//     this->text = other.text;
-//     this->Geologica = other.Geologica;
-//     this->window = other.window;
-//     this->align = other.align;
-//     this->maxWidth = other.maxWidth;
-//     this->zoomable = other.zoomable;
-//     this->movable = other.movable;
-//     this->deleteIt = other.deleteIt;
-//     this->x = other.x;
-//     this->y = other.y;
-//     this->width = other.width;
-//     this->height = other.height;
-//     return *this;
-// }
 
 sf::Text &Label::getText()
 {
@@ -126,7 +86,7 @@ void Label::AlignToCenter()
     if (!text.getString().isEmpty()){
         text.setString(newStr);
         text.setOrigin(sf::Vector2f(text.getGlobalBounds().width/2, (text.getCharacterSize() - text.getGlobalBounds().height) + text.getGlobalBounds().height/2));
-        text.setPosition(sf::Vector2f(x, y));
+        text.setPosition(sf::Vector2f(posRect.left, posRect.top));
     }
 }
 
@@ -148,7 +108,7 @@ void Label::AlignToLeft()
     if (!text.getString().isEmpty()){
         text.setString(newStr);
         text.setOrigin(sf::Vector2f(0, 0));
-        text.setPosition(sf::Vector2f(x, y));
+        text.setPosition(sf::Vector2f(posRect.left, posRect.top));
     }
     
 }

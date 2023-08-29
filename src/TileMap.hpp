@@ -6,6 +6,7 @@
 #include <vector>
 #include <map>
 #include <memory>
+#include "Tile.hpp"
 
 #ifndef DEBUG
 #define DEBUG                                           \
@@ -14,24 +15,26 @@
     }
 #endif // DEBUG
 
+class Gamew;
+
 class TileMap : public Obj{
 public:
     ~TileMap();
-    TileMap(sf::RenderWindow *window, std::string path);
+    TileMap(Gamew& gamew, std::string path);
     void Update(sf::Vector2f &offsetRelativeCenter) override;
     void Draw() override;
     void Zoom(int delta) override;
+    bool assumeCollide(sf::Vector2f deltaAssumedOffset, sf::IntRect& other);
 
 private:
 
     void FillMatrix(char* map);
 
-    
+    Gamew& gamew;
     std::map<int, std::unique_ptr<sf::Texture>> ids;
-    sf::RenderWindow *window;
     std::string path;
     rapidxml::xml_document<> tileset, tilemap;
-    sf::Sprite** map_ids;
+    Tile** map_Tiles;
     int heightInTiles, widthInTiles, heightTile, widthTile;
     
 };

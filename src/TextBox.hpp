@@ -25,7 +25,6 @@ private:
     sf::RenderWindow *window;
     sf::Font *Geologica;
     sf::Text text;
-    int maxWidth, h;
     sf::RectangleShape rect;
     sf::RectangleShape cursor;
     bool showCursor = true;

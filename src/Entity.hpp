@@ -9,12 +9,14 @@ public:
     virtual void Draw() = 0;
     virtual void Update();
     bool DeleteIt() { return deleteIt; }
-    
-private:
+
+    sf::IntRect posRect{};
+    float velocity = 4;
+
+protected:
     
     bool deleteIt = false;
-    int x, y;
     int HP;
-    int velocity;
+    
 
 };

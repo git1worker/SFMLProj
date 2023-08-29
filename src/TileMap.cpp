@@ -1,10 +1,11 @@
 #include "TileMap.hpp"
 #include <iostream>
 #include <string>
+#include "Gamew.hpp"
 
 using namespace rapidxml;
 
-TileMap::TileMap(sf::RenderWindow *window, std::string path) : window(window), path(path)
+TileMap::TileMap(Gamew& gamew, std::string path) : gamew(gamew), path(path)
 {   
     file<> xmlFile(path.c_str());
     tilemap.parse<0>(xmlFile.data());
@@ -30,9 +31,9 @@ TileMap::TileMap(sf::RenderWindow *window, std::string path) : window(window), p
     heightInTiles = atoi(root->first_node("layer")->first_attribute("height")->value());
     widthInTiles = atoi(root->first_node("layer")->first_attribute("width")->value());
     // Raw allocate a memory
-    map_ids = new sf::Sprite*[heightInTiles];
+    map_Tiles = new Tile*[heightInTiles];
     for (int i = 0; i < heightInTiles; ++i){
-        map_ids[i] = new sf::Sprite[widthInTiles];
+        map_Tiles[i] = new Tile[widthInTiles];
     }
     FillMatrix(map);
     movable = true;
@@ -45,9 +46,11 @@ void TileMap::Update(sf::Vector2f &offsetRelativeCenter)
 
     for (int i = 0; i < heightInTiles; ++i){
         for (int j = 0; j < widthInTiles; ++j){
-            if (widthTile * j + offsetRelativeCenter.x >= -2*widthTile && widthTile * j + offsetRelativeCenter.x <= window->getSize().x + 2*widthTile && 
-            heightTile * i + offsetRelativeCenter.y >= -2*heightTile && heightTile * i + offsetRelativeCenter.y <= window->getSize().y + 2*heightTile)
-                map_ids[i][j].setPosition(sf::Vector2f(widthTile * j + offsetRelativeCenter.x, heightTile * i + offsetRelativeCenter.y));
+            // if (widthTile * j + offsetRelativeCenter.x >= -2*widthTile && widthTile * j + offsetRelativeCenter.x <= gamew.window->getSize().x + 2*widthTile && 
+            // heightTile * i + offsetRelativeCenter.y >= -2*heightTile && heightTile * i + offsetRelativeCenter.y <= gamew.window->getSize().y + 2*heightTile)
+                map_Tiles[i][j].sprite.setPosition(sf::Vector2f(widthTile * j + offsetRelativeCenter.x, heightTile * i + offsetRelativeCenter.y));
+                map_Tiles[i][j].intRect.left = widthTile * j + offsetRelativeCenter.x;
+                map_Tiles[i][j].intRect.top = heightTile * i + offsetRelativeCenter.y;
         }
     }
 }
@@ -55,17 +58,17 @@ void TileMap::Update(sf::Vector2f &offsetRelativeCenter)
 TileMap::~TileMap(){
     // Delete allocated memory
     for (int i = 0; i < heightInTiles; ++i)
-        delete [] map_ids[i];
-    delete [] map_ids;
+        delete [] map_Tiles[i];
+    delete [] map_Tiles;
 }
 
 void TileMap::Draw()
 {   
     for (int i = 0; i < heightInTiles; ++i){
         for (int j = 0; j < widthInTiles; ++j){
-            if (map_ids[i][j].getPosition().x >= -2*widthTile && map_ids[i][j].getPosition().x <= window->getSize().x + 2*widthTile &&
-            map_ids[i][j].getPosition().y >= -2*heightTile && map_ids[i][j].getPosition().y <= window->getSize().y + 2*heightTile)
-                window->draw(map_ids[i][j]);
+            if (map_Tiles[i][j].sprite.getPosition().x >= -2*widthTile && map_Tiles[i][j].sprite.getPosition().x <= gamew.window->getSize().x + 2*widthTile &&
+            map_Tiles[i][j].sprite.getPosition().y >= -2*heightTile && map_Tiles[i][j].sprite.getPosition().y <= gamew.window->getSize().y + 2*heightTile)
+                gamew.window->draw(map_Tiles[i][j].sprite);
         }
     }
 }
@@ -73,6 +76,20 @@ void TileMap::Draw()
 void TileMap::Zoom(int delta)
 {
     
+}
+
+bool TileMap::assumeCollide(sf::Vector2f deltaAssumedOffset, sf::IntRect &other)
+{
+    for (int i = 0; i < heightInTiles; ++i){
+        for (int j = 0; j < widthInTiles; ++j){
+            auto tmp = map_Tiles[i][j].intRect;
+            tmp.left += deltaAssumedOffset.x;
+            tmp.top += deltaAssumedOffset.y;
+            if (tmp.intersects(other) && map_Tiles[i][j].canCollide) 
+               return true;
+        }
+    }
+    return false;
 }
 
 void TileMap::FillMatrix(char* map)
@@ -83,25 +100,38 @@ void TileMap::FillMatrix(char* map)
     for (int i = 0; map[i] != '\0'; ++i){
         if (map[i] == ',') {
             buffer[posBuff] = '\0';
-            
-            map_ids[posMatrix / widthInTiles][posMatrix % widthInTiles] = sf::Sprite();
-            if (atoi(buffer) != 0)
-                map_ids[posMatrix / widthInTiles][posMatrix % widthInTiles].setTexture(*(ids.at(atoi(buffer)-1)));
-            
-            map_ids[posMatrix / widthInTiles][posMatrix % widthInTiles].setPosition(sf::Vector2f(widthTile * (posMatrix % widthInTiles), 
-            heightTile * (posMatrix / widthInTiles)));
+            map_Tiles[posMatrix / widthInTiles][posMatrix % widthInTiles] = Tile();
+            if (atoi(buffer) != 0){
+                map_Tiles[posMatrix / widthInTiles][posMatrix % widthInTiles].sprite.setTexture(*(ids.at(atoi(buffer)-1)));
+                map_Tiles[posMatrix / widthInTiles][posMatrix % widthInTiles].id = atoi(buffer)-1;
+                if (atoi(buffer) != 14 && atoi(buffer) != 15)
+                    map_Tiles[posMatrix / widthInTiles][posMatrix % widthInTiles].canCollide = true;
+            }
+            map_Tiles[posMatrix / widthInTiles][posMatrix % widthInTiles].sprite.setPosition(sf::Vector2f(
+                widthTile * (posMatrix % widthInTiles), 
+                heightTile * (posMatrix / widthInTiles)));
+            map_Tiles[posMatrix / widthInTiles][posMatrix % widthInTiles].intRect.left = widthTile * (posMatrix % widthInTiles);
+            map_Tiles[posMatrix / widthInTiles][posMatrix % widthInTiles].intRect.top = heightTile * (posMatrix / widthInTiles);
+            map_Tiles[posMatrix / widthInTiles][posMatrix % widthInTiles].intRect.width = widthTile;
+            map_Tiles[posMatrix / widthInTiles][posMatrix % widthInTiles].intRect.height = heightTile;
             ++posMatrix, posBuff = 0;
         }
         else if (map[i] >= '0' && map[i] <= '9'){
             buffer[posBuff++] = map[i];
         }
     }    
-    // End condition
+    // Last tile
     buffer[posBuff] = '\0';
-    map_ids[posMatrix / widthInTiles][posMatrix % widthInTiles] = sf::Sprite();
-    if (atoi(buffer) != 0)
-        map_ids[posMatrix / widthInTiles][posMatrix % widthInTiles].setTexture(*(ids.at(atoi(buffer)-1).get()));
-    map_ids[posMatrix / widthInTiles][posMatrix % widthInTiles].setPosition(sf::Vector2f(widthTile * (posMatrix % widthInTiles), 
+    map_Tiles[posMatrix / widthInTiles][posMatrix % widthInTiles] = Tile();
+    if (atoi(buffer) != 0){
+        map_Tiles[posMatrix / widthInTiles][posMatrix % widthInTiles].sprite.setTexture(*(ids.at(atoi(buffer)-1).get()));
+        map_Tiles[posMatrix / widthInTiles][posMatrix % widthInTiles].id = atoi(buffer)-1;
+        map_Tiles[posMatrix / widthInTiles][posMatrix % widthInTiles].canCollide = true;
+    }
+    map_Tiles[posMatrix / widthInTiles][posMatrix % widthInTiles].sprite.setPosition(sf::Vector2f(widthTile * (posMatrix % widthInTiles), 
     heightTile * (posMatrix / widthInTiles)));
-    
+    map_Tiles[posMatrix / widthInTiles][posMatrix % widthInTiles].intRect.left = widthTile * (posMatrix % widthInTiles);
+    map_Tiles[posMatrix / widthInTiles][posMatrix % widthInTiles].intRect.top = heightTile * (posMatrix / widthInTiles);
+    map_Tiles[posMatrix / widthInTiles][posMatrix % widthInTiles].intRect.width = widthTile;
+    map_Tiles[posMatrix / widthInTiles][posMatrix % widthInTiles].intRect.height = heightTile;
 }

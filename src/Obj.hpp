@@ -13,6 +13,12 @@ public:
     bool isMovable() { return movable; }
     bool DeleteIt() { return deleteIt; }
     bool isZoomable() { return zoomable; }
+    virtual bool assumeCollide(sf::Vector2f deltaAssumedOffset, sf::IntRect& other) { 
+        auto tmp = posRect;
+        tmp.left += deltaAssumedOffset.x;
+        tmp.top += deltaAssumedOffset.y;
+        return tmp.intersects(other);
+    }
 
     enum Names{
         None,
@@ -33,11 +39,12 @@ public:
     };
 
     Names name = None;
+    sf::IntRect posRect{};
 
 protected:
     
     bool zoomable = false;
     bool movable = false;
     bool deleteIt = false;
-    float x, y, width, height;
+    
 };

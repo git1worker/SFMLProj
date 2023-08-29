@@ -2,6 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include "Entity.hpp"
 
+class Gamew;
 
 class Player : public Entity {
 public:
@@ -11,14 +12,22 @@ public:
         greenAgent
     };
 
-    Player(sf::RenderWindow *window, Types type, sf::Vector2f spawn);
+    Player(Gamew& gamew, Types type, sf::Vector2f spawn);
     
     void Draw() override;
     void Update() override;
+    void MovePlayerUp();
+    void MovePlayerLeft();
+    void MovePlayerDown();
+    void MovePlayerRight();
+
 
 private:
+
+
+
+    Gamew& gamew;
     std::string name;
-    sf::RenderWindow* window;
     sf::Sprite body, hand;
     sf::Texture textureBody;
     Types type;
@@ -26,4 +35,5 @@ private:
     sf::Texture texHand;
     sf::IntRect bodyRect, handRect;
     bool flipped = false;
+    
 };

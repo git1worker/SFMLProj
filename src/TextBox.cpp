@@ -3,16 +3,16 @@
 TextBox::TextBox(sf::RenderWindow *window, sf::Font *font, const float x, const float y, const unsigned int fSize, const float w, const float h) 
     : window(window), Geologica(font)
 {
-    this->x = x;
-    this->y = y;
-    this->maxWidth = w;
-    this->h = h;
-    if (fSize > h) this->h = fSize;
+    posRect.left = x;
+    posRect.top = y;
+    posRect.width = w;
+    posRect.height = h;
+    if (fSize > h) posRect.height = fSize;
 
     // Box
-    rect.setSize(sf::Vector2f(w, this->h));
+    rect.setSize(sf::Vector2f(posRect.width, posRect.height));
     rect.setOrigin(sf::Vector2f(0, 0));
-    rect.setPosition(sf::Vector2f(x, y));
+    rect.setPosition(sf::Vector2f(posRect.left, posRect.top));
     rect.setFillColor(sf::Color(220, 220, 220, 220));
     rect.setOutlineThickness(1);
     rect.setOutlineColor(sf::Color(50, 50, 50));
@@ -21,11 +21,11 @@ TextBox::TextBox(sf::RenderWindow *window, sf::Font *font, const float x, const 
     text.setFillColor(sf::Color::Black);
     text.setOrigin(sf::Vector2f(0, 0));
     text.setCharacterSize(fSize);
-    text.setPosition(x + text.getLetterSpacing(), y - text.getLineSpacing());
+    text.setPosition(posRect.left + text.getLetterSpacing(), posRect.top - text.getLineSpacing());
     // Cursor
     cursor.setSize(sf::Vector2f(text.getCharacterSize()/12, text.getCharacterSize()));
     cursor.setOrigin(sf::Vector2f(0, 0));
-    cursor.setPosition(sf::Vector2f(x, y));
+    cursor.setPosition(sf::Vector2f(posRect.left, posRect.top));
     cursor.setFillColor(sf::Color(50, 50, 50));
     
 }
@@ -58,6 +58,7 @@ void TextBox::SetDrawCursor(bool v)
 void TextBox::AppendLetter(wchar_t cr)
 {   
     text.setString(text.getString() + std::wstring(1, cr));
+    //std::wcout << text.getString().toWideString() << std::endl;
     CheckWidthText();
 }
 
@@ -85,7 +86,7 @@ void TextBox::CheckWidthText()
     sf::String lastStr = text.getString();
     for (auto it = lastStr.begin(); it != lastStr.end(); ++it){
         int currW = text.findCharacterPos(i).x - text.findCharacterPos(0).x;
-        if (maxWidth > currW){
+        if (posRect.width > currW){
             newStr.push_back(*it);
             ++i;
         }
@@ -93,7 +94,7 @@ void TextBox::CheckWidthText()
             newStr.push_back(L'\n');
             newStr.push_back(*it);
             text.setString(newStr);
-            if (h < text.getGlobalBounds().height){
+            if (posRect.height < text.getGlobalBounds().height){
                 newStr.pop_back();
                 newStr.pop_back();
                 text.setString(newStr);

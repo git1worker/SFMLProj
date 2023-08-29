@@ -54,6 +54,9 @@ public:
 
 private:
 
+    friend Player;
+    friend TileMap;
+
     void EventMouseMoved(sf::Event& event);
     void EventMouseButtonPressed(sf::Event& event);
     void EventMouseButtonReleased(sf::Event& event);
@@ -61,7 +64,7 @@ private:
     void EventMouseWheelScrolled(sf::Event& event);
     void HandleButton(Button * btn);
     void HandleTextBox();
-    void HandleMovement(Obj* b);
+    void HandleMovement();
     void InitMainWindow();
     void InitWindow1();
     void InitWindow2();
@@ -69,7 +72,6 @@ private:
     void InitWindow4();
     void CheckSwitchWindows();
     void CheckToDelete();
-    
     
     vector<std::vector<std::unique_ptr<Obj>>::iterator> ObjToDelete;
     vector<std::vector<std::unique_ptr<Entity>>::iterator> EntitiesToDelete;
@@ -89,4 +91,5 @@ private:
     sf::Cursor cursorArrow, cursorText;
     int screenOffsetX = 0, screenOffsetY = 0;
     sf::Vector2f offsetRelativeCenter{};
+    Player* player = nullptr;
 };
