@@ -2,10 +2,10 @@
 #include <cmath>
 #include <iostream>
 #include "Gamew.hpp"
+#include "Debug.hpp"
 
 #define IDENTATION_AT_HAND_X 2
 #define IDENTATION_AT_HAND_Y 2
-
 #define POINT_HAND_X (10 + IDENTATION_AT_HAND_X)
 #define POINT_HAND_Y (25 + IDENTATION_AT_HAND_Y)
 
@@ -14,10 +14,12 @@ Player::Player(Gamew& gamew, Types type, sf::Vector2f spawn) : gamew(gamew), typ
     if (type == Types::armoredAgent){
         textureBody.loadFromFile("../assets/img/characters/agent_2.png");
         texHand.loadFromFile("../assets/img/characters/right_hand_gray.png");
+        move = new Animation(&gamew, "../assets/img/characters/anims_gray_agent.png", 130);
     }
     else if (type == Types::greenAgent){
         textureBody.loadFromFile("../assets/img/characters/agent_1.png");
         texHand.loadFromFile("../assets/img/characters/right_hand_green.png");
+        move = new Animation(&gamew, "../assets/img/characters/anims_green_agent.png", 130);
     }
     body.setTexture(textureBody);
     body.setPosition(sf::Vector2f(gamew.window->getSize().x / 2 - POINT_HAND_X, gamew.window->getSize().y / 2 - POINT_HAND_Y));
@@ -32,16 +34,27 @@ Player::Player(Gamew& gamew, Types type, sf::Vector2f spawn) : gamew(gamew), typ
     hand.setOrigin(sf::Vector2f(IDENTATION_AT_HAND_X, IDENTATION_AT_HAND_Y));
     bodyRect = body.getTextureRect();
     handRect = hand.getTextureRect();
+
+}
+
+Player::~Player()
+{
+    delete move;
 }
 
 void Player::Draw()
-{
-    gamew.window->draw(body);
+{   
+    if (animated)
+        gamew.window->draw(move->sprite);        
+    else
+        gamew.window->draw(body);
     gamew.window->draw(hand);
 }
 
 void Player::Update()
 {   
+    
+    
     if (sf::Mouse::getPosition(*gamew.window).x - body.getPosition().x - POINT_HAND_X <= 0){
         if (!flipped){
             flipped = true;
@@ -74,6 +87,7 @@ void Player::Update()
         //std::cout << body.getPosition().x + POINT_HAND_X << ' ' << (body.getPosition().y + POINT_HAND_Y) << std::endl;
         hand.setRotation(-(atan(tg)*180 / 3.1415));
     }
+    move->sprite.setPosition(sf::Vector2f(body.getPosition().x, body.getPosition().y));
     
 }
 
@@ -108,7 +122,9 @@ void Player::MovePlayerUp()
 }
 
 void Player::MovePlayerLeft()
-{
+{   
+    move->PlayFlipped();
+    animated = true;
     bool flag = true;
     for (std::vector<std::unique_ptr<Obj>>::iterator it = gamew.ObjVector.begin(); it != gamew.ObjVector.end() && flag; ++it){
         if ((*it)->isMovable()){
@@ -165,6 +181,8 @@ void Player::MovePlayerDown()
 
 void Player::MovePlayerRight()
 {
+    move->PlayOrigin();
+    animated = true;
     bool flag = true;
     for (std::vector<std::unique_ptr<Obj>>::iterator it = gamew.ObjVector.begin(); it != gamew.ObjVector.end() && flag; ++it){
         if ((*it)->isMovable()){
@@ -187,6 +205,12 @@ void Player::MovePlayerRight()
             }
         }
         gamew.offsetRelativeCenter.x -= reduction - 2;
-        
     }
+    
+}
+
+void Player::MoveStop()
+{
+    animated = false;
+    move->Stop();
 }

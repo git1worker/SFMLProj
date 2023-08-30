@@ -1,10 +1,10 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include <memory>
-#include "Gamew.hpp"
+#include "../Gamew.hpp"
 #include "Label.hpp"
 #include <iostream>
-#include "Obj.hpp"
+#include "../Obj.hpp"
 #include <functional>
 #include <string>
 
@@ -26,8 +26,11 @@ public:
     void Draw() override;
     bool getWasClicked();
 
-    void Click(void (*callback)());
-    void Click(std::function<void(void)> lambda);
+    template<typename T>
+    void Click(T callback){
+        callback(), wasClicked = true;
+    }
+
     void Release();
     bool isHovered();
     void SetHovered();

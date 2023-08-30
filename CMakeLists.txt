@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.15)
 
-project(SFMLProj)
+project(SFMLProj.out)
 
 
 message(${CMAKE_SYSTEM_NAME})
@@ -14,18 +14,24 @@ add_link_options(-fsanitize=address -lX11)
 add_executable(${PROJECT_NAME}
     src/main.cpp
     src/Gamew.cpp
-    src/Button.cpp
-    src/Obj.cpp
-    src/Label.cpp
-    src/DebugInfo.cpp
+    src/gui/Button.cpp
+    src/gui/Label.cpp
+    src/gui/DebugInfo.cpp
     src/Background.cpp
-    src/TextBox.cpp
+    src/gui/TextBox.cpp
     src/TileMap.cpp
     src/Player.cpp
-    src/Entity.cpp
+    src/Animation.cpp
+    src/Debug.cpp
 )
 find_package(SFML REQUIRED COMPONENTS system window graphics)
 target_link_libraries(${PROJECT_NAME}
+    pthread
+    sfml-system 
+    sfml-window 
+    sfml-graphics
+)
+target_link_libraries(test.out
     pthread
     sfml-system 
     sfml-window 

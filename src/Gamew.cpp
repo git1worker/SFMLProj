@@ -1,22 +1,14 @@
 #include "Gamew.hpp"
 #include <iostream>
-#include "Button.hpp"
+#include "gui/Button.hpp"
 #include <stdio.h>
-#include "Label.hpp"
+#include "gui/Label.hpp"
 #include "Background.hpp"
 #include <string.h>
-
+#include "Player.hpp"
 
 using std::cerr;
 using std::cout;
-
-Gamew::Gamew()
-{
-}
-
-Gamew::~Gamew()
-{
-}
 
 void Gamew::UpdateFps(float fps) { debugInfo->UpdateFps(fps); }
 
@@ -41,7 +33,7 @@ void Gamew::Init(const std::wstring title, const int Style, const int width, con
 
     this->debugInfo = make_unique<DebugInfo>(window.get(), &Geologica, &event);
     debugInfo->name = Obj::DebugInfo;
-    
+
     view = window->getView();
 }
 
@@ -50,7 +42,9 @@ void Gamew::Polling()
     while (window->pollEvent(event))
     {
         debugInfo->UpdateEvents(&event);
-        if (event.type == sf::Event::MouseMoved)
+        if (event.type == sf::Event::Closed)
+            window->close(), isActive = false;
+        else if (event.type == sf::Event::MouseMoved)
             EventMouseMoved(event);
         else if (event.type == sf::Event::MouseButtonPressed)
             EventMouseButtonPressed(event);
@@ -58,10 +52,10 @@ void Gamew::Polling()
             EventMouseButtonReleased(event);
         else if (event.type == sf::Event::KeyPressed)
             EventKeyPressed(event);
+        else if (event.type == sf::Event::KeyReleased)
+            EventKeyReleased(event);
         else if (event.type == sf::Event::MouseWheelScrolled)
             EventMouseWheelScrolled(event);
-        else if (event.type == sf::Event::Closed)
-            window->close(), isActive = false;
     }
 }
 
@@ -86,7 +80,6 @@ void Gamew::EventMouseMoved(sf::Event &event)
             }
             TextBoxContains = true;
         }
-
     }
     if (cursorSetted && !TextBoxContains)
     {
@@ -98,19 +91,18 @@ void Gamew::EventMouseMoved(sf::Event &event)
 void Gamew::EventMouseButtonPressed(sf::Event &event)
 {
     for (const auto &i : ObjVector)
-    {   
-        if (selectedTextBox) 
+    {
+        if (selectedTextBox)
             selectedTextBox->SetDrawCursor(false), selectedTextBox = nullptr;
         if (auto *b = dynamic_cast<Button *>(i.get()); b && b->getRect().getGlobalBounds().contains(sf::Vector2f((float)event.mouseButton.x + screenOffsetX, (float)event.mouseButton.y + screenOffsetY)))
             HandleButton(b);
         else if (auto *b = dynamic_cast<TextBox *>(i.get()); b && b->getRect().getGlobalBounds().contains(sf::Vector2f((float)event.mouseButton.x + screenOffsetX, (float)event.mouseButton.y + screenOffsetY)))
             selectedTextBox = b, b->SetDrawCursor(true);
-        
     }
 }
 
 void Gamew::EventMouseButtonReleased(sf::Event &event)
-{   
+{
     for (const auto &i : ObjVector)
     {
         if (auto *b = dynamic_cast<Button *>(i.get()); b && b->getWasClicked())
@@ -130,7 +122,8 @@ void Gamew::EventKeyPressed(sf::Event &event)
     }
     else if (selectedTextBox != nullptr)
         HandleTextBox();
-    else if (event.key.code == sf::Keyboard::R){
+    else if (event.key.code == sf::Keyboard::R)
+    {
         std::cout << "Before view zoom: " << view.getSize().x / window->getSize().x << std::endl;
         view.zoom(1 / (view.getSize().x / (float)window->getSize().x));
         window->setView(view);
@@ -138,13 +131,21 @@ void Gamew::EventKeyPressed(sf::Event &event)
     }
 }
 
+void Gamew::EventKeyReleased(sf::Event &event)
+{   
+    if (player)
+        player->MoveStop();
+}
+
 void Gamew::EventMouseWheelScrolled(sf::Event &event)
 {
-    if (event.mouseWheelScroll.delta > 0){
+    if (event.mouseWheelScroll.delta > 0)
+    {
         view.zoom(0.9f);
         window->setView(view);
     }
-    else if (event.mouseWheelScroll.delta < 0){
+    else if (event.mouseWheelScroll.delta < 0)
+    {
         view.zoom(1.1f);
         window->setView(view);
     }
@@ -228,35 +229,36 @@ void Gamew::HandleTextBox()
 }
 
 void Gamew::HandleMovement()
-{   
-    
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) && currentWindow != Windows::MainW){
+{
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) && currentWindow != Windows::MainW)
+    {
         player->MovePlayerUp();
     }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) && currentWindow != Windows::MainW){
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) && currentWindow != Windows::MainW)
+    {
         player->MovePlayerLeft();
     }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::S) && currentWindow != Windows::MainW){
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::S) && currentWindow != Windows::MainW)
+    {
         player->MovePlayerDown();
     }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) && currentWindow != Windows::MainW){
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) && currentWindow != Windows::MainW)
+    {
         player->MovePlayerRight();
     }
-    //b->Update(offsetRelativeCenter);
+    // b->Update(offsetRelativeCenter);
 }
 
 void Gamew::Update()
 {
     CheckSwitchWindows();
-    if (player) {
-        HandleMovement();
-    }
-    
     for (std::vector<std::unique_ptr<Obj>>::iterator it = ObjVector.begin(); it != ObjVector.end(); ++it)
-    {   
+    {
         if ((*it)->isMovable())
             (*it)->Update(offsetRelativeCenter);
-        else (*it)->Update();
+        else
+            (*it)->Update();
         if ((*it)->DeleteIt())
             ObjToDelete.emplace_back(it);
     }
@@ -265,6 +267,11 @@ void Gamew::Update()
         (*it)->Update();
         if ((*it)->DeleteIt())
             EntitiesToDelete.emplace_back(it);
+    }
+
+    if (player)
+    {
+        HandleMovement();
     }
     CheckToDelete();
     debugInfo->Update();
@@ -286,7 +293,7 @@ void Gamew::Drawing()
 }
 
 void Gamew::InitMainWindow()
-{   
+{
     // Init
     player = nullptr;
     currentWindow = Windows::MainW;
@@ -309,7 +316,7 @@ void Gamew::InitMainWindow()
         if (i > 0)
             currentX += buttonWidth + padding;
         auto b = std::make_unique<Button>(window.get(), &Geologica, currentX + 150 / 2, 200, std::wstring(std::wstring(L"Уровень ") + std::to_wstring(i + 1)));
-        
+
         b->getRect().setFillColor(sf::Color(b->getRect().getFillColor().r, b->getRect().getFillColor().g, b->getRect().getFillColor().b, 100));
         ObjVector.emplace_back(std::move(b));
     }
@@ -320,15 +327,14 @@ void Gamew::InitMainWindow()
     // TextBox
     ObjVector.emplace_back(std::make_unique<TextBox>(window.get(), &Geologica, window->getSize().x / 2, window->getSize().y / 2, 30, 200, 3));
     ObjVector.back()->name = Obj::textBox1MainW;
-
 }
 
 void Gamew::InitWindow1()
-{   
+{
     // Init
     currentWindow = Windows::Game1;
     selectedTextBox = nullptr;
-    // Player 
+    // Player
     auto tmp3 = std::make_unique<Player>(*this, Player::Types::armoredAgent, sf::Vector2f(-150, -250));
     player = tmp3.get();
     EntitiesVector.emplace_back(std::move(tmp3));
@@ -345,7 +351,6 @@ void Gamew::InitWindow1()
     tmp2->name = Obj::titleW1;
     tmp2->SetAnimation(Label::Anims::AppearanceDecay);
     ObjVector.emplace_back(std::move(tmp2));
-    
 }
 
 void Gamew::InitWindow2()
@@ -353,14 +358,14 @@ void Gamew::InitWindow2()
     auto tmp1 = std::make_unique<Background>(window.get(), &Geologica);
     tmp1->SetTexture("../assets/img/background2.jpg");
     ObjVector.emplace_back(std::move(tmp1));
-    
+
     ObjVector.emplace_back(std::make_unique<Label>(window.get(), &Geologica, L"Уровень 2", window->getSize().x / 2, window->getSize().y / 12, Label::Align::Center, 55, 600));
     ObjVector.at(1)->name = Obj::titleW2;
     currentWindow = Windows::Game2;
 }
 
 void Gamew::InitWindow3()
-{   
+{
     auto tmp1 = std::make_unique<Background>(window.get(), &Geologica);
     tmp1->SetTexture("../assets/img/background3.jpg");
     ObjVector.emplace_back(std::move(tmp1));
@@ -371,7 +376,7 @@ void Gamew::InitWindow3()
 }
 
 void Gamew::InitWindow4()
-{   
+{
     auto tmp1 = std::make_unique<Background>(window.get(), &Geologica);
     tmp1->SetTexture("../assets/img/background4.jpg");
     ObjVector.emplace_back(std::move(tmp1));

@@ -1,7 +1,7 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
 #include "Gamew.hpp"
-#include "Button.hpp"
+
 #include <vector>
 #include <memory>
 #include <chrono>
@@ -30,7 +30,7 @@ int main()
         MyGame->Polling();
         MyGame->Update();
         MyGame->Drawing();
-            
+        //sf::sleep(sf::seconds(1));
     }
     return 0;
 }

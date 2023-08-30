@@ -75,7 +75,6 @@ void TileMap::Draw()
 
 void TileMap::Zoom(int delta)
 {
-    
 }
 
 bool TileMap::assumeCollide(sf::Vector2f deltaAssumedOffset, sf::IntRect &other)

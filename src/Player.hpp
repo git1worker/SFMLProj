@@ -1,6 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include "Entity.hpp"
+#include "Animation.hpp"
 
 class Gamew;
 
@@ -13,6 +14,7 @@ public:
     };
 
     Player(Gamew& gamew, Types type, sf::Vector2f spawn);
+    ~Player();
     
     void Draw() override;
     void Update() override;
@@ -20,11 +22,10 @@ public:
     void MovePlayerLeft();
     void MovePlayerDown();
     void MovePlayerRight();
+    void MoveStop();
 
 
 private:
-
-
 
     Gamew& gamew;
     std::string name;
@@ -35,5 +36,7 @@ private:
     sf::Texture texHand;
     sf::IntRect bodyRect, handRect;
     bool flipped = false;
+    Animation* move;
+    bool animated = false;
     
 };

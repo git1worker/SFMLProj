@@ -3,10 +3,13 @@
 #include <SFML/Graphics.hpp>
 #include <memory>
 #include <vector>
-#include "DebugInfo.hpp"
-#include "TextBox.hpp"
+#include "gui/DebugInfo.hpp"
+#include "gui/TextBox.hpp"
 #include "TileMap.hpp"
-#include "Player.hpp"
+#include "Entity.hpp"
+
+class Player;
+class Animation;
 
 
 #ifndef DEBUG
@@ -41,8 +44,8 @@ class Label;
 class Gamew
 {
 public:
-    Gamew();
-    ~Gamew();
+    Gamew() = default;
+    ~Gamew() = default;
     void Init(const std::wstring title = L"Gamew", const int Style = sf::Style::Close , const int width = 1200, const int height = 800);
     void Polling();
     void Update();
@@ -51,16 +54,19 @@ public:
     void UpdateFps(float fps);
 
     
+    
 
 private:
 
     friend Player;
     friend TileMap;
+    friend Animation;
 
     void EventMouseMoved(sf::Event& event);
     void EventMouseButtonPressed(sf::Event& event);
     void EventMouseButtonReleased(sf::Event& event);
     void EventKeyPressed(sf::Event& event);
+    void EventKeyReleased(sf::Event& event);
     void EventMouseWheelScrolled(sf::Event& event);
     void HandleButton(Button * btn);
     void HandleTextBox();

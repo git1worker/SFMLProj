@@ -1,5 +1,5 @@
 #pragma once
-#include "Obj.hpp"
+#include "../Obj.hpp"
 #include <SFML/Graphics.hpp>
 #include <memory>
 #include "Label.hpp"

@@ -4,12 +4,12 @@
 class Obj {
 public:
 
-    Obj();
+    Obj() = default;
     virtual void Draw() = 0;
-    virtual void Update();
-    virtual void Update(sf::Vector2f &offsetRelativeCenter);
+    virtual void Update() {};
+    virtual void Update(sf::Vector2f &offsetRelativeCenter) {};
     virtual ~Obj() = default;
-    virtual void Zoom(int delta);
+    virtual void Zoom(int delta) {};
     bool isMovable() { return movable; }
     bool DeleteIt() { return deleteIt; }
     bool isZoomable() { return zoomable; }

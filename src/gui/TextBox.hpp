@@ -1,6 +1,6 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-#include "Obj.hpp"
+#include "../Obj.hpp"
 #include <memory>
 #include <string>
 #include <iostream>

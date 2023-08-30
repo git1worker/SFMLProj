@@ -19,16 +19,6 @@ Button::Button(sf::RenderWindow *window, sf::Font* font, const float x, const fl
     // printf("\n%f %f %f %f\n", rect->getGlobalBounds().left, rect->getGlobalBounds().top, rect->getGlobalBounds().width, rect->getGlobalBounds().height);
     // printf("%f %f %f %f\n\n", text.getGlobalBounds().left, text.getGlobalBounds().top, text.getGlobalBounds().width, text.getGlobalBounds().height);
     ChangeText(str);
-} 
-
-void Button::Click(void (*callback)()){
-    callback();
-    wasClicked = true;
-}
-
-void Button::Click(std::function<void(void)> lambda){
-    lambda();
-    wasClicked = true;
 }
 
 void Button::ChangeText(std::wstring t)

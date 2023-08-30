@@ -30,5 +30,4 @@ void DebugInfo::Update()
 void DebugInfo::Draw()
 {   
     info.Draw();
-
 }
