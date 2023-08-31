@@ -9,11 +9,7 @@
 #include "Entity.hpp"
 #include "HandleEvent.hpp"
 
-class Player;
-class Animation;
-class Button;
-class Obj;
-class Label;
+#define DEBUGINFO
 
 #ifndef DEBUG
 #define DEBUG                                           \
@@ -28,6 +24,12 @@ using std::make_unique;
 using std::shared_ptr;
 using std::unique_ptr;
 using std::vector;
+
+class Player;
+class Animation;
+class Button;
+class Obj;
+class Label;
 
 namespace Windows
 {
@@ -58,6 +60,7 @@ private:
     friend TileMap;
     friend Animation;
     friend HandleEvent;
+    friend DebugInfo;
 
     void HandleButton(Button *btn);
     void InitMainWindow();
@@ -79,7 +82,7 @@ private:
     std::vector<std::unique_ptr<Entity>> EntitiesVector;
     sf::Font Geologica;
     std::unique_ptr<sf::RenderWindow> window;
-    std::unique_ptr<DebugInfo> debugInfo;
+    
     TextBox *selectedTextBox = nullptr;
     sf::View view;
     bool cursorSetted = false;
@@ -89,8 +92,13 @@ private:
     sf::Vector2f offsetRelativeCenter{};
     Player *player = nullptr;
 
-    const int fps = 60;
-    const int heightTile = 32;
+    const float fps = 60;
+    const float heightTile = 32;
     const float freeFall = 9.8;
-    const float pxPerFrame = (freeFall * heightTile) / fps;
+    const float pxPerFrameFall = (freeFall * heightTile * (2.f / (fps * fps))) - (freeFall * heightTile * (1.f / (fps * fps)));
+
+    int mouseX, mouseY;
+#ifdef DEBUGINFO
+    std::unique_ptr<DebugInfo> debugInfo;
+#endif // DEBUGINFO
 };

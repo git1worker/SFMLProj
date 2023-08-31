@@ -5,11 +5,13 @@
 #include "Label.hpp"
 #include <sstream>
 
+
+class Gamew;
+
 class DebugInfo : public Obj
 {
 public:
-    DebugInfo(sf::RenderWindow *window, sf::Font *font, sf::Event *event);
-    void UpdateEvents(const sf::Event *event);
+    DebugInfo(Gamew* gamew, sf::Font *font, sf::Event *event);
     void UpdateFps(float fps);
     void Update();
     void Draw() override;
@@ -17,10 +19,9 @@ public:
 private:
     float fps;
     std::wstringstream ss;
-    sf::RenderWindow *window;
+    Gamew* gamew;
     sf::Font *Geologica;
     Label info;
     sf::Event *event;
     float maxWidth = 200;
-    sf::Event::MouseMoveEvent lastMEvent{};
 };

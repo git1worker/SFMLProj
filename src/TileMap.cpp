@@ -38,6 +38,8 @@ TileMap::TileMap(Gamew &gamew, std::string path) : gamew(gamew), path(path)
         map_Tiles[i] = new Tile[widthInTiles];
     }
     FillMatrix(map);
+
+    canCollide = true;
     movable = true;
     zoomable = true;
 }
@@ -52,8 +54,8 @@ void TileMap::Update(sf::Vector2f &offsetRelativeCenter)
             // if (widthTile * j + offsetRelativeCenter.x >= -2*widthTile && widthTile * j + offsetRelativeCenter.x <= gamew.window->getSize().x + 2*widthTile &&
             // heightTile * i + offsetRelativeCenter.y >= -2*heightTile && heightTile * i + offsetRelativeCenter.y <= gamew.window->getSize().y + 2*heightTile)
             map_Tiles[i][j].sprite.setPosition(sf::Vector2f(widthTile * j + offsetRelativeCenter.x, heightTile * i + offsetRelativeCenter.y));
-            map_Tiles[i][j].intRect.left = widthTile * j + offsetRelativeCenter.x;
-            map_Tiles[i][j].intRect.top = heightTile * i + offsetRelativeCenter.y;
+            map_Tiles[i][j].posRect.left = widthTile * j + offsetRelativeCenter.x;
+            map_Tiles[i][j].posRect.top = heightTile * i + offsetRelativeCenter.y;
         }
     }
 }
@@ -83,20 +85,37 @@ void TileMap::Zoom(int delta)
 {
 }
 
-bool TileMap::assumeCollide(sf::Vector2f deltaAssumedOffset, sf::IntRect &other)
+bool TileMap::assumeCollideY(const float y, sf::FloatRect & other)
 {
+    bool flag = false;
     for (int i = 0; i < heightInTiles; ++i)
     {
         for (int j = 0; j < widthInTiles; ++j)
         {
-            auto tmp = map_Tiles[i][j].intRect;
-            tmp.left += deltaAssumedOffset.x;
-            tmp.top += deltaAssumedOffset.y;
-            if (tmp.intersects(other) && map_Tiles[i][j].canCollide)
-                return true;
+            map_Tiles[i][j].posRect.top -= y;
+            
+            if (map_Tiles[i][j].posRect.intersects(other) && map_Tiles[i][j].canCollide)
+                flag = true;
+            map_Tiles[i][j].posRect.top += y;
         }
     }
-    return false;
+    return flag;
+}
+
+bool TileMap::assumeCollideX(const float x, sf::FloatRect & other)
+{   
+    bool flag = false;
+    for (int i = 0; i < heightInTiles && !flag; ++i)
+    {
+        for (int j = 0; j < widthInTiles && !flag; ++j)
+        {
+            map_Tiles[i][j].posRect.left -= x;
+            if (map_Tiles[i][j].posRect.intersects(other) && map_Tiles[i][j].canCollide)
+                flag = true;
+            map_Tiles[i][j].posRect.left += x;
+        }
+    }
+    return flag;
 }
 
 void TileMap::FillMatrix(char *map)
@@ -120,10 +139,10 @@ void TileMap::FillMatrix(char *map)
             map_Tiles[posMatrix / widthInTiles][posMatrix % widthInTiles].sprite.setPosition(sf::Vector2f(
                 widthTile * (posMatrix % widthInTiles),
                 heightTile * (posMatrix / widthInTiles)));
-            map_Tiles[posMatrix / widthInTiles][posMatrix % widthInTiles].intRect.left = widthTile * (posMatrix % widthInTiles);
-            map_Tiles[posMatrix / widthInTiles][posMatrix % widthInTiles].intRect.top = heightTile * (posMatrix / widthInTiles);
-            map_Tiles[posMatrix / widthInTiles][posMatrix % widthInTiles].intRect.width = widthTile;
-            map_Tiles[posMatrix / widthInTiles][posMatrix % widthInTiles].intRect.height = heightTile;
+            map_Tiles[posMatrix / widthInTiles][posMatrix % widthInTiles].posRect.left = widthTile * (posMatrix % widthInTiles);
+            map_Tiles[posMatrix / widthInTiles][posMatrix % widthInTiles].posRect.top = heightTile * (posMatrix / widthInTiles);
+            map_Tiles[posMatrix / widthInTiles][posMatrix % widthInTiles].posRect.width = widthTile;
+            map_Tiles[posMatrix / widthInTiles][posMatrix % widthInTiles].posRect.height = heightTile;
             ++posMatrix, posBuff = 0;
         }
         else if (map[i] >= '0' && map[i] <= '9')
@@ -142,8 +161,8 @@ void TileMap::FillMatrix(char *map)
     }
     map_Tiles[posMatrix / widthInTiles][posMatrix % widthInTiles].sprite.setPosition(sf::Vector2f(widthTile * (posMatrix % widthInTiles),
                                                                                                   heightTile * (posMatrix / widthInTiles)));
-    map_Tiles[posMatrix / widthInTiles][posMatrix % widthInTiles].intRect.left = widthTile * (posMatrix % widthInTiles);
-    map_Tiles[posMatrix / widthInTiles][posMatrix % widthInTiles].intRect.top = heightTile * (posMatrix / widthInTiles);
-    map_Tiles[posMatrix / widthInTiles][posMatrix % widthInTiles].intRect.width = widthTile;
-    map_Tiles[posMatrix / widthInTiles][posMatrix % widthInTiles].intRect.height = heightTile;
+    map_Tiles[posMatrix / widthInTiles][posMatrix % widthInTiles].posRect.left = widthTile * (posMatrix % widthInTiles);
+    map_Tiles[posMatrix / widthInTiles][posMatrix % widthInTiles].posRect.top = heightTile * (posMatrix / widthInTiles);
+    map_Tiles[posMatrix / widthInTiles][posMatrix % widthInTiles].posRect.width = widthTile;
+    map_Tiles[posMatrix / widthInTiles][posMatrix % widthInTiles].posRect.height = heightTile;
 }

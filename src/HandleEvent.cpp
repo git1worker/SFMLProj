@@ -12,7 +12,6 @@ void HandleEvent::operator()(const sf::Event &event)
 {
     if (gamew)
     {
-        gamew->debugInfo->UpdateEvents(&event);
         if (event.type == sf::Event::Closed)
             gamew->window->close(), gamew->isActive = false;
         else if (event.type == sf::Event::MouseMoved)
@@ -31,7 +30,9 @@ void HandleEvent::operator()(const sf::Event &event)
 }
 
 void HandleEvent::eventMouseMoved(const sf::Event &event)
-{
+{   
+    gamew->mouseX = event.mouseMove.x;
+    gamew->mouseY = event.mouseMove.y;
     gamew->TextBoxContains = false;
     for (const auto &i : gamew->ObjVector)
     {

@@ -12,5 +12,6 @@ public:
     sf::Sprite sprite;
     int id;
     bool canCollide = false;
-    sf::IntRect intRect;
+    sf::FloatRect posRect;
+
 };

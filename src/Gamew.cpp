@@ -8,10 +8,17 @@
 #include "Player.hpp"
 #include <type_traits>
 
+
+
 using std::cerr;
 using std::cout;
 
-void Gamew::UpdateFps(float fps) { debugInfo->UpdateFps(fps); }
+void Gamew::UpdateFps(float fps)
+{
+#ifdef DEBUGINFO
+    debugInfo->UpdateFps(fps);
+#endif // DEBUGINFO
+}
 
 void Gamew::Init(const std::wstring title, const int Style, const int width, const int height)
 {
@@ -31,9 +38,10 @@ void Gamew::Init(const std::wstring title, const int Style, const int width, con
         cerr << "Failed to load cursor.\n", exit(1);
     }
     window->setMouseCursor(cursorArrow);
-
-    this->debugInfo = make_unique<DebugInfo>(window.get(), &Geologica, &event);
+#ifdef DEBUGINFO
+    this->debugInfo = make_unique<DebugInfo>(this, &Geologica, &event);
     debugInfo->name = Obj::DebugInfo;
+#endif // DEBUGINFO
     view = window->getView();
 }
 
@@ -95,7 +103,9 @@ void Gamew::Update()
             EntitiesToDelete.emplace_back(it);
     }
     CheckToDelete();
+#ifdef DEBUGINFO
     debugInfo->Update();
+#endif // DEBUGINFO
 }
 
 void Gamew::Drawing()
@@ -107,8 +117,9 @@ void Gamew::Drawing()
         (*it)->Draw();
     for (std::vector<std::unique_ptr<Entity>>::iterator it = EntitiesVector.begin(); it != EntitiesVector.end(); ++it)
         (*it)->Draw();
+#ifdef DEBUGINFO
     debugInfo->Draw();
-
+#endif // DEBUGINFO
     // -----------------------
     window->display();
 }

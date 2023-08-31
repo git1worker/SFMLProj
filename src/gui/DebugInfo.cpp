@@ -1,15 +1,10 @@
 #include "DebugInfo.hpp"
+#include "../Gamew.hpp"
 
-DebugInfo::DebugInfo(sf::RenderWindow *window, sf::Font *font, sf::Event *event) : window(window), Geologica(font), event(event)
+DebugInfo::DebugInfo(Gamew* gamew, sf::Font *font, sf::Event *event) : gamew(gamew), Geologica(font), event(event)
 {
-    info = Label(window, font, L"{DebugInfo}", window->getSize().x - maxWidth, 10, Label::Align::Left, 15, 400);
+    info = Label(gamew->window.get(), font, L"{DebugInfo}", gamew->window->getSize().x - maxWidth, 10, Label::Align::Left, 15, 400);
     info.getText().setFillColor(sf::Color(0, 0, 0, 130));
-}
-
-void DebugInfo::UpdateEvents(const sf::Event *event)
-{
-    if (event->type == sf::Event::MouseMoved)
-        lastMEvent = event->mouseMove;
 }
 
 void DebugInfo::UpdateFps(float fps)
@@ -20,7 +15,9 @@ void DebugInfo::UpdateFps(float fps)
 void DebugInfo::Update()
 {
 
-    ss << L"DebugInfo:\nMouse:\nx= " << lastMEvent.x << L"\ny= " << lastMEvent.y << L"\nFPS: " << fps << L'\n';
+    ss << L"DebugInfo:\nMouse:\nx= " << gamew->mouseX << L"\ny= " << gamew->mouseY << 
+    L"\nField:\nX=" << -gamew->offsetRelativeCenter.x / 32 << L"\nY=" << -gamew->offsetRelativeCenter.y / 32 << 
+    L"\nFPS: " << fps << L'\n';
     info.ChangeText(ss.str());
     ss.str(L"");
 }

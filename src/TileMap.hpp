@@ -25,7 +25,8 @@ public:
     void Update(sf::Vector2f &offsetRelativeCenter) override;
     void Draw() override;
     void Zoom(int delta) override;
-    bool assumeCollide(sf::Vector2f deltaAssumedOffset, sf::IntRect &other);
+    bool assumeCollideX(const float x, sf::FloatRect &other) override;
+    bool assumeCollideY(const float y, sf::FloatRect &other) override;
 
 private:
     void FillMatrix(char *map);
