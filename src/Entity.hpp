@@ -1,9 +1,9 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 
-class Entity {
+class Entity
+{
 public:
-
     Entity() = default;
     virtual ~Entity() = default;
     virtual void Draw() = 0;
@@ -14,9 +14,6 @@ public:
     float velocity = 2.5;
 
 protected:
-    
     bool deleteIt = false;
     int HP;
-    
-
 };

@@ -5,29 +5,34 @@
 
 class Gamew;
 
-class Player : public Entity {
+class Player : public Entity
+{
 public:
-
-    enum Types {
+    enum Types
+    {
         armoredAgent,
         greenAgent
     };
 
-    Player(Gamew& gamew, Types type, sf::Vector2f spawn);
+    Player(Gamew &gamew, Types type, sf::Vector2f spawn);
     ~Player();
-    
+
     void Draw() override;
     void Update() override;
+    void MoveStop();
+
+private:
+    // Return True if player are in free fall
+    void HandleMovement();
+    bool checkFreeFall();
     void MovePlayerUp();
     void MovePlayerLeft();
     void MovePlayerDown();
+    void MovePlayerDown(const float px);
     void MovePlayerRight();
-    void MoveStop();
+    void MovePlayerJump();
 
-
-private:
-
-    Gamew& gamew;
+    Gamew &gamew;
     std::string name;
     sf::Sprite body, hand;
     sf::Texture textureBody;
@@ -36,7 +41,6 @@ private:
     sf::Texture texHand;
     sf::IntRect bodyRect, handRect;
     bool flipped = false;
-    Animation* move;
+    Animation *move;
     bool animated = false;
-    
 };

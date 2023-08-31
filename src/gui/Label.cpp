@@ -1,9 +1,9 @@
 #include "Label.hpp"
 #include <iostream>
 
-Label::Label(sf::RenderWindow *window, sf::Font* font, std::wstring str, const float x, const float y, Align align, const unsigned int fSize, const float w) 
+Label::Label(sf::RenderWindow *window, sf::Font *font, std::wstring str, const float x, const float y, Align align, const unsigned int fSize, const float w)
     : window(window), Geologica(font), align(align)
-{   
+{
     posRect.left = x;
     posRect.top = y;
     text.setString(str);
@@ -20,7 +20,6 @@ Label::Label(sf::RenderWindow *window, sf::Font* font, std::wstring str, const f
         AlignToCenter();
         break;
     }
-    
 }
 
 sf::Text &Label::getText()
@@ -51,20 +50,26 @@ void Label::Update()
     }
 }
 
-void Label::DoAppearanceDecay(){
-    if (animStart) {
+void Label::DoAppearanceDecay()
+{
+    if (animStart)
+    {
         animStart = false;
         animOpacity = 0;
         animStop = false;
     }
-    if (!animStop){
-        //std::cout << 231 << std::endl;
+    if (!animStop)
+    {
+        // std::cout << 231 << std::endl;
         text.setFillColor(sf::Color(text.getFillColor().r, text.getFillColor().g, text.getFillColor().b, animOpacity++));
-        if (animOpacity == 255) animStop = true;
+        if (animOpacity == 255)
+            animStop = true;
     }
-    else if (animStop){
+    else if (animStop)
+    {
         text.setFillColor(sf::Color(text.getFillColor().r, text.getFillColor().g, text.getFillColor().b, animOpacity--));
-        if (animOpacity == 0) deleteIt = true;
+        if (animOpacity == 0)
+            deleteIt = true;
     }
 }
 
@@ -72,20 +77,25 @@ void Label::AlignToCenter()
 {
     std::wstring newStr;
     int i = 1;
-    for (auto it = text.getString().begin(); it != text.getString().end(); ++it){
-        if (maxWidth > i * (text.getCharacterSize() + text.getLetterSpacing())){
-            if (*it == L'\n') i = 1;
+    for (auto it = text.getString().begin(); it != text.getString().end(); ++it)
+    {
+        if (maxWidth > i * (text.getCharacterSize() + text.getLetterSpacing()))
+        {
+            if (*it == L'\n')
+                i = 1;
             newStr.push_back(*it);
             // DEBUG
             // std::cout << std::string(newStr.begin(), newStr.end()) << std::endl;
             // std::wcout <<  maxWidth << L' ' << i * text.getCharacterSize() << L' ' << newStr << L'\n';
             ++i;
         }
-        else newStr.push_back(L'\n'), newStr.push_back(*it), i = 2;
+        else
+            newStr.push_back(L'\n'), newStr.push_back(*it), i = 2;
     }
-    if (!text.getString().isEmpty()){
+    if (!text.getString().isEmpty())
+    {
         text.setString(newStr);
-        text.setOrigin(sf::Vector2f(text.getGlobalBounds().width/2, (text.getCharacterSize() - text.getGlobalBounds().height) + text.getGlobalBounds().height/2));
+        text.setOrigin(sf::Vector2f(text.getGlobalBounds().width / 2, (text.getCharacterSize() - text.getGlobalBounds().height) + text.getGlobalBounds().height / 2));
         text.setPosition(sf::Vector2f(posRect.left, posRect.top));
     }
 }
@@ -94,33 +104,37 @@ void Label::AlignToLeft()
 {
     std::wstring newStr;
     int i = 1;
-    for (auto it = text.getString().begin(); it != text.getString().end(); ++it){
-        if (maxWidth > i * (text.getCharacterSize() + text.getLetterSpacing())){
-            if (*it == L'\n') i = 1;
+    for (auto it = text.getString().begin(); it != text.getString().end(); ++it)
+    {
+        if (maxWidth > i * (text.getCharacterSize() + text.getLetterSpacing()))
+        {
+            if (*it == L'\n')
+                i = 1;
             newStr.push_back(*it);
             // DEBUG
             // std::cout << std::string(newStr.begin(), newStr.end()) << std::endl;
             // std::wcout <<  maxWidth << L' ' << i * text.getCharacterSize() << L' ' << newStr << L'\n';
             ++i;
         }
-        else newStr.push_back(L'\n'), newStr.push_back(*it), i = 2;
+        else
+            newStr.push_back(L'\n'), newStr.push_back(*it), i = 2;
     }
-    if (!text.getString().isEmpty()){
+    if (!text.getString().isEmpty())
+    {
         text.setString(newStr);
         text.setOrigin(sf::Vector2f(0, 0));
         text.setPosition(sf::Vector2f(posRect.left, posRect.top));
     }
-    
 }
 
 void Label::Draw()
 {
     window->draw(text);
-    //std::cout << text.getString().toAnsiString() << ' ' << text.getPosition().x << std::endl;
+    // std::cout << text.getString().toAnsiString() << ' ' << text.getPosition().x << std::endl;
 }
 
 void Label::ChangeText(std::wstring t)
-{   
+{
     text.setString(t);
     switch (align)
     {

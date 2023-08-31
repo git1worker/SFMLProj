@@ -1,5 +1,6 @@
 #include "TextBox.hpp"
 
+
 TextBox::TextBox(sf::RenderWindow *window, sf::Font *font, const float x, const float y, const unsigned int fSize, const float w, const float h) 
     : window(window), Geologica(font)
 {
@@ -77,7 +78,53 @@ void TextBox::ChangeText(std::wstring t)
     CheckWidthText();
 }
 
-sf::RectangleShape &TextBox::getRect() { return rect; }
+sf::RectangleShape &TextBox::getRect() 
+{ 
+    return rect; 
+}
+
+void TextBox::HandleTextbox(const sf::Event& event)
+{
+    if (event.key.code >= sf::Keyboard::A && event.key.code <= sf::Keyboard::Z)
+    {
+        if (event.key.shift)
+            this->AppendLetter((wchar_t)(L'A' + event.key.code));
+        else
+            this->AppendLetter((wchar_t)(L'a' + event.key.code));
+    }
+    else if (event.key.code >= sf::Keyboard::Num0 && event.key.code <= sf::Keyboard::Num9)
+    {
+        this->AppendLetter((wchar_t)(L'0' + event.key.code - sf::Keyboard::Num0));
+    }
+    else if (event.key.code == sf::Keyboard::Space)
+    {
+        this->AppendLetter(L' ');
+    }
+    else if (event.key.code == sf::Keyboard::SemiColon)
+    {
+        this->AppendLetter(L';');
+    }
+    else if (event.key.code == sf::Keyboard::Quote)
+    {
+        this->AppendLetter(L'\'');
+    }
+    else if (event.key.code == sf::Keyboard::Comma)
+    {
+        this->AppendLetter(L',');
+    }
+    else if (event.key.code == sf::Keyboard::Period)
+    {
+        this->AppendLetter(L'.');
+    }
+    else if (event.key.code == sf::Keyboard::Slash)
+    {
+        this->AppendLetter(L'/');
+    }
+    else if (event.key.code == sf::Keyboard::BackSpace)
+    {
+        this->DelLetter();
+    }
+}
 
 void TextBox::CheckWidthText()
 {

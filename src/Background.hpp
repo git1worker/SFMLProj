@@ -14,7 +14,7 @@
 class Background : public Obj
 {
 public:
-    Background(sf::RenderWindow* window, sf::Font *font, bool isStaticGradient = false);
+    Background(sf::RenderWindow *window, sf::Font *font, bool isStaticGradient = false);
     void SetGradient(sf::Color lUp, sf::Color rUp, sf::Color rDown, sf::Color lDown);
     void SetSingleColor(sf::Color color);
     void SetRandomGradient();
@@ -24,11 +24,10 @@ public:
     void Update(sf::Vector2f &offsetRelativeCenter) override;
 
 private:
-
     void GenerateRandom();
 
     sf::Clock delay;
-    sf::RenderWindow* window;
+    sf::RenderWindow *window;
     sf::Font *Geologica;
     bool isStaticGradient, isTextured;
     std::random_device rd;

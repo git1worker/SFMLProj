@@ -1,26 +1,28 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 
-class Obj {
+class Obj
+{
 public:
-
     Obj() = default;
     virtual void Draw() = 0;
-    virtual void Update() {};
-    virtual void Update(sf::Vector2f &offsetRelativeCenter) {};
+    virtual void Update(){};
+    virtual void Update(sf::Vector2f &offsetRelativeCenter){};
     virtual ~Obj() = default;
-    virtual void Zoom(int delta) {};
+    virtual void Zoom(int delta){};
     bool isMovable() { return movable; }
     bool DeleteIt() { return deleteIt; }
     bool isZoomable() { return zoomable; }
-    virtual bool assumeCollide(sf::Vector2f deltaAssumedOffset, sf::IntRect& other) { 
+    virtual bool assumeCollide(sf::Vector2f deltaAssumedOffset, sf::IntRect &other)
+    {
         auto tmp = posRect;
         tmp.left += deltaAssumedOffset.x;
         tmp.top += deltaAssumedOffset.y;
         return tmp.intersects(other);
     }
 
-    enum Names{
+    enum Names
+    {
         None,
         DebugInfo,
         titleMainW,
@@ -42,9 +44,7 @@ public:
     sf::IntRect posRect{};
 
 protected:
-    
     bool zoomable = false;
     bool movable = false;
     bool deleteIt = false;
-    
 };

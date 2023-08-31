@@ -20,17 +20,18 @@ int main()
 
     MyGame->Init(L"Gamew");
     while (MyGame->getActive())
-    {   
+    {
         elapsedTime = clock.restart();
         fps = 1.f / elapsedTime.asSeconds();
-        if (std::chrono::system_clock::now() - start > std::chrono::milliseconds(500)){
+        if (std::chrono::system_clock::now() - start > std::chrono::milliseconds(500))
+        {
             start = std::chrono::system_clock::now();
             MyGame->UpdateFps(fps);
         }
         MyGame->Polling();
         MyGame->Update();
         MyGame->Drawing();
-        //sf::sleep(sf::seconds(1));
+        // sf::sleep(sf::seconds(1));
     }
     return 0;
 }

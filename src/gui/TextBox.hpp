@@ -8,7 +8,6 @@
 class TextBox : public Obj
 {
 public:
-
     TextBox(sf::RenderWindow *window, sf::Font *font, const float x, const float y, const unsigned int fSize = 30, const float w = 200, const float h = 60);
     void Draw() override;
     void Update() override;
@@ -17,9 +16,9 @@ public:
     void DelLetter();
     void ChangeText(std::wstring t);
     sf::RectangleShape &getRect();
+    void HandleTextbox(const sf::Event &event);
 
 private:
-
     void CheckWidthText();
     int posCursor;
     sf::RenderWindow *window;
@@ -31,5 +30,3 @@ private:
     sf::Clock cursorClock;
     bool drawCursor = false;
 };
-
-

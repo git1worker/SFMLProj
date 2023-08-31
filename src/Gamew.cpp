@@ -6,6 +6,7 @@
 #include "Background.hpp"
 #include <string.h>
 #include "Player.hpp"
+#include <type_traits>
 
 using std::cerr;
 using std::cout;
@@ -15,7 +16,7 @@ void Gamew::UpdateFps(float fps) { debugInfo->UpdateFps(fps); }
 void Gamew::Init(const std::wstring title, const int Style, const int width, const int height)
 {
     window = std::make_unique<sf::RenderWindow>(sf::VideoMode(width, height), title, Style);
-    window->setFramerateLimit(60);
+    window->setFramerateLimit(fps);
     if (!Geologica.loadFromFile("../assets/fonts/Geologica-Regular.ttf"))
         cerr << "Failed to load font.\n", exit(1);
 
@@ -33,123 +34,13 @@ void Gamew::Init(const std::wstring title, const int Style, const int width, con
 
     this->debugInfo = make_unique<DebugInfo>(window.get(), &Geologica, &event);
     debugInfo->name = Obj::DebugInfo;
-
     view = window->getView();
 }
 
 void Gamew::Polling()
 {
     while (window->pollEvent(event))
-    {
-        debugInfo->UpdateEvents(&event);
-        if (event.type == sf::Event::Closed)
-            window->close(), isActive = false;
-        else if (event.type == sf::Event::MouseMoved)
-            EventMouseMoved(event);
-        else if (event.type == sf::Event::MouseButtonPressed)
-            EventMouseButtonPressed(event);
-        else if (event.type == sf::Event::MouseButtonReleased)
-            EventMouseButtonReleased(event);
-        else if (event.type == sf::Event::KeyPressed)
-            EventKeyPressed(event);
-        else if (event.type == sf::Event::KeyReleased)
-            EventKeyReleased(event);
-        else if (event.type == sf::Event::MouseWheelScrolled)
-            EventMouseWheelScrolled(event);
-    }
-}
-
-void Gamew::EventMouseMoved(sf::Event &event)
-{
-    TextBoxContains = false;
-    for (const auto &i : ObjVector)
-    {
-
-        if (auto *b = dynamic_cast<Button *>(i.get()); b && b->getRect().getGlobalBounds().contains(sf::Vector2f((float)event.mouseMove.x + screenOffsetX, (float)event.mouseMove.y + screenOffsetY)))
-        {
-            b->SetHovered();
-        }
-        else if (b && b->isHovered() && !b->getRect().getGlobalBounds().contains(sf::Vector2f((float)event.mouseMove.x + screenOffsetX, (float)event.mouseMove.y + screenOffsetY)))
-            b->ResetHovered();
-        else if (auto *b = dynamic_cast<TextBox *>(i.get()); b && b->getRect().getGlobalBounds().contains(sf::Vector2f((float)event.mouseMove.x + screenOffsetX, (float)event.mouseMove.y + screenOffsetY)))
-        {
-            if (!cursorSetted)
-            {
-                window->setMouseCursor(cursorText);
-                cursorSetted = true;
-            }
-            TextBoxContains = true;
-        }
-    }
-    if (cursorSetted && !TextBoxContains)
-    {
-        window->setMouseCursor(cursorArrow);
-        cursorSetted = false;
-    }
-}
-
-void Gamew::EventMouseButtonPressed(sf::Event &event)
-{
-    for (const auto &i : ObjVector)
-    {
-        if (selectedTextBox)
-            selectedTextBox->SetDrawCursor(false), selectedTextBox = nullptr;
-        if (auto *b = dynamic_cast<Button *>(i.get()); b && b->getRect().getGlobalBounds().contains(sf::Vector2f((float)event.mouseButton.x + screenOffsetX, (float)event.mouseButton.y + screenOffsetY)))
-            HandleButton(b);
-        else if (auto *b = dynamic_cast<TextBox *>(i.get()); b && b->getRect().getGlobalBounds().contains(sf::Vector2f((float)event.mouseButton.x + screenOffsetX, (float)event.mouseButton.y + screenOffsetY)))
-            selectedTextBox = b, b->SetDrawCursor(true);
-    }
-}
-
-void Gamew::EventMouseButtonReleased(sf::Event &event)
-{
-    for (const auto &i : ObjVector)
-    {
-        if (auto *b = dynamic_cast<Button *>(i.get()); b && b->getWasClicked())
-            b->Release();
-    }
-}
-
-void Gamew::EventKeyPressed(sf::Event &event)
-{
-
-    if (event.key.code == sf::Keyboard::Escape)
-    {
-        if (!switchWindow && currentWindow == 0)
-            window->close(), isActive = false;
-        else if (!switchWindow && currentWindow != Windows::MainW)
-            switchWindow = true, currentWindow = 0;
-    }
-    else if (selectedTextBox != nullptr)
-        HandleTextBox();
-    else if (event.key.code == sf::Keyboard::R)
-    {
-        std::cout << "Before view zoom: " << view.getSize().x / window->getSize().x << std::endl;
-        view.zoom(1 / (view.getSize().x / (float)window->getSize().x));
-        window->setView(view);
-        std::cout << "After view zoom: " << view.getSize().x / window->getSize().x << std::endl;
-    }
-}
-
-void Gamew::EventKeyReleased(sf::Event &event)
-{   
-    if (player)
-        player->MoveStop();
-}
-
-void Gamew::EventMouseWheelScrolled(sf::Event &event)
-{
-    if (event.mouseWheelScroll.delta > 0)
-    {
-        view.zoom(0.9f);
-        window->setView(view);
-    }
-    else if (event.mouseWheelScroll.delta < 0)
-    {
-        view.zoom(1.1f);
-        window->setView(view);
-    }
-    // std::cout << "Current view zoom: " << view.getSize().x / window->getSize().x << std::endl;
+        handle(event);
 }
 
 void Gamew::HandleButton(Button *btn)
@@ -185,71 +76,6 @@ void Gamew::HandleButton(Button *btn)
     }
 }
 
-void Gamew::HandleTextBox()
-{
-    if (event.key.code >= sf::Keyboard::A && event.key.code <= sf::Keyboard::Z)
-    {
-        if (event.key.shift)
-            selectedTextBox->AppendLetter((wchar_t)(L'A' + event.key.code));
-        else
-            selectedTextBox->AppendLetter((wchar_t)(L'a' + event.key.code));
-    }
-    else if (event.key.code >= sf::Keyboard::Num0 && event.key.code <= sf::Keyboard::Num9)
-    {
-        selectedTextBox->AppendLetter((wchar_t)(L'0' + event.key.code - sf::Keyboard::Num0));
-    }
-    else if (event.key.code == sf::Keyboard::Space)
-    {
-        selectedTextBox->AppendLetter(L' ');
-    }
-    else if (event.key.code == sf::Keyboard::SemiColon)
-    {
-        selectedTextBox->AppendLetter(L';');
-    }
-    else if (event.key.code == sf::Keyboard::Quote)
-    {
-        selectedTextBox->AppendLetter(L'\'');
-    }
-    else if (event.key.code == sf::Keyboard::Comma)
-    {
-        selectedTextBox->AppendLetter(L',');
-    }
-    else if (event.key.code == sf::Keyboard::Period)
-    {
-        selectedTextBox->AppendLetter(L'.');
-    }
-    else if (event.key.code == sf::Keyboard::Slash)
-    {
-        selectedTextBox->AppendLetter(L'/');
-    }
-    else if (event.key.code == sf::Keyboard::BackSpace)
-    {
-        selectedTextBox->DelLetter();
-    }
-}
-
-void Gamew::HandleMovement()
-{
-
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) && currentWindow != Windows::MainW)
-    {
-        player->MovePlayerUp();
-    }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) && currentWindow != Windows::MainW)
-    {
-        player->MovePlayerLeft();
-    }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::S) && currentWindow != Windows::MainW)
-    {
-        player->MovePlayerDown();
-    }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) && currentWindow != Windows::MainW)
-    {
-        player->MovePlayerRight();
-    }
-    // b->Update(offsetRelativeCenter);
-}
-
 void Gamew::Update()
 {
     CheckSwitchWindows();
@@ -267,11 +93,6 @@ void Gamew::Update()
         (*it)->Update();
         if ((*it)->DeleteIt())
             EntitiesToDelete.emplace_back(it);
-    }
-
-    if (player)
-    {
-        HandleMovement();
     }
     CheckToDelete();
     debugInfo->Update();

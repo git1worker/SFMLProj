@@ -3,14 +3,14 @@
 
 int Button::counter = 0;
 
-Button::Button(sf::RenderWindow *window, sf::Font* font, const float x, const float y, std::wstring stri) : str(stri), window(window), Geologica(font) 
-{   
+Button::Button(sf::RenderWindow *window, sf::Font *font, const float x, const float y, std::wstring stri) : str(stri), window(window), Geologica(font)
+{
     ++counter;
     posRect.left = x;
     posRect.top = y;
     posRect.width = 150, posRect.height = 50;
     rect = sf::RectangleShape(sf::Vector2f(posRect.width, posRect.height));
-    rect.setOrigin(sf::Vector2f(rect.getGlobalBounds().width/2, rect.getGlobalBounds().height/2));
+    rect.setOrigin(sf::Vector2f(rect.getGlobalBounds().width / 2, rect.getGlobalBounds().height / 2));
     rect.setPosition(sf::Vector2f(x, y));
     rect.setFillColor(sf::Color(160, 160, 160));
     rect.setOutlineThickness(2);
@@ -22,12 +22,12 @@ Button::Button(sf::RenderWindow *window, sf::Font* font, const float x, const fl
 }
 
 void Button::ChangeText(std::wstring t)
-{   
+{
     text.ChangeText(t);
 }
 
 void Button::Release()
-{   
+{
     ChangeText(str);
     wasClicked = false;
 }
@@ -44,20 +44,20 @@ void Button::SetHovered()
 }
 
 void Button::ResetHovered()
-{   
+{
     rect.setFillColor(sf::Color(160, 160, 160, 100));
     hovered = false;
 }
 
-bool Button::getWasClicked(){
+bool Button::getWasClicked()
+{
     return wasClicked;
 }
 
 void Button::Draw()
-{   
+{
     window->draw(rect);
     text.Draw();
-    
 }
 
 sf::RectangleShape &Button::getRect()

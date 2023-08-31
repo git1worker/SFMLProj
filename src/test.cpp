@@ -9,71 +9,70 @@
 
 using namespace rapidxml;
 
-class Base{
-public:
-    virtual void foo() = 0;
-};
+int main()
+{
+    // const int fps = 60;
+    // const int heightTile = 32;
+    // sf::RenderWindow window = sf::RenderWindow(sf::VideoMode(500, 500), "test");
+    // sf::Texture tmp;
+    // tmp.loadFromFile("../assets/img/characters/agent_1.png");
+    // sf::Texture tmp2;
+    // tmp2.loadFromFile("../assets/img/characters/agent_2.png");
+    // sf::Sprite player(tmp);
+    // auto t = player.getTextureRect();
+    // player.setPosition(sf::Vector2f(window.getSize().x/2, window.getSize().y/2));
+    // player.setTextureRect(t);
+    // window.setFramerateLimit(fps);
 
-class MyClass : public Base{
-public:
-    static int num;
+    // sf::Event event;
+    // bool isActive = true;
+    // sf::Vector2f offsetRelativeCenter{};
+    // const float freeFall = 9.8;
+    // const float pxPerFrame = (freeFall * heightTile) / fps;
 
-    void foo(){
-        std::cout << num++ << std::endl; 
-    };
+    // sf::RectangleShape floor(sf::Vector2f(window.getSize().x, 25));
+    // floor.setPosition(sf::Vector2f(0, window.getSize().y - 50));
+    // floor.setFillColor(sf::Color(0,0,0));
 
-};
+    // sf::Sprite a(tmp2);
+    // a.setPosition(sf::Vector2f(window.getSize().x/3 + offsetRelativeCenter.x, window.getSize().y/3 + offsetRelativeCenter.y));
+    // a.setTextureRect(t);
 
-int MyClass::num {};
+    // sf::FloatRect f{};
+    // sf::FloatRect s{};
 
-int main(){
+    // while (isActive)
+    // {
 
-    // std::vector<std::shared_ptr<Base>> v;
-    // for (int i = 0; i < 5; ++i){
-    //     v.emplace_back(std::make_shared<MyClass>());
+    //     while (window.pollEvent(event)){
+    //         if (event.type == sf::Event::Closed)
+    //             isActive = false;
+    //         if (event.type == sf::Event::KeyPressed){
+    //             if (event.key.code == sf::Keyboard::Escape)
+    //                 isActive = false;
+    //         }
+    //     }
+
+    //     a.setPosition(sf::Vector2f(a.getPosition().x, a.getPosition().y + pxPerFrame));
+    //     f.left = a.getPosition().x;
+    //     f.top = a.getPosition().y;
+    //     f.width = a.getTextureRect().width;
+    //     f.height = a.getTextureRect().height;
+    //     s.left = floor.getPosition().x;
+    //     s.top = floor.getPosition().y;
+    //     s.width = floor.getSize().x;
+    //     s.height = floor.getSize().y;
+
+    //     if (f.intersects(s))
+    //         a.setPosition(sf::Vector2f(a.getPosition().x, a.getPosition().y - pxPerFrame));
+
+    //     window.clear(sf::Color(255, 255, 255));
+    //     window.draw(player);
+    //     window.draw(floor);
+    //     window.draw(a);
+
+    //     window.display();
     // }
 
-    // for (auto& i : v){
-    //     i->foo();
-    // }
-
-    // unsigned int c = 10;
-    // float a = 1.11;
-    // std::cout << a + c << std::endl;
-    // std::string path("../assets/maps/untitled.xml");
-    // file<> xmlFile(path.c_str());
-    // rapidxml::xml_document<> tilemap;
-    // tilemap.parse<0>(xmlFile.data());
-    // while (path.back() != '/') path.pop_back();
-
-    // xml_node<>* root = tilemap.first_node();
-    // std::cout << root->name() << "\n";
-    // file<> xmlFile2((path + std::string(root->first_node("tileset")->first_attribute("source")->value())).c_str());
-    // rapidxml::xml_document<> tileset;
-    // tileset.parse<0>(xmlFile2.data());
-    // xml_node<>* root2 = tileset.first_node();
-    // std::cout << root2->name() << "\n";
-    sf::RenderWindow window = sf::RenderWindow(sf::VideoMode(500, 500), "test");
-    sf::Texture tmp;
-    tmp.loadFromFile("../assets/img/characters/anims_gray_agent.png");
-    sf::Sprite a(tmp);
-    auto t = a.getTextureRect();
-    t.width = -t.width;
-    t.left = t.left + abs(t.width);
-    a.setTextureRect(t);
-    
-    window.clear(sf::Color(255,255,255));
-    window.draw(a);
-    window.display();
-    sf::sleep(sf::seconds(10));
-    t = a.getTextureRect();
-    t.width = -t.width;
-    t.left = t.left - abs(t.width);
-    a.setTextureRect(t);
-    
-    window.clear(sf::Color(255,255,255));
-    window.draw(a);
-    window.display();
-    sf::sleep(sf::seconds(10));
     return 0;
 }
