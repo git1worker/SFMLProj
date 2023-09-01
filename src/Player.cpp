@@ -26,10 +26,10 @@ Player::Player(Gamew &gamew, Types type, sf::Vector2f spawn) : gamew(gamew), spa
     }
     body.setTexture(textureBody);
     body.setPosition(sf::Vector2f(gamew.window->getSize().x / 2 - POINT_HAND_X, gamew.window->getSize().y / 2 - POINT_HAND_Y));
-    posRect.left = body.getPosition().x;
-    posRect.top = body.getPosition().y;
-    posRect.width = body.getTextureRect().width;
-    posRect.height = body.getTextureRect().height;
+    posRect.left = body.getPosition().x + 3;
+    posRect.top = body.getPosition().y + 4;
+    posRect.width = body.getTextureRect().width - 3 * 2;
+    posRect.height = body.getTextureRect().height - 4;
     gamew.offsetRelativeCenter.x = spawn.x + body.getPosition().x + POINT_HAND_X;
     gamew.offsetRelativeCenter.y = spawn.y + body.getPosition().y + POINT_HAND_Y;
     hand.setTexture(texHand);
@@ -121,179 +121,6 @@ void Player::Update()
     UpdateDirection();
 }
 
-// void Player::MovePlayerUp()
-// {
-//     bool flag = true;
-//     int reduction = 0;
-//     for (std::vector<std::unique_ptr<Obj>>::iterator it = gamew.ObjVector.begin(); it != gamew.ObjVector.end() && flag; ++it)
-//     {
-//         if ((*it)->isMovable())
-//         {
-//             // Collision check
-//             if ((*it)->assumeCollide(sf::Vector2f(0, (this->velocity)), this->posRect))
-//                 flag = false;
-//         }
-//     }
-//     if (flag)
-//         gamew.offsetRelativeCenter.y += this->velocity;
-//     else
-//     {
-//         int reduction = 1;
-//         flag = true;
-//         for (; reduction < this->velocity && flag; ++reduction)
-//         {
-//             for (std::vector<std::unique_ptr<Obj>>::iterator it = gamew.ObjVector.begin(); it != gamew.ObjVector.end() && flag; ++it)
-//             {
-//                 if ((*it)->isMovable())
-//                 {
-//                     // Collision check
-//                     if ((*it)->assumeCollide(sf::Vector2f(0, reduction), this->posRect))
-//                         flag = false;
-//                 }
-//             }
-//         }
-//         gamew.offsetRelativeCenter.y += reduction - 2;
-//     }
-// }
-
-// void Player::MovePlayerLeft()
-// {
-//     move->PlayFlipped();
-//     bool flag = true;
-//     for (std::vector<std::unique_ptr<Obj>>::iterator it = gamew.ObjVector.begin(); it != gamew.ObjVector.end() && flag; ++it)
-//     {
-//         if ((*it)->isMovable())
-//         {
-//             // Collision check
-//             if ((*it)->assumeCollide(sf::Vector2f(this->velocity, 0), this->posRect))
-//                 flag = false;
-//         }
-//     }
-//     if (flag)
-//         gamew.offsetRelativeCenter.x += this->velocity;
-//     else
-//     {
-//         int reduction = 1;
-//         flag = true;
-//         for (; reduction < this->velocity && flag; ++reduction)
-//         {
-//             for (std::vector<std::unique_ptr<Obj>>::iterator it = gamew.ObjVector.begin(); it != gamew.ObjVector.end() && flag; ++it)
-//             {
-//                 if ((*it)->isMovable())
-//                 {
-//                     // Collision check
-//                     if ((*it)->assumeCollide(sf::Vector2f(reduction, 0), this->posRect))
-//                         flag = false;
-//                 }
-//             }
-//         }
-//         gamew.offsetRelativeCenter.x += reduction - 2;
-//     }
-// }
-
-// void Player::MovePlayerDown()
-// {
-//     bool flag = true;
-//     for (std::vector<std::unique_ptr<Obj>>::iterator it = gamew.ObjVector.begin(); it != gamew.ObjVector.end() && flag; ++it)
-//     {
-//         if ((*it)->isMovable())
-//         {
-//             // Collision check
-//             if ((*it)->assumeCollide(sf::Vector2f(0, -this->velocity), this->posRect))
-//                 flag = false;
-//         }
-//     }
-//     if (flag)
-//         gamew.offsetRelativeCenter.y -= this->velocity;
-//     else
-//     {
-//         int reduction = 1;
-//         flag = true;
-//         for (; reduction < this->velocity && flag; ++reduction)
-//         {
-//             for (std::vector<std::unique_ptr<Obj>>::iterator it = gamew.ObjVector.begin(); it != gamew.ObjVector.end() && flag; ++it)
-//             {
-//                 if ((*it)->isMovable())
-//                 {
-//                     // Collision check
-//                     if ((*it)->assumeCollide(sf::Vector2f(0, -reduction), this->posRect))
-//                         flag = false;
-//                 }
-//             }
-//         }
-//         gamew.offsetRelativeCenter.y -= reduction - 2;
-//     }
-// }
-
-// void Player::MovePlayerDown(const float px)
-// {
-//     bool flag = true;
-//     for (std::vector<std::unique_ptr<Obj>>::iterator it = gamew.ObjVector.begin(); it != gamew.ObjVector.end() && flag; ++it)
-//     {
-//         if ((*it)->isMovable())
-//         {
-//             // Collision check
-//             if ((*it)->assumeCollide(sf::Vector2f(0, -px), this->posRect))
-//                 flag = false;
-//         }
-//     }
-//     if (flag)
-//         gamew.offsetRelativeCenter.y -= px;
-//     else
-//     {
-//         int reduction = 1;
-//         flag = true;
-//         for (; reduction < px && flag; ++reduction)
-//         {
-//             for (std::vector<std::unique_ptr<Obj>>::iterator it = gamew.ObjVector.begin(); it != gamew.ObjVector.end() && flag; ++it)
-//             {
-//                 if ((*it)->isMovable())
-//                 {
-//                     // Collision check
-//                     if ((*it)->assumeCollide(sf::Vector2f(0, -reduction), this->posRect))
-//                         flag = false;
-//                 }
-//             }
-//         }
-//         gamew.offsetRelativeCenter.y -= reduction - 2;
-//     }
-// }
-
-// void Player::MovePlayerRight()
-// {
-//     move->PlayOrigin();
-//     bool flag = true;
-//     for (std::vector<std::unique_ptr<Obj>>::iterator it = gamew.ObjVector.begin(); it != gamew.ObjVector.end() && flag; ++it)
-//     {
-//         if ((*it)->isMovable())
-//         {
-//             // Collision check
-//             if ((*it)->assumeCollide(sf::Vector2f(-this->velocity, 0), this->posRect))
-//                 flag = false;
-//         }
-//     }
-//     if (flag)
-//         gamew.offsetRelativeCenter.x -= this->velocity;
-//     else
-//     {
-//         int reduction = 1;
-//         flag = true;
-//         for (; reduction < this->velocity && flag; ++reduction)
-//         {
-//             for (std::vector<std::unique_ptr<Obj>>::iterator it = gamew.ObjVector.begin(); it != gamew.ObjVector.end() && flag; ++it)
-//             {
-//                 if ((*it)->isMovable())
-//                 {
-//                     // Collision check
-//                     if ((*it)->assumeCollide(sf::Vector2f(-reduction, 0), this->posRect))
-//                         flag = false;
-//                 }
-//             }
-//         }
-//         gamew.offsetRelativeCenter.x -= reduction - 2;
-//     }
-// }
-
 void Player::MoveStop()
 {
     move->Stop();
@@ -301,46 +128,170 @@ void Player::MoveStop()
 
 void Player::MovePlayerJump()
 {
-
+    
 }
 
 void Player::CollideCheck()
 {   
-    for (std::vector<std::unique_ptr<Obj>>::iterator it = gamew.ObjVector.begin(); it != gamew.ObjVector.end(); ++it)
+    int actionForX = (direction.x > 0.01 ? 1 : -1);
+    int actionForY = (direction.y > 0.01 ? 1 : -1);
+    bool flag = true;
+    for (std::vector<std::unique_ptr<Obj>>::iterator it = gamew.ObjVector.begin(); it != gamew.ObjVector.end() && flag; ++it)
     {
-        if ((*it)->isMovable() && (*it)->isCollidable())
+        if ((*it)->isMovable())
         {
-            // Selection of the smallest allowable offset.
-            // Need to finish this part !!! And all directions of moving !!!
-            float maxAllowedPromotion = 0;
-            for (float i = 1; i <= round(direction.x); i += 0.5){
-                if ((*it)->assumeCollideX(i, this->posRect)){
-                    maxAllowedPromotion = i-1;
-                    break;
+            // Collision check
+            if ((*it)->assumeCollideX(direction.x, this->posRect))
+                flag = false;
+        }
+    }
+    if (!flag)
+    {
+        int reduction = actionForX;
+        flag = true;
+        for (; abs(reduction) < abs(direction.x) && flag; reduction = reduction + actionForX)
+        {
+            for (std::vector<std::unique_ptr<Obj>>::iterator it = gamew.ObjVector.begin(); it != gamew.ObjVector.end() && flag; ++it)
+            {
+                if ((*it)->isMovable())
+                {
+                    // Collision check
+                    if ((*it)->assumeCollideX(reduction, this->posRect))
+                        flag = false;
                 }
-                maxAllowedPromotion = i;
             }
-            direction.x = maxAllowedPromotion;
+        }
+        direction.x = reduction + (-actionForX * 2);
+    }
 
-            maxAllowedPromotion = 0;
-            for (float i = 1; i <= round(direction.y); i += 0.5){
-                if ((*it)->assumeCollideX(i, this->posRect)){
-                    maxAllowedPromotion = i - 0.5;
-                    break;
+    flag = true;
+    for (std::vector<std::unique_ptr<Obj>>::iterator it = gamew.ObjVector.begin(); it != gamew.ObjVector.end() && flag; ++it)
+    {
+        if ((*it)->isMovable())
+        {
+            // Collision check
+            if ((*it)->assumeCollideY(direction.y, this->posRect))
+                flag = false;
+        }
+    }
+    if (!flag)
+    {
+        int reduction = actionForY;
+        flag = true;
+        for (; abs(reduction) < abs(direction.y) && flag; reduction = reduction + actionForY)
+        {
+            for (std::vector<std::unique_ptr<Obj>>::iterator it = gamew.ObjVector.begin(); it != gamew.ObjVector.end() && flag; ++it)
+            {
+                if ((*it)->isMovable())
+                {
+                    // Collision check
+                    if ((*it)->assumeCollideY(reduction, this->posRect))
+                        flag = false;
                 }
-                maxAllowedPromotion = i;
             }
-            direction.y = maxAllowedPromotion;
+        }
+        direction.y = reduction + (-actionForY * 2);
+    }
+    
+}
 
+void Player::CollideCheckV2()
+{
+    int summ = round(abs(direction.x));
+    int actionForX = (direction.x > 0.01 ? -1 : 1);
+    int actionForY = (direction.y > 0.01 ? -1 : 1);
+    bool flag = false;
+    while (summ != 0 && !flag){
+        flag = true;
+        for (std::vector<std::unique_ptr<Obj>>::iterator it = gamew.ObjVector.begin(); it != gamew.ObjVector.end() && flag; ++it)
+        {
+            if ((*it)->isMovable() && (*it)->isCollidable())
+            {
+                // Selection of the smallest allowable offset.
+                // Need to finish this part !!! And all directions of moving !!!
+                if ((*it)->assumeCollideX(direction.x, this->posRect)){
+                    --summ;
+                    if (summ != 0)
+                        direction.x = direction.x + (direction.x / summ) * actionForX, flag = false;
+                    else direction.x = 0, flag = true;
+                    
+                }
+            }
+        }
+    }
+    flag = false;
+    summ = round(abs(direction.y));
+    while (summ != 0 && !flag){
+        flag = true;
+        for (std::vector<std::unique_ptr<Obj>>::iterator it = gamew.ObjVector.begin(); it != gamew.ObjVector.end() && flag; ++it)
+        {
+            if ((*it)->isMovable() && (*it)->isCollidable())
+            {
+                // Selection of the smallest allowable offset.
+                // Need to finish this part !!! And all directions of moving !!!
+                if ((*it)->assumeCollideY(direction.y, this->posRect)){
+                    --summ;
+                    if (summ != 0)
+                        direction.y = direction.y + (direction.y / summ) * actionForY, flag = false;
+                    else direction.y = 0, flag = true;
+                    
+                }
+            }
         }
     }
 }
 
 void Player::UpdateDirection()
 {   
-    direction += sf::Vector2f(0, -gamew.pxPerFrameFall);
+    direction = sf::Vector2f(0,0);
+    direction += sf::Vector2f(0, GetFreeFall());
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)){
+        direction += sf::Vector2f(0, -currSpeedFall - velocity);
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)){
+        move->PlayFlipped();
+        direction += sf::Vector2f(-velocity, 0);
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)){
+        move->PlayOrigin();
+        direction += sf::Vector2f(velocity, 0);
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && !isFalling)
+        MovePlayerJump();
+        
+    
     CollideCheck();
     gamew.offsetRelativeCenter.x -= direction.x;
-    gamew.offsetRelativeCenter.y += direction.y;
+    gamew.offsetRelativeCenter.y -= direction.y;
 }
 
+float Player::GetFreeFall()
+{   
+    bool ff = CheckFreeFall();
+    if (!isFalling && ff)
+        isFalling = true, currSpeedFall = 2;  
+    else if (isFalling && ff){
+        if (currSpeedFall < 7){
+            currSpeedFall += gamew.pxPerFrameFall;
+        }
+        return currSpeedFall;
+    }
+    else 
+        isFalling = false;
+    return 0;
+}
+
+bool Player::CheckFreeFall()
+{   
+    bool flag = true;
+    for (std::vector<std::unique_ptr<Obj>>::iterator it = gamew.ObjVector.begin(); it != gamew.ObjVector.end() && flag; ++it)
+    {
+        if ((*it)->isMovable() && (*it)->isCollidable())
+        {
+            if ((*it)->assumeCollideY(1, this->posRect)){
+                flag = false;
+            }
+        }
+    }
+    return flag;
+}

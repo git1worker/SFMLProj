@@ -16,7 +16,7 @@ void DebugInfo::Update()
 {
 
     ss << L"DebugInfo:\nMouse:\nx= " << gamew->mouseX << L"\ny= " << gamew->mouseY << 
-    L"\nField:\nX=" << -gamew->offsetRelativeCenter.x / 32 << L"\nY=" << -gamew->offsetRelativeCenter.y / 32 << 
+    L"\nField:\nX=" << (-gamew->offsetRelativeCenter.x / 32) + (gamew->window->getSize().x / 2) / 32 << L"\nY=" << (-gamew->offsetRelativeCenter.y / 32) + (gamew->window->getSize().y / 2) / 32 << 
     L"\nFPS: " << fps << L'\n';
     info.ChangeText(ss.str());
     ss.str(L"");

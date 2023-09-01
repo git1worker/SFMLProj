@@ -17,14 +17,19 @@ public:
     virtual void Update(){};
     bool DeleteIt() { return deleteIt; }
 
+    // The physical model for interacting with the 
+    // other entities and tiles.
     sf::FloatRect posRect{};
-    float velocity = 2.5;
+
+    // Velocity of moving
+    float velocity = 3.5;
 
 protected:
+
     Types type;
     bool deleteIt = false;
     int HP;
-
+    int cntFreeFall;
     // Direction relative X - right and Y - down
     sf::Vector2f direction{};
     

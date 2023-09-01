@@ -165,7 +165,6 @@ void Gamew::InitWindow1()
 {
     // Init
     currentWindow = Windows::Game1;
-    selectedTextBox = nullptr;
     // Player
     auto tmp3 = std::make_unique<Player>(*this, Player::Types::armoredAgent, sf::Vector2f(-150, -250));
     player = tmp3.get();

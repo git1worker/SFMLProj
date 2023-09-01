@@ -7,6 +7,12 @@ class Gamew;
 
 class Player : public Entity
 {
+// Physical model for all players are with the rect below
+// posRect: l = 0 cords at sprite + 3 px
+//          t = 0 cords at sprite + 4 px 
+//          w = w at sprite - 3 * 2
+//          h = h at sprite - t
+// 
 public:
     
 
@@ -18,16 +24,13 @@ public:
     void MoveStop();
 
 private:
-    // Return True if player are in free fall
-    void HandleMovement();
+    
     void CollideCheck();
-    void MovePlayerUp();
-    void MovePlayerLeft();
-    void MovePlayerDown();
-    void MovePlayerDown(const float px);
-    void MovePlayerRight();
+    void CollideCheckV2();
     void MovePlayerJump();
     void UpdateDirection();
+    float GetFreeFall();
+    bool CheckFreeFall();
 
     Gamew &gamew;
     std::string name;
@@ -40,5 +43,6 @@ private:
     bool flipped = false;
     Animation *move;
     bool animated = false;
-
+    float currSpeedFall = 2;
+    bool isFalling = false;
 };

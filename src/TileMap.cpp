@@ -88,15 +88,14 @@ void TileMap::Zoom(int delta)
 bool TileMap::assumeCollideY(const float y, sf::FloatRect & other)
 {
     bool flag = false;
-    for (int i = 0; i < heightInTiles; ++i)
+    for (int i = 0; i < heightInTiles && !flag; ++i)
     {
-        for (int j = 0; j < widthInTiles; ++j)
+        for (int j = 0; j < widthInTiles && !flag; ++j)
         {
-            map_Tiles[i][j].posRect.top -= y;
-            
+            other.top += y;
             if (map_Tiles[i][j].posRect.intersects(other) && map_Tiles[i][j].canCollide)
                 flag = true;
-            map_Tiles[i][j].posRect.top += y;
+            other.top -= y;
         }
     }
     return flag;
@@ -109,10 +108,13 @@ bool TileMap::assumeCollideX(const float x, sf::FloatRect & other)
     {
         for (int j = 0; j < widthInTiles && !flag; ++j)
         {
-            map_Tiles[i][j].posRect.left -= x;
-            if (map_Tiles[i][j].posRect.intersects(other) && map_Tiles[i][j].canCollide)
+            other.left += x;
+            if (map_Tiles[i][j].posRect.intersects(other) && map_Tiles[i][j].canCollide){
+                auto t = map_Tiles[i][j];
                 flag = true;
-            map_Tiles[i][j].posRect.left += x;
+            }
+                
+            other.left -= x;
         }
     }
     return flag;
