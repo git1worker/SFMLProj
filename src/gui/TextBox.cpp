@@ -1,14 +1,13 @@
 #include "TextBox.hpp"
 
-
-TextBox::TextBox(sf::RenderWindow *window, sf::Font *font, const float x, const float y, const unsigned int fSize, const float w, const float h) 
-    : window(window), Geologica(font)
-{
+TextBox::TextBox(sf::RenderWindow *window, sf::Font *font, const float x, const float y, const unsigned int fSize, const float w, const float h)
+    : window(window), Geologica(font) {
     posRect.left = x;
     posRect.top = y;
     posRect.width = w;
     posRect.height = h;
-    if (fSize > h) posRect.height = fSize;
+    if (fSize > h)
+        posRect.height = fSize;
 
     // Box
     rect.setSize(sf::Vector2f(posRect.width, posRect.height));
@@ -24,20 +23,17 @@ TextBox::TextBox(sf::RenderWindow *window, sf::Font *font, const float x, const 
     text.setCharacterSize(fSize);
     text.setPosition(posRect.left + text.getLetterSpacing(), posRect.top - text.getLineSpacing());
     // Cursor
-    cursor.setSize(sf::Vector2f(text.getCharacterSize()/12, text.getCharacterSize()));
+    cursor.setSize(sf::Vector2f(text.getCharacterSize() / 12, text.getCharacterSize()));
     cursor.setOrigin(sf::Vector2f(0, 0));
     cursor.setPosition(sf::Vector2f(posRect.left, posRect.top));
     cursor.setFillColor(sf::Color(50, 50, 50));
-    
 }
 
-void TextBox::Draw()
-{   
+void TextBox::Draw() {
     window->draw(rect);
     window->draw(text);
-    if (drawCursor){
-        if (cursorClock.getElapsedTime().asMilliseconds() > 500)
-        {
+    if (drawCursor) {
+        if (cursorClock.getElapsedTime().asMilliseconds() > 500) {
             showCursor = !showCursor;
             cursorClock.restart();
         }
@@ -46,25 +42,17 @@ void TextBox::Draw()
     }
 }
 
-void TextBox::Update()
-{
-    
-}
+void TextBox::Update() {}
 
-void TextBox::SetDrawCursor(bool v)
-{
-    drawCursor = v;
-}
+void TextBox::SetDrawCursor(bool v) { drawCursor = v; }
 
-void TextBox::AppendLetter(wchar_t cr)
-{   
+void TextBox::AppendLetter(wchar_t cr) {
     text.setString(text.getString() + std::wstring(1, cr));
-    //std::wcout << text.getString().toWideString() << std::endl;
+    // std::wcout << text.getString().toWideString() << std::endl;
     CheckWidthText();
 }
 
-void TextBox::DelLetter()
-{   
+void TextBox::DelLetter() {
     std::wstring tmp = text.getString();
     if (!tmp.empty())
         tmp.erase(tmp.size() - 1, 1);
@@ -72,86 +60,60 @@ void TextBox::DelLetter()
     CheckWidthText();
 }
 
-void TextBox::ChangeText(std::wstring t)
-{
+void TextBox::ChangeText(std::wstring t) {
     text.setString(t);
     CheckWidthText();
 }
 
-sf::RectangleShape &TextBox::getRect() 
-{ 
-    return rect; 
-}
+sf::RectangleShape &TextBox::getRect() { return rect; }
 
-void TextBox::HandleTextbox(const sf::Event& event)
-{
-    if (event.key.code >= sf::Keyboard::A && event.key.code <= sf::Keyboard::Z)
-    {
+void TextBox::HandleTextbox(const sf::Event &event) {
+    if (event.key.code >= sf::Keyboard::A && event.key.code <= sf::Keyboard::Z) {
         if (event.key.shift)
             this->AppendLetter((wchar_t)(L'A' + event.key.code));
         else
             this->AppendLetter((wchar_t)(L'a' + event.key.code));
-    }
-    else if (event.key.code >= sf::Keyboard::Num0 && event.key.code <= sf::Keyboard::Num9)
-    {
+    } else if (event.key.code >= sf::Keyboard::Num0 && event.key.code <= sf::Keyboard::Num9) {
         this->AppendLetter((wchar_t)(L'0' + event.key.code - sf::Keyboard::Num0));
-    }
-    else if (event.key.code == sf::Keyboard::Space)
-    {
+    } else if (event.key.code == sf::Keyboard::Space) {
         this->AppendLetter(L' ');
-    }
-    else if (event.key.code == sf::Keyboard::SemiColon)
-    {
+    } else if (event.key.code == sf::Keyboard::SemiColon) {
         this->AppendLetter(L';');
-    }
-    else if (event.key.code == sf::Keyboard::Quote)
-    {
+    } else if (event.key.code == sf::Keyboard::Quote) {
         this->AppendLetter(L'\'');
-    }
-    else if (event.key.code == sf::Keyboard::Comma)
-    {
+    } else if (event.key.code == sf::Keyboard::Comma) {
         this->AppendLetter(L',');
-    }
-    else if (event.key.code == sf::Keyboard::Period)
-    {
+    } else if (event.key.code == sf::Keyboard::Period) {
         this->AppendLetter(L'.');
-    }
-    else if (event.key.code == sf::Keyboard::Slash)
-    {
+    } else if (event.key.code == sf::Keyboard::Slash) {
         this->AppendLetter(L'/');
-    }
-    else if (event.key.code == sf::Keyboard::BackSpace)
-    {
+    } else if (event.key.code == sf::Keyboard::BackSpace) {
         this->DelLetter();
     }
 }
 
-void TextBox::CheckWidthText()
-{
+void TextBox::CheckWidthText() {
     std::wstring newStr;
     int i = 1;
     sf::String lastStr = text.getString();
-    for (auto it = lastStr.begin(); it != lastStr.end(); ++it){
+    for (auto it = lastStr.begin(); it != lastStr.end(); ++it) {
         int currW = text.findCharacterPos(i).x - text.findCharacterPos(0).x;
-        if (posRect.width > currW){
+        if (posRect.width > currW) {
             newStr.push_back(*it);
             ++i;
-        }
-        else {
+        } else {
             newStr.push_back(L'\n');
             newStr.push_back(*it);
             text.setString(newStr);
-            if (posRect.height < text.getGlobalBounds().height){
+            if (posRect.height < text.getGlobalBounds().height) {
                 newStr.pop_back();
                 newStr.pop_back();
                 text.setString(newStr);
             }
         }
     }
-    if (!text.getString().isEmpty()){
+    if (!text.getString().isEmpty()) {
         text.setString(newStr);
     }
     cursor.setPosition(text.findCharacterPos(text.getString().getSize()).x, text.findCharacterPos(text.getString().getSize()).y);
-
 }
-

@@ -1,8 +1,7 @@
 #include "Animation.hpp"
 #include "Debug.hpp"
 
-Animation::Animation(Gamew *gamew, std::string path, int speed, int offset) : gamew(gamew), speed(speed), offset(offset)
-{
+Animation::Animation(Gamew *gamew, std::string path, int speed, int offset) : gamew(gamew), speed(speed), offset(offset) {
     tAnim.loadFromFile(path);
     sprite.setTexture(tAnim);
 
@@ -10,10 +9,8 @@ Animation::Animation(Gamew *gamew, std::string path, int speed, int offset) : ga
     sprite.setTextureRect(sf::IntRect(0, 0, offset, sprite.getTextureRect().height));
 }
 
-void Animation::PlayOrigin()
-{
-    if (flipped)
-    {
+void Animation::PlayOrigin() {
+    if (flipped) {
         auto tmp = sprite.getTextureRect();
         tmp.width = -tmp.width;
         sprite.setTextureRect(tmp);
@@ -22,10 +19,8 @@ void Animation::PlayOrigin()
     Play();
 }
 
-void Animation::PlayFlipped()
-{
-    if (!flipped)
-    {
+void Animation::PlayFlipped() {
+    if (!flipped) {
         auto tmp = sprite.getTextureRect();
         tmp.width = -tmp.width;
         sprite.setTextureRect(tmp);
@@ -35,25 +30,14 @@ void Animation::PlayFlipped()
     Play();
 }
 
-void Animation::Stop()
-{
-    animate = false;
-}
+void Animation::Stop() { animate = false; }
 
-bool Animation::getFlipped()
-{
-    return flipped;
-}
+bool Animation::getFlipped() { return flipped; }
 
-bool Animation::getAnimated()
-{
-    return animate;
-}
+bool Animation::getAnimated() { return animate; }
 
-void Animation::Play()
-{
-    if (!animate)
-    {
+void Animation::Play() {
+    if (!animate) {
         start = std::chrono::system_clock::now();
         animate = true;
         currFrame = 1;
@@ -63,11 +47,8 @@ void Animation::Play()
         else
             tmp.left = offset * (currFrame - 1);
         sprite.setTextureRect(tmp);
-    }
-    else
-    {
-        if (std::chrono::system_clock::now() - start > std::chrono::milliseconds(speed * currFrame))
-        {
+    } else {
+        if (std::chrono::system_clock::now() - start > std::chrono::milliseconds(speed * currFrame)) {
             if (currFrame >= numFrames)
                 start = std::chrono::system_clock::now(), currFrame = 0;
 

@@ -17,8 +17,9 @@ public:
     virtual void Update(){};
     bool DeleteIt() { return deleteIt; }
 
-    // The physical model for interacting with the 
-    // other entities and tiles.
+    // The physical model for interacting with other entities and tiles.
+    // This is mean that entity possesses coordinates relative the center of axes (coords 0, 0)
+    // It does not include offsetRelativeCenter because offset should affect relative the main player
     sf::FloatRect posRect{};
 
     // Velocity of moving

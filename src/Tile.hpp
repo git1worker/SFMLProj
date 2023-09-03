@@ -13,5 +13,5 @@ public:
     int id;
     bool canCollide = false;
     sf::FloatRect posRect;
-
+    
 };

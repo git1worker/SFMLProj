@@ -30,6 +30,7 @@ class Animation;
 class Button;
 class Obj;
 class Label;
+class Enemy;
 
 namespace Windows
 {
@@ -61,6 +62,7 @@ private:
     friend Animation;
     friend HandleEvent;
     friend DebugInfo;
+    friend Enemy;
 
     void HandleButton(Button *btn);
     void InitMainWindow();
@@ -91,6 +93,7 @@ private:
     int screenOffsetX = 0, screenOffsetY = 0;
     sf::Vector2f offsetRelativeCenter{};
     Player *player = nullptr;
+    TileMap* currTileMap = nullptr;
 
     const float fps = 60;
     const float heightTile = 32;
@@ -98,6 +101,7 @@ private:
     const float pxPerFrameFall = (freeFall * heightTile * (2.f / (fps * fps))) - (freeFall * heightTile * (1.f / (fps * fps)));
 
     int mouseX, mouseY;
+
 #ifdef DEBUGINFO
     std::unique_ptr<DebugInfo> debugInfo;
 #endif // DEBUGINFO

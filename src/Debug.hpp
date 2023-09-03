@@ -25,10 +25,4 @@ void Print();
 template <typename Head, typename... Tail>
 void Print(Head h, Tail... t);
 
-// inline void RTDrawing(sf::RenderWindow *window, sf::Drawable& sprite){
-//     int a;
-//     window->draw(sprite);
-//     window->display();
-//     std::cout << "Line: " << __LINE__ << " File: " << __FILE__ << "Cnt: " << DebugCnt++ << std::endl;
-//     std::cin >> a;
-// }
+

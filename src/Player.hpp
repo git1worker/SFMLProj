@@ -26,11 +26,12 @@ public:
 private:
     
     void CollideCheck();
-    void CollideCheckV2();
-    void MovePlayerJump();
+    void StartJump();
+    void CheckJump();
     void UpdateDirection();
     float GetFreeFall();
     bool CheckFreeFall();
+    bool CheckCanMoveUp();
 
     Gamew &gamew;
     std::string name;
@@ -45,4 +46,6 @@ private:
     bool animated = false;
     float currSpeedFall = 2;
     bool isFalling = false;
+    bool jumping = false;
+    int energyJump = 0;
 };

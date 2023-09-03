@@ -3,8 +3,8 @@
 
 using sf::Vector2f;
 
-Background::Background(sf::RenderWindow *window, sf::Font *font, bool isStaticGradient) : window(window), Geologica(font), isStaticGradient(isStaticGradient)
-{
+Background::Background(sf::RenderWindow *window, sf::Font *font, bool isStaticGradient)
+    : window(window), Geologica(font), isStaticGradient(isStaticGradient) {
     V_A.setPrimitiveType(sf::Quads);
     if (!isStaticGradient)
         GenerateRandom();
@@ -14,8 +14,7 @@ Background::Background(sf::RenderWindow *window, sf::Font *font, bool isStaticGr
     V_A.append(sf::Vertex(Vector2f(window->getSize().x, 0), lDown));
 }
 
-void Background::SetGradient(sf::Color lUp, sf::Color rUp, sf::Color rDown, sf::Color lDown)
-{
+void Background::SetGradient(sf::Color lUp, sf::Color rUp, sf::Color rDown, sf::Color lDown) {
     this->lUp = lUp, this->rUp = rUp, this->rDown = rDown, this->lDown = lDown;
     V_A[0] = (sf::Vertex(Vector2f(0, 0), lUp));
     V_A[1] = (sf::Vertex(Vector2f(0, window->getSize().y), rUp));
@@ -23,17 +22,14 @@ void Background::SetGradient(sf::Color lUp, sf::Color rUp, sf::Color rDown, sf::
     V_A[3] = (sf::Vertex(Vector2f(window->getSize().x, 0), lDown));
 }
 
-void Background::SetRandomGradient()
-{
+void Background::SetRandomGradient() {
     isStaticGradient = false;
     GenerateRandom();
     SetGradient(lUp, rUp, rDown, lDown);
 }
 
-void Background::Update()
-{
-    if (!isStaticGradient)
-    {
+void Background::Update() {
+    if (!isStaticGradient) {
         if (delay.getElapsedTime().asMilliseconds() < 100)
             return;
         delay.restart();
@@ -41,8 +37,7 @@ void Background::Update()
         int change;
         std::uniform_int_distribution<int> dis(-1, 1);
         sf::Color *tmpArr[4]{&lUp, &rUp, &rDown, &lDown};
-        for (int i = 0; i < 4; ++i)
-        {
+        for (int i = 0; i < 4; ++i) {
             change = dis(gen);
             if (tmpArr[i]->r + change > max || tmpArr[i]->r + change < min)
                 tmpArr[i]->r -= change;
@@ -63,15 +58,12 @@ void Background::Update()
     // std::cout << (int)V_A[0].color.r << std::endl;
 }
 
-void Background::Update(sf::Vector2f &offsetRelativeCenter)
-{
-    rect.setTextureRect(sf::IntRect(
-        sf::Vector2i(-offsetRelativeCenter.x, -offsetRelativeCenter.y),
-        sf::Vector2i(rect.getTextureRect().width, rect.getTextureRect().height)));
+void Background::Update(sf::Vector2f &offsetRelativeCenter) {
+    rect.setTextureRect(sf::IntRect(sf::Vector2i(-offsetRelativeCenter.x, -offsetRelativeCenter.y),
+                                    sf::Vector2i(rect.getTextureRect().width, rect.getTextureRect().height)));
 }
 
-void Background::GenerateRandom()
-{
+void Background::GenerateRandom() {
     std::mt19937 gen(rd());
     std::uniform_int_distribution<int> dis(min, max);
 
@@ -81,16 +73,14 @@ void Background::GenerateRandom()
     lDown = sf::Color(dis(gen), dis(gen), dis(gen));
 }
 
-void Background::Draw()
-{
+void Background::Draw() {
     if (!isTextured)
         window->draw(V_A);
     else
         window->draw(rect);
 }
 
-void Background::SetSingleColor(sf::Color color)
-{
+void Background::SetSingleColor(sf::Color color) {
     isStaticGradient = true;
     V_A.append(sf::Vertex(Vector2f(0, 0), color));
     V_A.append(sf::Vertex(Vector2f(0, window->getSize().y), color));
@@ -98,8 +88,7 @@ void Background::SetSingleColor(sf::Color color)
     V_A.append(sf::Vertex(Vector2f(window->getSize().x, 0), color));
 }
 
-void Background::SetTexture(const std::string filename)
-{
+void Background::SetTexture(const std::string filename) {
     isTextured = true;
     isStaticGradient = false;
     texture = sf::Texture();
