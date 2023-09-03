@@ -67,14 +67,16 @@ void TileMap::Update(sf::Vector2f &offsetRelativeCenter) {
 
     for (int i = 0; i < heightInTiles; ++i) {
         for (int j = 0; j < widthInTiles; ++j) {
-            map_Tiles[i][j].sprite.setPosition(
-                sf::Vector2f(map_Tiles[i][j].posRect.left + offsetRelativeCenter.x, map_Tiles[i][j].posRect.top + offsetRelativeCenter.y));
+            if (map_Tiles[i][j].id != -1)
+                map_Tiles[i][j].sprite.setPosition(
+                    sf::Vector2f(map_Tiles[i][j].posRect.left + offsetRelativeCenter.x, map_Tiles[i][j].posRect.top + offsetRelativeCenter.y));
         }
     }
     for (int i = 0; i < heightInTiles; ++i) {
         for (int j = 0; j < widthInTiles; ++j) {
-            map_TilesBackground[i][j].sprite.setPosition(sf::Vector2f(map_TilesBackground[i][j].posRect.left + offsetRelativeCenter.x,
-                                                                      map_TilesBackground[i][j].posRect.top + offsetRelativeCenter.y));
+            if (map_TilesBackground[i][j].id != -1)
+                map_TilesBackground[i][j].sprite.setPosition(sf::Vector2f(map_TilesBackground[i][j].posRect.left + offsetRelativeCenter.x,
+                                                                          map_TilesBackground[i][j].posRect.top + offsetRelativeCenter.y));
         }
     }
 }
@@ -110,7 +112,7 @@ bool TileMap::assumeCollideY(const float y, sf::FloatRect &other) {
     for (int i = 0; i < heightInTiles && !flag; ++i) {
         for (int j = 0; j < widthInTiles && !flag; ++j) {
             other.top += y;
-            if (map_Tiles[i][j].posRect.intersects(other) && map_Tiles[i][j].canCollide)
+            if (map_Tiles[i][j].canCollide && map_Tiles[i][j].posRect.intersects(other))
                 flag = true;
             other.top -= y;
         }
@@ -134,7 +136,7 @@ bool TileMap::assumeCollideX(const float x, sf::FloatRect &other) {
     for (int i = 0; i < heightInTiles && !flag; ++i) {
         for (int j = 0; j < widthInTiles && !flag; ++j) {
             other.left += x;
-            if (map_Tiles[i][j].posRect.intersects(other) && map_Tiles[i][j].canCollide) {
+            if (map_Tiles[i][j].canCollide && map_Tiles[i][j].posRect.intersects(other)) {
                 auto t = map_Tiles[i][j];
                 flag = true;
             }

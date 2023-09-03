@@ -14,12 +14,13 @@ Player::Player(Gamew &gamew, Types type, sf::Vector2f spawn) : gamew(gamew), spa
     if (type == Types::armoredAgent) {
         textureBody.loadFromFile("../assets/img/characters/agent_2.png");
         texHand.loadFromFile("../assets/img/characters/right_hand_gray.png");
-        move = new Animation(&gamew, "../assets/img/characters/anims_gray_agent.png", 110);
+        move = new Animation(&gamew, "../assets/img/characters/anims_gray_agent.png", this);
     } else if (type == Types::greenAgent) {
         textureBody.loadFromFile("../assets/img/characters/agent_1.png");
         texHand.loadFromFile("../assets/img/characters/right_hand_green.png");
-        move = new Animation(&gamew, "../assets/img/characters/anims_green_agent.png", 110);
+        move = new Animation(&gamew, "../assets/img/characters/anims_green_agent.png", this);
     }
+    
     body.setTexture(textureBody);
     posRect.left = spawn.x + 3;
     posRect.top = spawn.y + 4;
@@ -31,11 +32,17 @@ Player::Player(Gamew &gamew, Types type, sf::Vector2f spawn) : gamew(gamew), spa
     hand.setTexture(texHand);
     hand.setPosition(body.getPosition().x + POINT_HAND_X, body.getPosition().y + POINT_HAND_Y);
     hand.setOrigin(sf::Vector2f(IDENTATION_AT_HAND_X, IDENTATION_AT_HAND_Y));
+    gun.GetSprite().setPosition(hand.getPosition());
+
     bodyRect = body.getTextureRect();
     handRect = hand.getTextureRect();
 }
 
 Player::~Player() { delete move; }
+
+void Player::Shoot() {
+    gun.Shoot();
+}
 
 void Player::Draw() {
 
@@ -43,47 +50,14 @@ void Player::Draw() {
         gamew.window->draw(move->sprite);
     else
         gamew.window->draw(body);
+    gamew.window->draw(gun.GetSprite());
     gamew.window->draw(hand);
 }
 
 void Player::Update() {
-    if (sf::Mouse::getPosition(*gamew.window).x - body.getPosition().x - POINT_HAND_X <= 0) {
-        if (!flipped) {
-            flipped = true;
-            bodyRect.width = -bodyRect.width;
-            handRect.width = -handRect.width;
-            handRect.left = handRect.left + abs(handRect.width);
-            bodyRect.left = bodyRect.left + abs(bodyRect.width);
-            body.setTextureRect(bodyRect);
-            hand.setOrigin(abs(handRect.width) - IDENTATION_AT_HAND_X, IDENTATION_AT_HAND_Y);
-            hand.setPosition((body.getPosition().x + abs(bodyRect.width)) - POINT_HAND_X, body.getPosition().y + POINT_HAND_Y);
-            hand.setTextureRect(handRect);
-        }
-        double tg = ((body.getPosition().y + POINT_HAND_Y) - sf::Mouse::getPosition(*gamew.window).y) /
-                    (sf::Mouse::getPosition(*gamew.window).x - (body.getPosition().x + abs(bodyRect.width) - POINT_HAND_X));
-        hand.setRotation(-(atan(tg) * 180 / 3.1415));
-        // std::cout << body.getPosition().x - body.getTextureRect().width +
-        // POINT_HAND_X << std::endl;
-    } else {
-        if (flipped) {
-            flipped = false;
-            bodyRect.width = -bodyRect.width;
-            handRect.width = -handRect.width;
-            handRect.left = handRect.left - abs(handRect.width);
-            bodyRect.left = bodyRect.left - abs(bodyRect.width);
-            body.setTextureRect(bodyRect);
-            hand.setOrigin(IDENTATION_AT_HAND_X, IDENTATION_AT_HAND_Y);
-            hand.setPosition(body.getPosition().x + POINT_HAND_X, body.getPosition().y + POINT_HAND_Y);
-            hand.setTextureRect(handRect);
-        }
-        double tg = ((body.getPosition().y + POINT_HAND_Y) - sf::Mouse::getPosition(*gamew.window).y) /
-                    (sf::Mouse::getPosition(*gamew.window).x - (body.getPosition().x + POINT_HAND_X));
-        // std::cout << body.getPosition().x + POINT_HAND_X << ' ' <<
-        // (body.getPosition().y + POINT_HAND_Y) << std::endl;
-        hand.setRotation(-(atan(tg) * 180 / 3.1415));
-    }
-
-    move->sprite.setPosition(sf::Vector2f(body.getPosition().x, body.getPosition().y));
+    
+    UpdateRotation();
+    move->Update();
     UpdateDirection();
 }
 
@@ -210,3 +184,55 @@ bool Player::CheckFreeFall() {
 }
 
 bool Player::CheckCanMoveUp() { return gamew.currTileMap->IsThereLadNearby(this->posRect); }
+
+void Player::UpdateRotation() {
+    if (sf::Mouse::getPosition(*gamew.window).x - body.getPosition().x - POINT_HAND_X <= 0) {
+        if (!flipped) {
+            flipped = true;
+            bodyRect.width = -bodyRect.width;
+            bodyRect.left = bodyRect.left + abs(bodyRect.width);
+            body.setTextureRect(bodyRect);
+
+            handRect.width = -handRect.width;
+            handRect.left = handRect.left + abs(handRect.width);
+            hand.setOrigin(abs(handRect.width) - IDENTATION_AT_HAND_X, IDENTATION_AT_HAND_Y);
+            hand.setPosition((body.getPosition().x + abs(bodyRect.width)) - POINT_HAND_X, body.getPosition().y + POINT_HAND_Y);
+            hand.setTextureRect(handRect);
+
+            auto tmp = gun.GetSprite().getTextureRect();
+            tmp.width = -tmp.width;
+            tmp.left = tmp.left + abs(tmp.width);
+            gun.GetSprite().setOrigin(abs(tmp.width) - IDENTATION_AT_GUN_X, IDENTATION_AT_GUN_Y);
+            gun.GetSprite().setPosition(hand.getPosition());
+            gun.GetSprite().setTextureRect(tmp);
+        }
+        tg = ((body.getPosition().y + POINT_HAND_Y) - sf::Mouse::getPosition(*gamew.window).y) /
+              (sf::Mouse::getPosition(*gamew.window).x - (body.getPosition().x + abs(bodyRect.width) - POINT_HAND_X));
+        hand.setRotation(-(atan(tg) * 180 / 3.1415));
+        gun.GetSprite().setRotation(-(atan(tg) * 180 / 3.1415));
+    } else {
+        if (flipped) {
+            flipped = false;
+            bodyRect.width = -bodyRect.width;
+            bodyRect.left = bodyRect.left - abs(bodyRect.width);
+            body.setTextureRect(bodyRect);
+
+            handRect.width = -handRect.width;
+            handRect.left = handRect.left - abs(handRect.width);
+            hand.setOrigin(IDENTATION_AT_HAND_X, IDENTATION_AT_HAND_Y);
+            hand.setPosition(body.getPosition().x + POINT_HAND_X, body.getPosition().y + POINT_HAND_Y);
+            hand.setTextureRect(handRect);
+            
+            auto tmp = gun.GetSprite().getTextureRect();
+            tmp.width = -tmp.width;
+            tmp.left = tmp.left - abs(tmp.width);
+            gun.GetSprite().setOrigin(IDENTATION_AT_GUN_X, IDENTATION_AT_GUN_Y);
+            gun.GetSprite().setPosition(hand.getPosition());
+            gun.GetSprite().setTextureRect(tmp);
+        }
+        tg = ((body.getPosition().y + POINT_HAND_Y) - sf::Mouse::getPosition(*gamew.window).y) /
+                    (sf::Mouse::getPosition(*gamew.window).x - (body.getPosition().x + POINT_HAND_X));
+        hand.setRotation(-(atan(tg) * 180 / 3.1415));
+        gun.GetSprite().setRotation(-(atan(tg) * 180 / 3.1415));
+    }
+}

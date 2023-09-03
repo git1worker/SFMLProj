@@ -2,6 +2,7 @@
 #include "Entity.hpp"
 #include <SFML/Graphics.hpp>
 #include "Animation.hpp"
+#include "Gun.hpp"
 
 class Gamew;
 
@@ -16,9 +17,12 @@ public:
 private:
 
     void UpdateDirection();
-    void CheckJump();
     void UpdatePosition();
     bool IsThisInsideWindow();
+    float GetFreeFall();
+    bool CheckFreeFall();
+    void CollideCheck();
+    void UpdateRotation();
 
     Gamew &gamew;
     sf::Sprite body, hand;
@@ -27,4 +31,9 @@ private:
     sf::Texture texHand;
     sf::IntRect bodyRect, handRect;
 
+    Animation *move;
+    bool animated = false;
+    float currSpeedFall = 2;
+    bool isFalling = false;
+    Gun gun{Gun::Types::Pistol, gamew};
 };

@@ -90,6 +90,10 @@ void Gamew::Update() {
         if ((*it)->DeleteIt())
             EntitiesToDelete.emplace_back(it);
     }
+    if (!BulletsVector.empty()){
+        for (const auto& i : BulletsVector)
+            i->Update();
+    }
     CheckToDelete();
 #ifdef DEBUGINFO
     debugInfo->Update();

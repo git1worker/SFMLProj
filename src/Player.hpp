@@ -2,6 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include "Entity.hpp"
 #include "Animation.hpp"
+#include "Gun.hpp"
 
 class Gamew;
 
@@ -14,16 +15,19 @@ class Player : public Entity
 //          h = h at sprite - t
 // 
 public:
-    
+    friend Gun;
+    friend Bullet;
 
     Player(Gamew &gamew, Types type, sf::Vector2f spawn);
     ~Player();
-
+    void Shoot();
     void Draw() override;
     void Update() override;
     void MoveStop();
 
 private:
+
+
     
     void CollideCheck();
     void StartJump();
@@ -32,6 +36,7 @@ private:
     float GetFreeFall();
     bool CheckFreeFall();
     bool CheckCanMoveUp();
+    void UpdateRotation();
 
     Gamew &gamew;
     std::string name;
@@ -41,11 +46,12 @@ private:
     sf::Vector2f spawn;
     sf::Texture texHand;
     sf::IntRect bodyRect, handRect;
-    bool flipped = false;
     Animation *move;
     bool animated = false;
     float currSpeedFall = 2;
     bool isFalling = false;
     bool jumping = false;
     int energyJump = 0;
+    double tg;
+    Gun gun{Gun::Types::AK, gamew};
 };

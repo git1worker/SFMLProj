@@ -1,7 +1,7 @@
 #include "Animation.hpp"
 #include "Debug.hpp"
 
-Animation::Animation(Gamew *gamew, std::string path, int speed, int offset) : gamew(gamew), speed(speed), offset(offset) {
+Animation::Animation(Gamew *gamew, std::string path, Entity* entity, int speed, int offset) : gamew(gamew), speed(speed), offset(offset), entity(entity) {
     tAnim.loadFromFile(path);
     sprite.setTexture(tAnim);
 
@@ -28,6 +28,11 @@ void Animation::PlayFlipped() {
         // RTDrawing(gamew->window.get(), sprite);
     }
     Play();
+}
+
+void Animation::Update() {
+    sprite.setPosition(entity->posRect.left - 3 + gamew->offsetRelativeCenter.x, 
+                       entity->posRect.top - 4 + gamew->offsetRelativeCenter.y);
 }
 
 void Animation::Stop() { animate = false; }

@@ -3,6 +3,7 @@
 #include <string>
 #include <chrono>
 #include "Gamew.hpp"
+#include "Entity.hpp"
 
 class Animation
 {
@@ -10,10 +11,11 @@ public:
     Animation() = default;
     ~Animation() = default;
 
-    Animation(Gamew *gamew, std::string path, int speed = 100, int offset = 32);
+    Animation(Gamew *gamew, std::string path, Entity* entity, int speed = 110, int offset = 32);
 
     void PlayOrigin();
     void PlayFlipped();
+    void Update();
     void Stop();
     bool getFlipped();
     bool getAnimated();
@@ -29,4 +31,5 @@ private:
     int currFrame = 1;
     Gamew *gamew;
     bool flipped = false;
+    Entity* entity;
 };

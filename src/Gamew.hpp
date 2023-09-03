@@ -3,6 +3,7 @@
 #include <SFML/Graphics.hpp>
 #include <memory>
 #include <vector>
+#include "Bullet.hpp"
 #include "gui/DebugInfo.hpp"
 #include "gui/TextBox.hpp"
 #include "TileMap.hpp"
@@ -31,6 +32,8 @@ class Button;
 class Obj;
 class Label;
 class Enemy;
+class Gun;
+
 
 namespace Windows
 {
@@ -63,6 +66,8 @@ private:
     friend HandleEvent;
     friend DebugInfo;
     friend Enemy;
+    friend Gun;
+    friend Bullet;
 
     void HandleButton(Button *btn);
     void InitMainWindow();
@@ -84,7 +89,7 @@ private:
     std::vector<std::unique_ptr<Entity>> EntitiesVector;
     sf::Font Geologica;
     std::unique_ptr<sf::RenderWindow> window;
-    
+    vector<std::unique_ptr<Bullet>> BulletsVector;
     TextBox *selectedTextBox = nullptr;
     sf::View view;
     bool cursorSetted = false;

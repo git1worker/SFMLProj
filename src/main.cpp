@@ -1,7 +1,7 @@
 #include "Gamew.hpp"
 #include <SFML/Graphics.hpp>
 #include <iostream>
-
+#include "Gun.hpp"
 #include <chrono>
 #include <memory>
 #include <vector>
@@ -30,5 +30,6 @@ int main() {
         MyGame->Drawing();
         // sf::sleep(sf::seconds(1));
     }
+    
     return 0;
 }

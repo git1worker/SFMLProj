@@ -27,11 +27,12 @@ public:
 
 protected:
 
+    bool flipped = false;
     Types type;
     bool deleteIt = false;
     int HP;
     int cntFreeFall;
-    // Direction relative X - right and Y - down
+    // Vector of velocity relative X - right and Y - down
     sf::Vector2f direction{};
     
 };

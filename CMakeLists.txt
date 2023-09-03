@@ -24,6 +24,8 @@ if (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
         src/Debug.cpp
         src/HandleEvent.cpp
         src/Enemy.cpp
+        src/Gun.cpp
+        src/Bullet.cpp
     ) 
     find_package(SFML REQUIRED COMPONENTS 
         system
