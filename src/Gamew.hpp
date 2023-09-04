@@ -80,16 +80,18 @@ private:
 
     vector<std::vector<std::unique_ptr<Obj>>::iterator> ObjToDelete;
     vector<std::vector<std::unique_ptr<Entity>>::iterator> EntitiesToDelete;
+    vector<std::vector<std::unique_ptr<Bullet>>::iterator> BulletsToDelete;
+    std::vector<std::unique_ptr<Obj>> ObjVector;
+    std::vector<std::unique_ptr<Entity>> EntitiesVector;
+    std::vector<std::unique_ptr<Bullet>> BulletsVector;
+
     int currentWindow = Windows::MainW;
     bool isActive = true;
     bool switchWindow = false;
     sf::Event event;
     HandleEvent handle = HandleEvent(this);
-    std::vector<std::unique_ptr<Obj>> ObjVector;
-    std::vector<std::unique_ptr<Entity>> EntitiesVector;
     sf::Font Geologica;
     std::unique_ptr<sf::RenderWindow> window;
-    vector<std::unique_ptr<Bullet>> BulletsVector;
     TextBox *selectedTextBox = nullptr;
     sf::View view;
     bool cursorSetted = false;

@@ -52,6 +52,6 @@ private:
     bool isFalling = false;
     bool jumping = false;
     int energyJump = 0;
-    double tg;
+    double tg, sin;
     Gun gun{Gun::Types::AK, gamew};
 };

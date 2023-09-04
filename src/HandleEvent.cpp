@@ -67,8 +67,8 @@ void HandleEvent::eventMouseButtonPressed(const sf::Event &event) {
                  b && b->getRect().getGlobalBounds().contains(
                           sf::Vector2f((float)event.mouseButton.x + gamew->screenOffsetX, (float)event.mouseButton.y + gamew->screenOffsetY)))
             gamew->selectedTextBox = b, b->SetDrawCursor(true);
-        if (gamew->player) gamew->player->Shoot();
     }
+    if (gamew->player) gamew->player->Shoot();
 }
 
 void HandleEvent::eventMouseButtonReleased(const sf::Event &event) {

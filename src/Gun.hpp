@@ -8,6 +8,7 @@
 #define IDENTATION_AT_GUN_X 2
 #define IDENTATION_AT_GUN_Y 7
 
+class Entity;
 
 class Gun {
 public:
@@ -18,7 +19,7 @@ public:
 
     Gun(Types type, Gamew& gamew);
     sf::Sprite& GetSprite();
-    void Shoot();
+    void Shoot(sf::Vector2f pos, Entity* ptrSelf);
     
     
 private:

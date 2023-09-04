@@ -107,6 +107,17 @@ void TileMap::Draw() {
 
 void TileMap::Zoom(int delta) {}
 
+bool TileMap::collide(sf::FloatRect other) { 
+    bool flag = false;
+    for (int i = 0; i < heightInTiles && !flag; ++i) {
+        for (int j = 0; j < widthInTiles && !flag; ++j) {
+            if (map_Tiles[i][j].canCollide && map_Tiles[i][j].posRect.intersects(other))
+                flag = true;
+        }
+    }
+    return flag; 
+}
+
 bool TileMap::assumeCollideY(const float y, sf::FloatRect &other) {
     bool flag = false;
     for (int i = 0; i < heightInTiles && !flag; ++i) {

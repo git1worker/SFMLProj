@@ -41,7 +41,7 @@ Player::Player(Gamew &gamew, Types type, sf::Vector2f spawn) : gamew(gamew), spa
 Player::~Player() { delete move; }
 
 void Player::Shoot() {
-    gun.Shoot();
+    gun.Shoot(sf::Vector2f(posRect.left + POINT_HAND_X, posRect.top + POINT_HAND_Y - 4), this);
 }
 
 void Player::Draw() {
@@ -207,7 +207,7 @@ void Player::UpdateRotation() {
             gun.GetSprite().setTextureRect(tmp);
         }
         tg = ((body.getPosition().y + POINT_HAND_Y) - sf::Mouse::getPosition(*gamew.window).y) /
-              (sf::Mouse::getPosition(*gamew.window).x - (body.getPosition().x + abs(bodyRect.width) - POINT_HAND_X));
+             (sf::Mouse::getPosition(*gamew.window).x - (body.getPosition().x + abs(bodyRect.width) - POINT_HAND_X));
         hand.setRotation(-(atan(tg) * 180 / 3.1415));
         gun.GetSprite().setRotation(-(atan(tg) * 180 / 3.1415));
     } else {

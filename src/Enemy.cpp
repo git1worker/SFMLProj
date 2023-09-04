@@ -52,6 +52,7 @@ void Enemy::Update() {
     //UpdateRotation();
     //move->Update();
     UpdatePosition();
+    if (HP <= 0) deleteIt = true;
 }
 
 Enemy::~Enemy() { delete move;}

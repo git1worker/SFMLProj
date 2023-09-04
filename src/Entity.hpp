@@ -15,6 +15,7 @@ public:
     virtual ~Entity() = default;
     virtual void Draw() = 0;
     virtual void Update(){};
+    void Hit() { HP -= 25; }
     bool DeleteIt() { return deleteIt; }
 
     // The physical model for interacting with other entities and tiles.
@@ -30,7 +31,7 @@ protected:
     bool flipped = false;
     Types type;
     bool deleteIt = false;
-    int HP;
+    int HP = 100;
     int cntFreeFall;
     // Vector of velocity relative X - right and Y - down
     sf::Vector2f direction{};

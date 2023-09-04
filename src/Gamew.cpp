@@ -90,10 +90,16 @@ void Gamew::Update() {
         if ((*it)->DeleteIt())
             EntitiesToDelete.emplace_back(it);
     }
-    if (!BulletsVector.empty()){
-        for (const auto& i : BulletsVector)
-            i->Update();
+    for (std::vector<std::unique_ptr<Bullet>>::iterator it = BulletsVector.begin(); it != BulletsVector.end(); ++it){
+        (*it)->Update();
+        if ((*it)->DeleteIt()){
+            BulletsToDelete.emplace_back(it);
+            
+        }
+            
     }
+      
+    
     CheckToDelete();
 #ifdef DEBUGINFO
     debugInfo->Update();
@@ -107,6 +113,8 @@ void Gamew::Drawing() {
     for (std::vector<std::unique_ptr<Obj>>::iterator it = ObjVector.begin(); it != ObjVector.end(); ++it)
         (*it)->Draw();
     for (std::vector<std::unique_ptr<Entity>>::iterator it = EntitiesVector.begin(); it != EntitiesVector.end(); ++it)
+        (*it)->Draw();
+    for (std::vector<std::unique_ptr<Bullet>>::iterator it = BulletsVector.begin(); it != BulletsVector.end(); ++it)
         (*it)->Draw();
 #ifdef DEBUGINFO
     debugInfo->Draw();
@@ -240,10 +248,13 @@ void Gamew::CheckSwitchWindows() {
 }
 
 void Gamew::CheckToDelete() {
-    for (const auto i : ObjToDelete)
+    for (const auto& i : ObjToDelete)
         ObjVector.erase(i);
     ObjToDelete.clear();
-    for (const auto i : EntitiesToDelete)
+    for (const auto& i : EntitiesToDelete)
         EntitiesVector.erase(i);
     EntitiesToDelete.clear();
+    for (const auto& i : BulletsToDelete)
+        BulletsVector.erase(i);
+    BulletsToDelete.clear();
 }

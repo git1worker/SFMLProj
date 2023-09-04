@@ -14,7 +14,9 @@ public:
     bool DeleteIt() { return deleteIt; }
     bool isZoomable() { return zoomable; }
     bool isCollidable() { return canCollide; }
-    
+    virtual bool collide(sf::FloatRect other){
+        return posRect.intersects(other);
+    }
     virtual bool assumeCollideX(const float x, sf::FloatRect &other){
         bool flag = false;
         posRect.left += x;

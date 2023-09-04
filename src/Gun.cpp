@@ -24,7 +24,7 @@ sf::Sprite &Gun::GetSprite() {
     return sprite;
 }
 
-void Gun::Shoot() {
-    //std::cout << gamew.player->tg << std::endl;
-    gamew.BulletsVector.emplace_back(std::make_unique<Bullet>(&gamew, sprite.getPosition()));
+void Gun::Shoot(sf::Vector2f pos, Entity* ptrSelf) {
+    //std::cout << "---" << std::endl;
+    gamew.BulletsVector.emplace_back(std::make_unique<Bullet>(&gamew, pos, ptrSelf));
 }
