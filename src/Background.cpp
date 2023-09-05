@@ -58,7 +58,7 @@ void Background::Update() {
     // std::cout << (int)V_A[0].color.r << std::endl;
 }
 
-void Background::Update(sf::Vector2f &offsetRelativeCenter) {
+void Background::Update(const sf::Vector2f &offsetRelativeCenter) {
     rect.setTextureRect(sf::IntRect(sf::Vector2i(-offsetRelativeCenter.x, -offsetRelativeCenter.y),
                                     sf::Vector2i(rect.getTextureRect().width, rect.getTextureRect().height)));
 }

@@ -1,7 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include "Entity.hpp"
-#include "Animation.hpp"
+#include "AnimHuman.hpp"
 #include "Gun.hpp"
 
 class Gamew;
@@ -46,7 +46,7 @@ private:
     sf::Vector2f spawn;
     sf::Texture texHand;
     sf::IntRect bodyRect, handRect;
-    Animation *move;
+    AnimHuman *move;
     bool animated = false;
     float currSpeedFall = 2;
     bool isFalling = false;

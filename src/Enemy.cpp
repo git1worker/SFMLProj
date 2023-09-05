@@ -16,13 +16,13 @@ Enemy::Enemy(Gamew &gamew, sf::Vector2f spawn) : gamew(gamew) {
     if (type == Types::armoredAgent) {
         textureBody.loadFromFile("../assets/img/characters/agent_2.png");
         texHand.loadFromFile("../assets/img/characters/right_hand_gray.png");
-        move = new Animation(&gamew, "../assets/img/characters/anims_gray_agent.png", this);
+        move = new AnimHuman(&gamew, "../assets/img/characters/anims_gray_agent.png", this);
     } else if (type == Types::greenAgent) {
         textureBody.loadFromFile("../assets/img/characters/agent_1.png");
         texHand.loadFromFile("../assets/img/characters/right_hand_green.png");
-        move = new Animation(&gamew, "../assets/img/characters/anims_green_agent.png", this);
+        move = new AnimHuman(&gamew, "../assets/img/characters/anims_green_agent.png", this);
     }
-    
+
     body.setTexture(textureBody);
     posRect.left = spawn.x + IDENTATION_AT_POSRECT_LEFT;
     posRect.top = spawn.y + IDENTATION_AT_POSRECT_TOP;
@@ -49,33 +49,34 @@ void Enemy::Draw() {
 }
 
 void Enemy::Update() {
-    //UpdateRotation();
-    //move->Update();
+    // UpdateRotation();
+    // move->Update();
     UpdatePosition();
-    if (HP <= 0) deleteIt = true;
+    if (HP <= 0)
+        deleteIt = true;
 }
 
-Enemy::~Enemy() { delete move;}
+Enemy::~Enemy() { delete move; }
 
-void Enemy::UpdateDirection() { 
+void Enemy::UpdateDirection() {
     direction = sf::Vector2f(0, 0);
     direction += sf::Vector2f(0, GetFreeFall());
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
-        move->PlayFlipped();
+        move->SetFlipped();
         direction += sf::Vector2f(-velocity, 0);
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
-        move->PlayOrigin();
+        move->SetOrigin();
         direction += sf::Vector2f(velocity, 0);
     }
     CollideCheck();
     posRect.left += direction.x;
     posRect.top += direction.y;
-    UpdatePosition(); 
+    UpdatePosition();
 }
 
 void Enemy::UpdatePosition() {
-    body.setPosition(posRect.left - IDENTATION_AT_POSRECT_LEFT + gamew.offsetRelativeCenter.x, 
+    body.setPosition(posRect.left - IDENTATION_AT_POSRECT_LEFT + gamew.offsetRelativeCenter.x,
                      posRect.top - IDENTATION_AT_POSRECT_TOP + gamew.offsetRelativeCenter.y);
     hand.setPosition(body.getPosition().x + POINT_HAND_X, body.getPosition().y + POINT_HAND_Y);
     gun.GetSprite().setPosition(hand.getPosition());
@@ -89,7 +90,7 @@ bool Enemy::IsThisInsideWindow() {
     return true;
 }
 
-float Enemy::GetFreeFall() { 
+float Enemy::GetFreeFall() {
     bool ff = CheckFreeFall();
     if (!isFalling && ff)
         isFalling = true, currSpeedFall = 2;
@@ -103,9 +104,9 @@ float Enemy::GetFreeFall() {
     return 0;
 }
 
-bool Enemy::CheckFreeFall() { 
+bool Enemy::CheckFreeFall() {
     bool flag = true;
-    for (std::vector<std::unique_ptr<Obj>>::iterator it = gamew.ObjVector.begin(); it != gamew.ObjVector.end() && flag; ++it) {
+    for (std::list<std::unique_ptr<Obj>>::iterator it = gamew.ObjVector.begin(); it != gamew.ObjVector.end() && flag; ++it) {
         if ((*it)->isMovable() && (*it)->isCollidable()) {
             if ((*it)->assumeCollideY(1, this->posRect)) {
                 flag = false;
@@ -119,7 +120,7 @@ void Enemy::CollideCheck() {
     int actionForX = (direction.x > 0.01 ? 1 : -1);
     int actionForY = (direction.y > 0.01 ? 1 : -1);
     bool flag = true;
-    for (std::vector<std::unique_ptr<Obj>>::iterator it = gamew.ObjVector.begin(); it != gamew.ObjVector.end() && flag; ++it) {
+    for (std::list<std::unique_ptr<Obj>>::iterator it = gamew.ObjVector.begin(); it != gamew.ObjVector.end() && flag; ++it) {
         if ((*it)->isMovable()) {
             // Collision check
             if ((*it)->assumeCollideX(direction.x, this->posRect))
@@ -130,7 +131,7 @@ void Enemy::CollideCheck() {
         int reduction = actionForX;
         flag = true;
         for (; abs(reduction) < abs(direction.x) && flag; reduction = reduction + actionForX) {
-            for (std::vector<std::unique_ptr<Obj>>::iterator it = gamew.ObjVector.begin(); it != gamew.ObjVector.end() && flag; ++it) {
+            for (std::list<std::unique_ptr<Obj>>::iterator it = gamew.ObjVector.begin(); it != gamew.ObjVector.end() && flag; ++it) {
                 if ((*it)->isMovable()) {
                     // Collision check
                     if ((*it)->assumeCollideX(reduction, this->posRect))
@@ -142,7 +143,7 @@ void Enemy::CollideCheck() {
     }
 
     flag = true;
-    for (std::vector<std::unique_ptr<Obj>>::iterator it = gamew.ObjVector.begin(); it != gamew.ObjVector.end() && flag; ++it) {
+    for (std::list<std::unique_ptr<Obj>>::iterator it = gamew.ObjVector.begin(); it != gamew.ObjVector.end() && flag; ++it) {
         if ((*it)->isMovable()) {
             // Collision check
             if ((*it)->assumeCollideY(direction.y, this->posRect))
@@ -153,7 +154,7 @@ void Enemy::CollideCheck() {
         int reduction = actionForY;
         flag = true;
         for (; abs(reduction) < abs(direction.y) && flag; reduction = reduction + actionForY) {
-            for (std::vector<std::unique_ptr<Obj>>::iterator it = gamew.ObjVector.begin(); it != gamew.ObjVector.end() && flag; ++it) {
+            for (std::list<std::unique_ptr<Obj>>::iterator it = gamew.ObjVector.begin(); it != gamew.ObjVector.end() && flag; ++it) {
                 if ((*it)->isMovable()) {
                     // Collision check
                     if ((*it)->assumeCollideY(reduction, this->posRect))
@@ -202,7 +203,7 @@ void Enemy::UpdateRotation() {
             hand.setOrigin(IDENTATION_AT_HAND_X, IDENTATION_AT_HAND_Y);
             hand.setPosition(body.getPosition().x + POINT_HAND_X, body.getPosition().y + POINT_HAND_Y);
             hand.setTextureRect(handRect);
-            
+
             auto tmp = gun.GetSprite().getTextureRect();
             tmp.width = -tmp.width;
             tmp.left = tmp.left - abs(tmp.width);

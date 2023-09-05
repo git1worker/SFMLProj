@@ -7,7 +7,7 @@ public:
     Obj() = default;
     virtual void Draw() = 0;
     virtual void Update(){};
-    virtual void Update(sf::Vector2f &offsetRelativeCenter){};
+    virtual void Update(const sf::Vector2f &offsetRelativeCenter){};
     virtual ~Obj() = default;
     virtual void Zoom(int delta){};
     bool isMovable() { return movable; }
@@ -17,7 +17,7 @@ public:
     virtual bool collide(sf::FloatRect other){
         return posRect.intersects(other);
     }
-    virtual bool assumeCollideX(const float x, sf::FloatRect &other){
+    virtual bool assumeCollideX(const float x, sf::FloatRect other){
         bool flag = false;
         posRect.left += x;
         if (posRect.intersects(other))
@@ -25,7 +25,7 @@ public:
         posRect.left -= x;
         return flag;
     }
-    virtual bool assumeCollideY(const float y, sf::FloatRect &other){
+    virtual bool assumeCollideY(const float y, sf::FloatRect other){
         bool flag = false;
         posRect.top += y;
         if (posRect.intersects(other))

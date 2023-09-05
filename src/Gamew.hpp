@@ -9,6 +9,9 @@
 #include "TileMap.hpp"
 #include "Entity.hpp"
 #include "HandleEvent.hpp"
+#include "../libs/ThreadPool/ThreadPool.h"
+#include "Animation.hpp"
+#include <list>
 
 #define DEBUGINFO
 
@@ -27,8 +30,8 @@ using std::unique_ptr;
 using std::vector;
 
 class Player;
-class Animation;
 class Button;
+class AnimHuman;
 class Obj;
 class Label;
 class Enemy;
@@ -62,12 +65,13 @@ public:
 private:
     friend Player;
     friend TileMap;
-    friend Animation;
+    friend AnimHuman;
     friend HandleEvent;
     friend DebugInfo;
     friend Enemy;
     friend Gun;
     friend Bullet;
+    friend Animation;
 
     void HandleButton(Button *btn);
     void InitMainWindow();
@@ -78,13 +82,16 @@ private:
     void CheckSwitchWindows();
     void CheckToDelete();
 
-    vector<std::vector<std::unique_ptr<Obj>>::iterator> ObjToDelete;
-    vector<std::vector<std::unique_ptr<Entity>>::iterator> EntitiesToDelete;
-    vector<std::vector<std::unique_ptr<Bullet>>::iterator> BulletsToDelete;
-    std::vector<std::unique_ptr<Obj>> ObjVector;
-    std::vector<std::unique_ptr<Entity>> EntitiesVector;
-    std::vector<std::unique_ptr<Bullet>> BulletsVector;
+    std::list<std::list<std::unique_ptr<Obj>>::iterator> ObjToDelete;
+    std::list<std::list<std::unique_ptr<Entity>>::iterator> EntitiesToDelete;
+    std::list<std::list<std::unique_ptr<Bullet>>::iterator> BulletsToDelete;
+    std::list<Animation*> AnimsToDelete;
+    std::list<std::unique_ptr<Obj>> ObjVector;
+    std::list<std::unique_ptr<Entity>> EntitiesVector;
+    std::list<std::unique_ptr<Bullet>> BulletsVector;
+    std::list<Animation*> AnimsVector;
 
+    ThreadPool pool{3};
     int currentWindow = Windows::MainW;
     bool isActive = true;
     bool switchWindow = false;

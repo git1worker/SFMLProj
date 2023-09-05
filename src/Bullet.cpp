@@ -3,9 +3,9 @@
 #include "Player.hpp"
 #include <cmath>
 
-Bullet::Bullet(Gamew* gamew, sf::Vector2f pos, Entity* ptrSelf) : gamew(gamew), pos(pos), ptrSelf(ptrSelf) {
+Bullet::Bullet(Gamew *gamew, sf::Vector2f pos, Entity *ptrSelf) : gamew(gamew), pos(pos), ptrSelf(ptrSelf) {
     texture.setFillColor(sf::Color(121, 121, 121));
-    texture.setOutlineColor(sf::Color::Black);
+    texture.setOutlineColor(sf::Color::Red);
     texture.setSize(sf::Vector2f(3, 1));
     texture.setOutlineThickness(1);
     texture.setPosition(pos);
@@ -14,43 +14,41 @@ Bullet::Bullet(Gamew* gamew, sf::Vector2f pos, Entity* ptrSelf) : gamew(gamew), 
     sin = sqrt(1 - cos * cos);
     direction.x = velocity * cos;
     direction.y = velocity * sin;
-    if (gamew->player->flipped){
+    if (gamew->player->flipped) {
         direction.x *= -1;
         if (gamew->player->tg < 0)
             direction.y *= -1;
+    } else {
+        if (gamew->player->tg > 0)
+            direction.y *= -1;
     }
-    else {
-        if (gamew->player->tg > 0) direction.y *= -1;
-    }
-    //std::cout << direction.x << ' ' << direction.y << std::endl;
+    // std::cout << direction.x << ' ' << direction.y << std::endl;
 }
 
 void Bullet::Update() {
     bool flag = true;
-    for (int i = 1; i < velocity; ++i){
-        for (std::vector<std::unique_ptr<Obj>>::iterator it = gamew->ObjVector.begin(); it != gamew->ObjVector.end() && flag; ++it)
-        {
-            if ((*it)->isMovable() && (*it)->isCollidable()){
-                if ((*it)->collide(sf::FloatRect(pos.x + (direction.x / velocity) * i, pos.y + (direction.y / velocity) * i, 
-                                                            texture.getSize().x, texture.getSize().y))) flag = false;
+    for (int i = 1; i < velocity; i += 10) {
+        for (std::list<std::unique_ptr<Obj>>::iterator it = gamew->ObjVector.begin(); it != gamew->ObjVector.end() && flag; ++it) {
+            if ((*it)->isMovable() && (*it)->isCollidable()) {
+                if ((*it)->collide(sf::FloatRect(pos.x + (direction.x / velocity) * i, pos.y + (direction.y / velocity) * i, texture.getSize().x,
+                                                 texture.getSize().y)))
+                    flag = false;
             }
-                
-            
         }
-        for (std::vector<std::unique_ptr<Entity>>::iterator it = gamew->EntitiesVector.begin(); it != gamew->EntitiesVector.end() && flag; ++it)
-            if ((*it)->posRect.contains(pos.x + (direction.x / velocity) * i, pos.y + (direction.y / velocity) * i) && (*it).get() != ptrSelf){
+        for (std::list<std::unique_ptr<Entity>>::iterator it = gamew->EntitiesVector.begin(); it != gamew->EntitiesVector.end() && flag; ++it)
+            if ((*it)->posRect.contains(pos.x + (direction.x / velocity) * i, pos.y + (direction.y / velocity) * i) && (*it).get() != ptrSelf) {
                 flag = false;
                 (*it)->Hit();
             }
-                 
     }
-    
-    if (!flag || ++cnt > 1000 / velocity) deleteIt = true;
-    else pos += direction;
+
+    if (!flag || ++cnt > 1000 / velocity)
+        deleteIt = true;
+    else
+        pos += direction;
 }
 
 void Bullet::Draw() {
     texture.setPosition(pos.x + gamew->offsetRelativeCenter.x, pos.y + gamew->offsetRelativeCenter.y);
     gamew->window->draw(texture);
 }
-

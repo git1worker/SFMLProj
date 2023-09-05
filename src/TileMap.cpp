@@ -63,7 +63,7 @@ TileMap::~TileMap() {
     delete[] map_TilesBackground;
 }
 
-void TileMap::Update(sf::Vector2f &offsetRelativeCenter) {
+void TileMap::Update(const sf::Vector2f &offsetRelativeCenter) {
 
     for (int i = 0; i < heightInTiles; ++i) {
         for (int j = 0; j < widthInTiles; ++j) {
@@ -96,10 +96,9 @@ void TileMap::Draw() {
     }
     for (int i = 0; i < heightInTiles; ++i) {
         for (int j = 0; j < widthInTiles; ++j) {
-            if (map_Tiles[i][j].id != -1 && 
-            IsThisInsideWindow(sf::FloatRect(map_Tiles[i][j].sprite.getPosition(),
-                                             sf::Vector2f(map_Tiles[i][j].sprite.getTextureRect().width,
-                                                          map_Tiles[i][j].sprite.getTextureRect().height))))
+            if (map_Tiles[i][j].id != -1 &&
+                IsThisInsideWindow(sf::FloatRect(map_Tiles[i][j].sprite.getPosition(), sf::Vector2f(map_Tiles[i][j].sprite.getTextureRect().width,
+                                                                                                    map_Tiles[i][j].sprite.getTextureRect().height))))
                 gamew.window->draw(map_Tiles[i][j].sprite);
         }
     }
@@ -107,7 +106,7 @@ void TileMap::Draw() {
 
 void TileMap::Zoom(int delta) {}
 
-bool TileMap::collide(sf::FloatRect other) { 
+bool TileMap::collide(sf::FloatRect other) {
     bool flag = false;
     for (int i = 0; i < heightInTiles && !flag; ++i) {
         for (int j = 0; j < widthInTiles && !flag; ++j) {
@@ -115,10 +114,10 @@ bool TileMap::collide(sf::FloatRect other) {
                 flag = true;
         }
     }
-    return flag; 
+    return flag;
 }
 
-bool TileMap::assumeCollideY(const float y, sf::FloatRect &other) {
+bool TileMap::assumeCollideY(const float y, sf::FloatRect other) {
     bool flag = false;
     for (int i = 0; i < heightInTiles && !flag; ++i) {
         for (int j = 0; j < widthInTiles && !flag; ++j) {
@@ -142,7 +141,7 @@ bool TileMap::IsThereLadNearby(sf::FloatRect &other) {
     return flag;
 }
 
-bool TileMap::assumeCollideX(const float x, sf::FloatRect &other) {
+bool TileMap::assumeCollideX(const float x, sf::FloatRect other) {
     bool flag = false;
     for (int i = 0; i < heightInTiles && !flag; ++i) {
         for (int j = 0; j < widthInTiles && !flag; ++j) {
@@ -215,11 +214,9 @@ void TileMap::OneTileProcessing(int &posBuff, int &posMatrix, char *buffer) {
 
     buffer[posBuff] = '\0';
     if (atoi(buffer) == 28) {
-        gamew.EntitiesVector.emplace_back(std::make_unique<Enemy>(gamew,
-        sf::Vector2f(widthTile * (posMatrix % widthInTiles), heightTile *
-        (posMatrix / widthInTiles))));
-    }
-    else {
+        gamew.EntitiesVector.emplace_back(
+            std::make_unique<Enemy>(gamew, sf::Vector2f(widthTile * (posMatrix % widthInTiles), heightTile * (posMatrix / widthInTiles))));
+    } else {
         map_Tiles[posMatrix / widthInTiles][posMatrix % widthInTiles] = Tile();
         if (atoi(buffer) != 0) {
             map_Tiles[posMatrix / widthInTiles][posMatrix % widthInTiles].sprite.setTexture(*(ids.at(atoi(buffer) - 1)));

@@ -26,6 +26,7 @@ if (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
         src/Enemy.cpp
         src/Gun.cpp
         src/Bullet.cpp
+        src/AnimHuman.cpp
     ) 
     find_package(SFML REQUIRED COMPONENTS 
         system

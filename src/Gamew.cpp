@@ -3,6 +3,7 @@
 #include "Player.hpp"
 #include "gui/Button.hpp"
 #include "gui/Label.hpp"
+#include <chrono>
 #include <iostream>
 #include <stdio.h>
 #include <string.h>
@@ -10,6 +11,9 @@
 
 using std::cerr;
 using std::cout;
+using tp = std::chrono::system_clock::time_point;
+using sc = std::chrono::system_clock;
+using ms = std::chrono::milliseconds;
 
 void Gamew::UpdateFps(float fps) {
 #ifdef DEBUGINFO
@@ -76,8 +80,11 @@ void Gamew::HandleButton(Button *btn) {
 }
 
 void Gamew::Update() {
+    tp log1, log2;
+    log1 = sc::now();
     CheckSwitchWindows();
-    for (std::vector<std::unique_ptr<Obj>>::iterator it = ObjVector.begin(); it != ObjVector.end(); ++it) {
+    // auto updateObjectsTask = pool.enqueue([&] {
+    for (std::list<std::unique_ptr<Obj>>::iterator it = ObjVector.begin(); it != ObjVector.end(); ++it) {
         if ((*it)->isMovable())
             (*it)->Update(offsetRelativeCenter);
         else
@@ -85,37 +92,50 @@ void Gamew::Update() {
         if ((*it)->DeleteIt())
             ObjToDelete.emplace_back(it);
     }
-    for (std::vector<std::unique_ptr<Entity>>::iterator it = EntitiesVector.begin(); it != EntitiesVector.end(); ++it) {
+    for (std::list<std::unique_ptr<Entity>>::iterator it = EntitiesVector.begin(); it != EntitiesVector.end(); ++it) {
         (*it)->Update();
         if ((*it)->DeleteIt())
             EntitiesToDelete.emplace_back(it);
     }
-    for (std::vector<std::unique_ptr<Bullet>>::iterator it = BulletsVector.begin(); it != BulletsVector.end(); ++it){
-        (*it)->Update();
-        if ((*it)->DeleteIt()){
-            BulletsToDelete.emplace_back(it);
-            
-        }
-            
+    for (std::list<Animation *>::iterator it = AnimsVector.begin(); it != AnimsVector.end(); ++it) {
+        if ((*it)->getStop())
+            AnimsVector.erase(it++);
+        else
+            (*it)->Update();
     }
-      
-    
-    CheckToDelete();
+    //});
+    // auto updateBulletsTask = pool.enqueue([&] {
+    for (std::list<std::unique_ptr<Bullet>>::iterator it = BulletsVector.begin(); it != BulletsVector.end(); ++it) {
+        (*it)->Update();
+        if ((*it)->DeleteIt()) {
+            BulletsToDelete.emplace_back(it);
+        }
+    }
+    //});
+
+    // updateObjectsTask.get();
+    // updateBulletsTask.get();
 #ifdef DEBUGINFO
     debugInfo->Update();
 #endif // DEBUGINFO
+    // std::cout << std::chrono::duration_cast<ms>(sc::now() - log1) << '\n';
+
+    CheckToDelete();
 }
 
 void Gamew::Drawing() {
     window->clear(sf::Color::White);
     // Drawing inside this ---
 
-    for (std::vector<std::unique_ptr<Obj>>::iterator it = ObjVector.begin(); it != ObjVector.end(); ++it)
+    for (std::list<std::unique_ptr<Obj>>::iterator it = ObjVector.begin(); it != ObjVector.end(); ++it)
         (*it)->Draw();
-    for (std::vector<std::unique_ptr<Entity>>::iterator it = EntitiesVector.begin(); it != EntitiesVector.end(); ++it)
+    for (std::list<std::unique_ptr<Entity>>::iterator it = EntitiesVector.begin(); it != EntitiesVector.end(); ++it)
         (*it)->Draw();
-    for (std::vector<std::unique_ptr<Bullet>>::iterator it = BulletsVector.begin(); it != BulletsVector.end(); ++it)
+    for (std::list<std::unique_ptr<Bullet>>::iterator it = BulletsVector.begin(); it != BulletsVector.end(); ++it)
         (*it)->Draw();
+    for (std::list<Animation *>::iterator it = AnimsVector.begin(); it != AnimsVector.end(); ++it)
+        (*it)->Draw();
+
 #ifdef DEBUGINFO
     debugInfo->Draw();
 #endif // DEBUGINFO
@@ -149,12 +169,25 @@ void Gamew::InitMainWindow() {
                                           std::wstring(std::wstring(L"Уровень ") + std::to_wstring(i + 1)));
 
         b->getRect().setFillColor(sf::Color(b->getRect().getFillColor().r, b->getRect().getFillColor().g, b->getRect().getFillColor().b, 100));
+
+        switch (i) {
+        case 0:
+            b->name = Obj::butt1MainW;
+            break;
+        case 1:
+            b->name = Obj::butt2MainW;
+            break;
+        case 2:
+            b->name = Obj::butt3MainW;
+            break;
+        case 3:
+            b->name = Obj::butt4MainW;
+            break;
+        default:
+            break;
+        }
         ObjVector.emplace_back(std::move(b));
     }
-    ObjVector.at(2)->name = Obj::butt1MainW;
-    ObjVector.at(3)->name = Obj::butt2MainW;
-    ObjVector.at(4)->name = Obj::butt3MainW;
-    ObjVector.at(5)->name = Obj::butt4MainW;
     // TextBox
     ObjVector.emplace_back(std::make_unique<TextBox>(window.get(), &Geologica, window->getSize().x / 2, window->getSize().y / 2, 30, 200, 3));
     ObjVector.back()->name = Obj::textBox1MainW;
@@ -192,7 +225,7 @@ void Gamew::InitWindow2() {
 
     ObjVector.emplace_back(std::make_unique<Label>(window.get(), &Geologica, L"Уровень 2", window->getSize().x / 2, window->getSize().y / 12,
                                                    Label::Align::Center, 55, 600));
-    ObjVector.at(1)->name = Obj::titleW2;
+    ObjVector.back()->name = Obj::titleW2;
     currentWindow = Windows::Game2;
 }
 
@@ -203,7 +236,7 @@ void Gamew::InitWindow3() {
 
     ObjVector.emplace_back(std::make_unique<Label>(window.get(), &Geologica, L"Уровень 3", window->getSize().x / 2, window->getSize().y / 12,
                                                    Label::Align::Center, 55, 600));
-    ObjVector.at(1)->name = Obj::titleW3;
+    ObjVector.back()->name = Obj::titleW3;
     currentWindow = Windows::Game3;
 }
 
@@ -214,7 +247,7 @@ void Gamew::InitWindow4() {
 
     ObjVector.emplace_back(std::make_unique<Label>(window.get(), &Geologica, L"Уровень 4", window->getSize().x / 2, window->getSize().y / 12,
                                                    Label::Align::Center, 55, 600));
-    ObjVector.at(1)->name = Obj::titleW4;
+    ObjVector.back()->name = Obj::titleW4;
     currentWindow = Windows::Game4;
 }
 
@@ -248,13 +281,13 @@ void Gamew::CheckSwitchWindows() {
 }
 
 void Gamew::CheckToDelete() {
-    for (const auto& i : ObjToDelete)
+    for (const auto &i : ObjToDelete)
         ObjVector.erase(i);
     ObjToDelete.clear();
-    for (const auto& i : EntitiesToDelete)
+    for (const auto &i : EntitiesToDelete)
         EntitiesVector.erase(i);
     EntitiesToDelete.clear();
-    for (const auto& i : BulletsToDelete)
+    for (const auto &i : BulletsToDelete)
         BulletsVector.erase(i);
     BulletsToDelete.clear();
 }

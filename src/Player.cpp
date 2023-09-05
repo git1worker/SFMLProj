@@ -14,13 +14,13 @@ Player::Player(Gamew &gamew, Types type, sf::Vector2f spawn) : gamew(gamew), spa
     if (type == Types::armoredAgent) {
         textureBody.loadFromFile("../assets/img/characters/agent_2.png");
         texHand.loadFromFile("../assets/img/characters/right_hand_gray.png");
-        move = new Animation(&gamew, "../assets/img/characters/anims_gray_agent.png", this);
+        move = new AnimHuman(&gamew, "../assets/img/characters/anims_gray_agent.png", this);
     } else if (type == Types::greenAgent) {
         textureBody.loadFromFile("../assets/img/characters/agent_1.png");
         texHand.loadFromFile("../assets/img/characters/right_hand_green.png");
-        move = new Animation(&gamew, "../assets/img/characters/anims_green_agent.png", this);
+        move = new AnimHuman(&gamew, "../assets/img/characters/anims_green_agent.png", this);
     }
-    
+
     body.setTexture(textureBody);
     posRect.left = spawn.x + 3;
     posRect.top = spawn.y + 4;
@@ -40,9 +40,7 @@ Player::Player(Gamew &gamew, Types type, sf::Vector2f spawn) : gamew(gamew), spa
 
 Player::~Player() { delete move; }
 
-void Player::Shoot() {
-    gun.Shoot(sf::Vector2f(posRect.left + POINT_HAND_X, posRect.top + POINT_HAND_Y - 4), this);
-}
+void Player::Shoot() { gun.Shoot(sf::Vector2f(posRect.left + POINT_HAND_X, posRect.top + POINT_HAND_Y - 4), this); }
 
 void Player::Draw() {
 
@@ -55,10 +53,10 @@ void Player::Draw() {
 }
 
 void Player::Update() {
-    
+
     UpdateRotation();
-    move->Update();
     UpdateDirection();
+    move->Update();
 }
 
 void Player::MoveStop() { move->Stop(); }
@@ -73,7 +71,7 @@ void Player::CollideCheck() {
     int actionForX = (direction.x > 0.01 ? 1 : -1);
     int actionForY = (direction.y > 0.01 ? 1 : -1);
     bool flag = true;
-    for (std::vector<std::unique_ptr<Obj>>::iterator it = gamew.ObjVector.begin(); it != gamew.ObjVector.end() && flag; ++it) {
+    for (std::list<std::unique_ptr<Obj>>::iterator it = gamew.ObjVector.begin(); it != gamew.ObjVector.end() && flag; ++it) {
         if ((*it)->isMovable()) {
             // Collision check
             if ((*it)->assumeCollideX(direction.x, this->posRect))
@@ -84,7 +82,7 @@ void Player::CollideCheck() {
         int reduction = actionForX;
         flag = true;
         for (; abs(reduction) < abs(direction.x) && flag; reduction = reduction + actionForX) {
-            for (std::vector<std::unique_ptr<Obj>>::iterator it = gamew.ObjVector.begin(); it != gamew.ObjVector.end() && flag; ++it) {
+            for (std::list<std::unique_ptr<Obj>>::iterator it = gamew.ObjVector.begin(); it != gamew.ObjVector.end() && flag; ++it) {
                 if ((*it)->isMovable()) {
                     // Collision check
                     if ((*it)->assumeCollideX(reduction, this->posRect))
@@ -96,7 +94,7 @@ void Player::CollideCheck() {
     }
 
     flag = true;
-    for (std::vector<std::unique_ptr<Obj>>::iterator it = gamew.ObjVector.begin(); it != gamew.ObjVector.end() && flag; ++it) {
+    for (std::list<std::unique_ptr<Obj>>::iterator it = gamew.ObjVector.begin(); it != gamew.ObjVector.end() && flag; ++it) {
         if ((*it)->isMovable()) {
             // Collision check
             if ((*it)->assumeCollideY(direction.y, this->posRect))
@@ -107,7 +105,7 @@ void Player::CollideCheck() {
         int reduction = actionForY;
         flag = true;
         for (; abs(reduction) < abs(direction.y) && flag; reduction = reduction + actionForY) {
-            for (std::vector<std::unique_ptr<Obj>>::iterator it = gamew.ObjVector.begin(); it != gamew.ObjVector.end() && flag; ++it) {
+            for (std::list<std::unique_ptr<Obj>>::iterator it = gamew.ObjVector.begin(); it != gamew.ObjVector.end() && flag; ++it) {
                 if ((*it)->isMovable()) {
                     // Collision check
                     if ((*it)->assumeCollideY(reduction, this->posRect))
@@ -131,18 +129,21 @@ void Player::UpdateDirection() {
     direction = sf::Vector2f(0, 0);
     direction += sf::Vector2f(0, GetFreeFall());
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) && CheckCanMoveUp()) {
-        direction += sf::Vector2f(0, -currSpeedFall -velocity);
+        direction += sf::Vector2f(0, -currSpeedFall - velocity);
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
-        move->PlayFlipped();
+        move->SetFlipped();
+        move->Start();
         direction += sf::Vector2f(-velocity, 0);
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
-        move->PlayOrigin();
+        move->SetOrigin();
+        move->Start();
         direction += sf::Vector2f(velocity, 0);
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
-        move->PlayOrigin();
+        move->SetOrigin();
+        move->Start();
         direction += sf::Vector2f(0, velocity);
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && !isFalling)
@@ -173,7 +174,7 @@ float Player::GetFreeFall() {
 
 bool Player::CheckFreeFall() {
     bool flag = true;
-    for (std::vector<std::unique_ptr<Obj>>::iterator it = gamew.ObjVector.begin(); it != gamew.ObjVector.end() && flag; ++it) {
+    for (std::list<std::unique_ptr<Obj>>::iterator it = gamew.ObjVector.begin(); it != gamew.ObjVector.end() && flag; ++it) {
         if ((*it)->isMovable() && (*it)->isCollidable()) {
             if ((*it)->assumeCollideY(1, this->posRect)) {
                 flag = false;
@@ -222,7 +223,7 @@ void Player::UpdateRotation() {
             hand.setOrigin(IDENTATION_AT_HAND_X, IDENTATION_AT_HAND_Y);
             hand.setPosition(body.getPosition().x + POINT_HAND_X, body.getPosition().y + POINT_HAND_Y);
             hand.setTextureRect(handRect);
-            
+
             auto tmp = gun.GetSprite().getTextureRect();
             tmp.width = -tmp.width;
             tmp.left = tmp.left - abs(tmp.width);
@@ -231,7 +232,7 @@ void Player::UpdateRotation() {
             gun.GetSprite().setTextureRect(tmp);
         }
         tg = ((body.getPosition().y + POINT_HAND_Y) - sf::Mouse::getPosition(*gamew.window).y) /
-                    (sf::Mouse::getPosition(*gamew.window).x - (body.getPosition().x + POINT_HAND_X));
+             (sf::Mouse::getPosition(*gamew.window).x - (body.getPosition().x + POINT_HAND_X));
         hand.setRotation(-(atan(tg) * 180 / 3.1415));
         gun.GetSprite().setRotation(-(atan(tg) * 180 / 3.1415));
     }

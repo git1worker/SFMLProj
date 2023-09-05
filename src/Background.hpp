@@ -21,7 +21,7 @@ public:
     void SetTexture(const std::string filename);
     void Draw() override;
     void Update() override;
-    void Update(sf::Vector2f &offsetRelativeCenter) override;
+    void Update(const sf::Vector2f &offsetRelativeCenter) override;
 
 private:
     void GenerateRandom();

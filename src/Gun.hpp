@@ -9,6 +9,7 @@
 #define IDENTATION_AT_GUN_Y 7
 
 class Entity;
+class Animation;
 
 class Gun {
 public:
@@ -18,6 +19,7 @@ public:
     };
 
     Gun(Types type, Gamew& gamew);
+    ~Gun();
     sf::Sprite& GetSprite();
     void Shoot(sf::Vector2f pos, Entity* ptrSelf);
     
@@ -27,6 +29,7 @@ private:
     static bool initTextures;
 
     Gamew& gamew;
+    Animation* shoot;
     sf::Sprite sprite;
     Types type;
 };

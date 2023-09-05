@@ -19,7 +19,7 @@ private:
     sf::Vector2f pos, direction;
     double cos, sin;
     sf::RectangleShape texture;
-    float velocity = 45;
+    float velocity = 50;
     bool deleteIt = false;
     int cnt = 0;
 };
