@@ -51,7 +51,7 @@ private:
     float currSpeedFall = 2;
     bool isFalling = false;
     bool jumping = false;
-    int energyJump = 0;
+    float energyJump = 0;
     double tg, sin;
     Gun gun{Gun::Types::AK, gamew};
 };

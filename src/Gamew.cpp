@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <type_traits>
+#include "Debug.hpp"
 
 using std::cerr;
 using std::cout;
@@ -28,13 +29,13 @@ void Gamew::Init(const std::wstring title, const int Style, const int width, con
         cerr << "Failed to load font.\n", exit(1);
 
     sf::Image icon;
-    if (icon.loadFromFile("../assets/img/icon.png")) {
+    if (icon.loadFromFile("../assets/img/icon.png")) 
         window->setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
-    }
+    
     InitMainWindow();
-    if (!cursorArrow.loadFromSystem(sf::Cursor::Arrow) || !cursorText.loadFromSystem(sf::Cursor::Text)) {
+    if (!cursorArrow.loadFromSystem(sf::Cursor::Arrow) || !cursorText.loadFromSystem(sf::Cursor::Text)) 
         cerr << "Failed to load cursor.\n", exit(1);
-    }
+    
     window->setMouseCursor(cursorArrow);
 #ifdef DEBUGINFO
     this->debugInfo = make_unique<DebugInfo>(this, &Geologica, &event);
@@ -80,53 +81,51 @@ void Gamew::HandleButton(Button *btn) {
 }
 
 void Gamew::Update() {
-    tp log1, log2;
-    log1 = sc::now();
+    // Timer a;
     CheckSwitchWindows();
-    // auto updateObjectsTask = pool.enqueue([&] {
-    for (std::list<std::unique_ptr<Obj>>::iterator it = ObjVector.begin(); it != ObjVector.end(); ++it) {
-        if ((*it)->isMovable())
-            (*it)->Update(offsetRelativeCenter);
-        else
-            (*it)->Update();
-        if ((*it)->DeleteIt())
-            ObjToDelete.emplace_back(it);
-    }
-    for (std::list<std::unique_ptr<Entity>>::iterator it = EntitiesVector.begin(); it != EntitiesVector.end(); ++it) {
-        (*it)->Update();
-        if ((*it)->DeleteIt())
-            EntitiesToDelete.emplace_back(it);
-    }
-    for (std::list<Animation *>::iterator it = AnimsVector.begin(); it != AnimsVector.end(); ++it) {
-        if ((*it)->getStop())
-            AnimsVector.erase(it++);
-        else
-            (*it)->Update();
-    }
-    //});
-    // auto updateBulletsTask = pool.enqueue([&] {
-    for (std::list<std::unique_ptr<Bullet>>::iterator it = BulletsVector.begin(); it != BulletsVector.end(); ++it) {
-        (*it)->Update();
-        if ((*it)->DeleteIt()) {
-            BulletsToDelete.emplace_back(it);
+    auto updateObjectsTask = pool.enqueue([&] {
+        for (std::list<std::unique_ptr<Obj>>::iterator it = ObjVector.begin(); it != ObjVector.end(); ++it) {
+            if ((*it)->isMovable())
+                (*it)->Update(offsetRelativeCenter);
+            else
+                (*it)->Update();
+            if ((*it)->DeleteIt())
+                ObjToDelete.emplace_back(it);
         }
-    }
-    //});
-
-    // updateObjectsTask.get();
-    // updateBulletsTask.get();
+        for (std::list<std::unique_ptr<Entity>>::iterator it = EntitiesVector.begin(); it != EntitiesVector.end(); ++it) {
+            (*it)->Update();
+            if ((*it)->DeleteIt())
+                EntitiesToDelete.emplace_back(it);
+        }
+        for (std::list<Animation *>::iterator it = AnimsVector.begin(); it != AnimsVector.end(); ++it) {
+            if ((*it)->getStop())
+                AnimsVector.erase(it++);
+            else
+                (*it)->Update();
+        }
+    });
+    auto updateBulletsTask = pool.enqueue([&] {
+        for (std::list<std::unique_ptr<Bullet>>::iterator it = BulletsVector.begin(); it != BulletsVector.end(); ++it) {
+            (*it)->Update();
+            if ((*it)->DeleteIt()) {
+                BulletsToDelete.emplace_back(it);
+            }
+        }
+    });
+    updateObjectsTask.get();
+    updateBulletsTask.get();
 #ifdef DEBUGINFO
     debugInfo->Update();
 #endif // DEBUGINFO
-    // std::cout << std::chrono::duration_cast<ms>(sc::now() - log1) << '\n';
+    
 
     CheckToDelete();
 }
 
 void Gamew::Drawing() {
     window->clear(sf::Color::White);
+    
     // Drawing inside this ---
-
     for (std::list<std::unique_ptr<Obj>>::iterator it = ObjVector.begin(); it != ObjVector.end(); ++it)
         (*it)->Draw();
     for (std::list<std::unique_ptr<Entity>>::iterator it = EntitiesVector.begin(); it != EntitiesVector.end(); ++it)
@@ -139,6 +138,7 @@ void Gamew::Drawing() {
 #ifdef DEBUGINFO
     debugInfo->Draw();
 #endif // DEBUGINFO
+
     // -----------------------
     window->display();
 }
@@ -255,6 +255,8 @@ void Gamew::CheckSwitchWindows() {
     if (switchWindow) {
         ObjVector.clear();
         EntitiesVector.clear();
+        BulletsVector.clear();
+        AnimsVector.clear();
         currTileMap = nullptr;
 
         switch (currentWindow) {

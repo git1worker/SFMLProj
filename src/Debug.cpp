@@ -8,3 +8,11 @@ template <typename Head, typename... Tail> void Print(Head h, Tail... t) {
     Do(h);
     Print(t...);
 }
+
+Timer::Timer() {
+    start = sc::now();
+}
+
+Timer::~Timer() {
+    std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(sc::now() - start) << std::endl;
+}

@@ -63,7 +63,7 @@ void Player::MoveStop() { move->Stop(); }
 
 void Player::StartJump() {
     if (!jumping)
-        energyJump = 15;
+        energyJump = 13;
     jumping = true;
 }
 
@@ -90,7 +90,9 @@ void Player::CollideCheck() {
                 }
             }
         }
-        direction.x = reduction + (-actionForX * 2);
+        if (reduction == actionForX)
+            direction.x = 0;
+        else direction.x = reduction + (-actionForX * 2);
     }
 
     flag = true;
@@ -113,14 +115,17 @@ void Player::CollideCheck() {
                 }
             }
         }
-        direction.y = reduction + (-actionForY * 2);
+        if (reduction == actionForY)
+            direction.y = 0;
+        else direction.y = reduction + (-actionForY * 2);
     }
 }
 
 void Player::CheckJump() {
     if (jumping) {
-        direction.y -= energyJump--;
-        if (energyJump == 0)
+        energyJump -= 0.65;
+        direction.y -= energyJump;
+        if (energyJump <= 0)
             jumping = false;
     }
 }
@@ -128,9 +133,8 @@ void Player::CheckJump() {
 void Player::UpdateDirection() {
     direction = sf::Vector2f(0, 0);
     direction += sf::Vector2f(0, GetFreeFall());
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) && CheckCanMoveUp()) {
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) && CheckCanMoveUp()) 
         direction += sf::Vector2f(0, -currSpeedFall - velocity);
-    }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
         move->SetFlipped();
         move->Start();
@@ -141,11 +145,8 @@ void Player::UpdateDirection() {
         move->Start();
         direction += sf::Vector2f(velocity, 0);
     }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
-        move->SetOrigin();
-        move->Start();
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) 
         direction += sf::Vector2f(0, velocity);
-    }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && !isFalling)
         StartJump();
 
@@ -187,7 +188,7 @@ bool Player::CheckFreeFall() {
 bool Player::CheckCanMoveUp() { return gamew.currTileMap->IsThereLadNearby(this->posRect); }
 
 void Player::UpdateRotation() {
-    if (sf::Mouse::getPosition(*gamew.window).x - body.getPosition().x - POINT_HAND_X <= 0) {
+    if (sf::Mouse::getPosition(*gamew.window).x - body.getPosition().x - POINT_HAND_X <= 0 && !sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
         if (!flipped) {
             flipped = true;
             bodyRect.width = -bodyRect.width;
@@ -211,7 +212,7 @@ void Player::UpdateRotation() {
              (sf::Mouse::getPosition(*gamew.window).x - (body.getPosition().x + abs(bodyRect.width) - POINT_HAND_X));
         hand.setRotation(-(atan(tg) * 180 / 3.1415));
         gun.GetSprite().setRotation(-(atan(tg) * 180 / 3.1415));
-    } else {
+    } else if (!sf::Keyboard::isKeyPressed(sf::Keyboard::A)){
         if (flipped) {
             flipped = false;
             bodyRect.width = -bodyRect.width;
@@ -236,4 +237,24 @@ void Player::UpdateRotation() {
         hand.setRotation(-(atan(tg) * 180 / 3.1415));
         gun.GetSprite().setRotation(-(atan(tg) * 180 / 3.1415));
     }
-}
+    else if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) && !flipped){
+        flipped = true;
+        bodyRect.width = -bodyRect.width;
+        bodyRect.left = bodyRect.left + abs(bodyRect.width);
+        body.setTextureRect(bodyRect);
+
+        handRect.width = -handRect.width;
+        handRect.left = handRect.left + abs(handRect.width);
+        hand.setOrigin(abs(handRect.width) - IDENTATION_AT_HAND_X, IDENTATION_AT_HAND_Y);
+        hand.setPosition((body.getPosition().x + abs(bodyRect.width)) - POINT_HAND_X, body.getPosition().y + POINT_HAND_Y);
+        hand.setTextureRect(handRect);
+
+        auto tmp = gun.GetSprite().getTextureRect();
+        tmp.width = -tmp.width;
+        tmp.left = tmp.left + abs(tmp.width);
+        gun.GetSprite().setOrigin(abs(tmp.width) - IDENTATION_AT_GUN_X, IDENTATION_AT_GUN_Y);
+        gun.GetSprite().setPosition(hand.getPosition());
+        gun.GetSprite().setTextureRect(tmp);
+    
+    }
+} 

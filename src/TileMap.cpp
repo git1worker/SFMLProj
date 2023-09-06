@@ -67,7 +67,10 @@ void TileMap::Update(const sf::Vector2f &offsetRelativeCenter) {
 
     for (int i = 0; i < heightInTiles; ++i) {
         for (int j = 0; j < widthInTiles; ++j) {
-            if (map_Tiles[i][j].id != -1)
+            if (map_Tiles[i][j].id == 19)
+                map_Tiles[i][j].sprite.setPosition(
+                    sf::Vector2f(map_Tiles[i][j].posRect.left + offsetRelativeCenter.x, map_Tiles[i][j].posRect.top - 24 + offsetRelativeCenter.y));
+            else if (map_Tiles[i][j].id != -1)
                 map_Tiles[i][j].sprite.setPosition(
                     sf::Vector2f(map_Tiles[i][j].posRect.left + offsetRelativeCenter.x, map_Tiles[i][j].posRect.top + offsetRelativeCenter.y));
         }
@@ -196,10 +199,11 @@ void TileMap::FillMatrixBackground() {
 
 void TileMap::OneTileProcessingBackground(int &posBuff, int &posMatrix, char *buffer) {
     buffer[posBuff] = '\0';
+    int idInTiled = atoi(buffer) - 1;
     map_TilesBackground[posMatrix / widthInTiles][posMatrix % widthInTiles] = Tile();
-    if (atoi(buffer) != 0) {
-        map_TilesBackground[posMatrix / widthInTiles][posMatrix % widthInTiles].sprite.setTexture(*(ids.at(atoi(buffer) - 1)));
-        map_TilesBackground[posMatrix / widthInTiles][posMatrix % widthInTiles].id = atoi(buffer) - 1;
+    if (idInTiled != -1) {
+        map_TilesBackground[posMatrix / widthInTiles][posMatrix % widthInTiles].sprite.setTexture(*(ids.at(idInTiled)));
+        map_TilesBackground[posMatrix / widthInTiles][posMatrix % widthInTiles].id = idInTiled;
     } else
         map_TilesBackground[posMatrix / widthInTiles][posMatrix % widthInTiles].id = -1;
     map_TilesBackground[posMatrix / widthInTiles][posMatrix % widthInTiles].sprite.setPosition(
@@ -213,20 +217,21 @@ void TileMap::OneTileProcessingBackground(int &posBuff, int &posMatrix, char *bu
 void TileMap::OneTileProcessing(int &posBuff, int &posMatrix, char *buffer) {
 
     buffer[posBuff] = '\0';
-    if (atoi(buffer) == 28) {
+    int idInTiled = atoi(buffer) - 1;
+    if (idInTiled == 27) {
         gamew.EntitiesVector.emplace_back(
             std::make_unique<Enemy>(gamew, sf::Vector2f(widthTile * (posMatrix % widthInTiles), heightTile * (posMatrix / widthInTiles))));
     } else {
         map_Tiles[posMatrix / widthInTiles][posMatrix % widthInTiles] = Tile();
-        if (atoi(buffer) != 0) {
-            map_Tiles[posMatrix / widthInTiles][posMatrix % widthInTiles].sprite.setTexture(*(ids.at(atoi(buffer) - 1)));
-            map_Tiles[posMatrix / widthInTiles][posMatrix % widthInTiles].id = atoi(buffer) - 1;
-            if (atoi(buffer) != 14 && atoi(buffer) != 15 && atoi(buffer) != 1 && atoi(buffer) != 2 && atoi(buffer) != 12 && atoi(buffer) != 13)
+        if (idInTiled != -1) {
+            map_Tiles[posMatrix / widthInTiles][posMatrix % widthInTiles].sprite.setTexture(*(ids.at(idInTiled)));
+            map_Tiles[posMatrix / widthInTiles][posMatrix % widthInTiles].id = idInTiled;
+            if (idInTiled != 13 && idInTiled != 14 && idInTiled != 0 && idInTiled != 1 && idInTiled != 11 && idInTiled != 12)
                 map_Tiles[posMatrix / widthInTiles][posMatrix % widthInTiles].canCollide = true;
         }
         map_Tiles[posMatrix / widthInTiles][posMatrix % widthInTiles].sprite.setPosition(
             sf::Vector2f(widthTile * (posMatrix % widthInTiles), heightTile * (posMatrix / widthInTiles)));
-        if (atoi(buffer) == 18) {
+        if (idInTiled == 19) {
             map_Tiles[posMatrix / widthInTiles][posMatrix % widthInTiles].posRect.left = widthTile * (posMatrix % widthInTiles);
             map_Tiles[posMatrix / widthInTiles][posMatrix % widthInTiles].posRect.top = heightTile * (posMatrix / widthInTiles) + 24;
             map_Tiles[posMatrix / widthInTiles][posMatrix % widthInTiles].posRect.width = widthTile;

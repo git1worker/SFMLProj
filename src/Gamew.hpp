@@ -13,6 +13,7 @@
 #include "Animation.hpp"
 #include <list>
 
+
 #define DEBUGINFO
 
 #ifndef DEBUG

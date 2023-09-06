@@ -19,7 +19,7 @@ public:
     virtual void Update();
     virtual void Stop();
     virtual void Draw();
-    void Start() { stop = false; }
+    virtual void Start() { stop = false; currFrame = 1; animate = false; }
     bool DeleteIt() { return deleteIt; }
     bool getFlipped() { return flipped; };
     bool getAnimated() { return animate; };
