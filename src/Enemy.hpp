@@ -3,6 +3,7 @@
 #include <SFML/Graphics.hpp>
 #include "AnimHuman.hpp"
 #include "Gun.hpp"
+#include "SplashOfBlood.hpp"
 
 class Gamew;
 
@@ -12,6 +13,7 @@ public:
     Enemy(Gamew &gamew, sf::Vector2f spawn);
     void Draw() override;
     void Update() override;
+    void Hit(float posX, float posY, sf::Vector2f direction) override;
     ~Enemy();
 
 private:
@@ -31,6 +33,7 @@ private:
     sf::Texture texHand;
     sf::IntRect bodyRect, handRect;
 
+    SplashOfBlood* blood;
     AnimHuman *move;
     bool animated = false;
     float currSpeedFall = 2;

@@ -14,9 +14,10 @@ using sc = std::chrono::system_clock;
     {                                                     \
         window->draw(sprite);                             \
         window->display();                                \
-        std::cout << "Line:\t" << __LINE__ << std::endl   \
-                  << "File:\t" << __FILE__ << std::endl   \
-                  << "Cnt:\t" << DebugCnt++ << std::endl; \
+        std::cout << "Line: " << __LINE__ << '\t'   \
+                  << "File: " << __FILE__ << std::endl   \
+                  << "Cnt: " << DebugCnt++ << " Sprite pos: x = " << \
+                    sprite.getPosition().x << " y = " << sprite.getPosition().y << std::endl; \
         sf::sleep(sf::seconds(3));                        \
     }
 #endif // RTDrawing

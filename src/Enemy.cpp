@@ -22,7 +22,7 @@ Enemy::Enemy(Gamew &gamew, sf::Vector2f spawn) : gamew(gamew) {
         texHand.loadFromFile("../assets/img/characters/right_hand_green.png");
         move = new AnimHuman(&gamew, "../assets/img/characters/anims_green_agent.png", this);
     }
-
+    blood = new SplashOfBlood(&gamew);
     body.setTexture(textureBody);
     posRect.left = spawn.x + IDENTATION_AT_POSRECT_LEFT;
     posRect.top = spawn.y + IDENTATION_AT_POSRECT_TOP;
@@ -45,6 +45,7 @@ void Enemy::Draw() {
             gamew.window->draw(body);
         gamew.window->draw(gun.GetSprite());
         gamew.window->draw(hand);
+        blood->Draw();
     }
 }
 
@@ -52,11 +53,17 @@ void Enemy::Update() {
     // UpdateRotation();
     // move->Update();
     UpdatePosition();
+    blood->Update();
     if (HP <= 0)
         deleteIt = true;
 }
 
-Enemy::~Enemy() { delete move; }
+void Enemy::Hit(float posX, float posY, sf::Vector2f direction) {
+    blood->StartSplash(posX, posY, direction);
+    HP -= 25;
+}
+
+Enemy::~Enemy() { delete move; delete blood; }
 
 void Enemy::UpdateDirection() {
     direction = sf::Vector2f(0, 0);

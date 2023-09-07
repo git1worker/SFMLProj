@@ -83,7 +83,7 @@ void Gamew::HandleButton(Button *btn) {
 void Gamew::Update() {
     // Timer a;
     CheckSwitchWindows();
-    auto updateObjectsTask = pool.enqueue([&] {
+    //auto updateObjectsTask = pool.enqueue([&] {
         for (std::list<std::unique_ptr<Obj>>::iterator it = ObjVector.begin(); it != ObjVector.end(); ++it) {
             if ((*it)->isMovable())
                 (*it)->Update(offsetRelativeCenter);
@@ -103,17 +103,17 @@ void Gamew::Update() {
             else
                 (*it)->Update();
         }
-    });
-    auto updateBulletsTask = pool.enqueue([&] {
+    //});
+    //auto updateBulletsTask = pool.enqueue([&] {
         for (std::list<std::unique_ptr<Bullet>>::iterator it = BulletsVector.begin(); it != BulletsVector.end(); ++it) {
             (*it)->Update();
             if ((*it)->DeleteIt()) {
                 BulletsToDelete.emplace_back(it);
             }
         }
-    });
-    updateObjectsTask.get();
-    updateBulletsTask.get();
+    //});
+    //updateObjectsTask.get();
+    //updateBulletsTask.get();
 #ifdef DEBUGINFO
     debugInfo->Update();
 #endif // DEBUGINFO

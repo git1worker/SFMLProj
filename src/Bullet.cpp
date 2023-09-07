@@ -5,7 +5,7 @@
 
 Bullet::Bullet(Gamew *gamew, sf::Vector2f pos, Entity *ptrSelf) : gamew(gamew), pos(pos), ptrSelf(ptrSelf) {
     texture.setFillColor(sf::Color(121, 121, 121));
-    texture.setOutlineColor(sf::Color::Red);
+    texture.setOutlineColor(sf::Color(200, 0, 0));
     texture.setSize(sf::Vector2f(3, 1));
     texture.setOutlineThickness(1);
     texture.setPosition(pos);
@@ -38,7 +38,7 @@ void Bullet::Update() {
         for (std::list<std::unique_ptr<Entity>>::iterator it = gamew->EntitiesVector.begin(); it != gamew->EntitiesVector.end() && flag; ++it)
             if ((*it)->posRect.contains(pos.x + (direction.x / velocity) * i, pos.y + (direction.y / velocity) * i) && (*it).get() != ptrSelf) {
                 flag = false;
-                (*it)->Hit();
+                (*it)->Hit(pos.x + (direction.x / velocity) * i, pos.y + (direction.y / velocity) * i, direction);
             }
     }
 

@@ -37,6 +37,7 @@ class Obj;
 class Label;
 class Enemy;
 class Gun;
+class SplashOfBlood;
 
 
 namespace Windows
@@ -73,6 +74,7 @@ private:
     friend Gun;
     friend Bullet;
     friend Animation;
+    friend SplashOfBlood;
 
     void HandleButton(Button *btn);
     void InitMainWindow();

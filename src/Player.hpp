@@ -27,8 +27,6 @@ public:
 
 private:
 
-
-    
     void CollideCheck();
     void StartJump();
     void CheckJump();
@@ -47,6 +45,7 @@ private:
     sf::Texture texHand;
     sf::IntRect bodyRect, handRect;
     AnimHuman *move;
+    bool lyingPosition = false;
     bool animated = false;
     float currSpeedFall = 2;
     bool isFalling = false;

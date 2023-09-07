@@ -15,7 +15,7 @@ public:
     virtual ~Entity() = default;
     virtual void Draw() = 0;
     virtual void Update(){};
-    void Hit() { HP -= 25; }
+    virtual void Hit(float posX, float posY, sf::Vector2f direction) { HP -= 25; }
     bool DeleteIt() { return deleteIt; }
 
     // The physical model for interacting with other entities and tiles.
