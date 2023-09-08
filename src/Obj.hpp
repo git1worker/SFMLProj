@@ -1,9 +1,8 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 
-class Obj
-{
-public:
+class Obj {
+  public:
     Obj() = default;
     virtual void Draw() = 0;
     virtual void Update(){};
@@ -13,10 +12,9 @@ public:
     bool isMovable() { return movable; }
     bool DeleteIt() { return deleteIt; }
     bool isCollidable() { return canCollide; }
-    virtual bool collide(sf::FloatRect other){
-        return posRect.intersects(other);
-    }
-    virtual bool assumeCollideX(const float x, sf::FloatRect other){
+    virtual bool collide(sf::FloatRect other) { return posRect.intersects(other); }
+    virtual bool collidePoint(sf::Vector2f p) { return posRect.contains(p); }
+    virtual bool assumeCollideX(const float x, sf::FloatRect other) {
         bool flag = false;
         posRect.left += x;
         if (posRect.intersects(other))
@@ -24,7 +22,7 @@ public:
         posRect.left -= x;
         return flag;
     }
-    virtual bool assumeCollideY(const float y, sf::FloatRect other){
+    virtual bool assumeCollideY(const float y, sf::FloatRect other) {
         bool flag = false;
         posRect.top += y;
         if (posRect.intersects(other))
@@ -33,8 +31,7 @@ public:
         return flag;
     }
 
-    enum Names
-    {
+    enum Names {
         None,
         DebugInfo,
         titleMainW,
@@ -55,7 +52,7 @@ public:
     Names name = None;
     sf::FloatRect posRect{};
 
-protected:
+  protected:
     bool canCollide = false;
     bool movable = false;
     bool deleteIt = false;

@@ -3,13 +3,12 @@
 
 class Gamew;
 
-class HandleEvent
-{
-public:
+class HandleEvent {
+  public:
     HandleEvent(Gamew *gamew);
     void operator()(const sf::Event &event);
 
-private:
+  private:
     void eventMouseMoved(const sf::Event &event);
     void eventMouseButtonPressed(const sf::Event &event);
     void eventMouseButtonReleased(const sf::Event &event);

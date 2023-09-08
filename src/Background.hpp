@@ -1,19 +1,16 @@
 #pragma once
 #include "Obj.hpp"
 #include <SFML/Graphics.hpp>
-#include <random>
 #include <memory>
+#include <random>
 
 #ifndef DEBUG
-#define DEBUG                                           \
-    {                                                   \
-        std::cout << "Line: " << __LINE__ << std::endl; \
-    }
+#define DEBUG                                                                                                                                        \
+    { std::cout << "Line: " << __LINE__ << std::endl; }
 #endif // DEBUG
 
-class Background : public Obj
-{
-public:
+class Background : public Obj {
+  public:
     Background(sf::RenderWindow *window, sf::Font *font, bool isStaticGradient = false);
     void SetGradient(sf::Color lUp, sf::Color rUp, sf::Color rDown, sf::Color lDown);
     void SetSingleColor(sf::Color color);
@@ -23,7 +20,7 @@ public:
     void Update() override;
     void Update(const sf::Vector2f &offsetRelativeCenter) override;
 
-private:
+  private:
     void GenerateRandom();
 
     sf::Clock delay;

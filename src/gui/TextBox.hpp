@@ -1,14 +1,14 @@
 #pragma once
-#include <SFML/Graphics.hpp>
 #include "../Obj.hpp"
+#include <SFML/Graphics.hpp>
+#include <iostream>
 #include <memory>
 #include <string>
-#include <iostream>
 
-class TextBox : public Obj
-{
-public:
-    TextBox(sf::RenderWindow *window, sf::Font *font, const float x, const float y, const unsigned int fSize = 30, const float w = 200, const float h = 60);
+class TextBox : public Obj {
+  public:
+    TextBox(sf::RenderWindow *window, sf::Font *font, const float x, const float y, const unsigned int fSize = 30, const float w = 200,
+            const float h = 60);
     void Draw() override;
     void Update() override;
     void SetDrawCursor(bool v);
@@ -18,7 +18,7 @@ public:
     sf::RectangleShape &getRect();
     void HandleTextbox(const sf::Event &event);
 
-private:
+  private:
     void CheckWidthText();
     int posCursor;
     sf::RenderWindow *window;

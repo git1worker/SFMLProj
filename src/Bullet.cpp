@@ -12,8 +12,8 @@ Bullet::Bullet(Gamew *gamew, sf::Vector2f pos, Entity *ptrSelf) : gamew(gamew), 
     texture.setRotation(-(atan(gamew->player->tg) * 180 / 3.1415));
     cos = sqrt(1 / (1 + gamew->player->tg * gamew->player->tg));
     sin = sqrt(1 - cos * cos);
-    direction.x = velocity * cos;
-    direction.y = velocity * sin;
+    direction.x = velocity * cos + (rand() % 4) - 2;
+    direction.y = velocity * sin + (rand() % 4) - 2;
     if (gamew->player->flipped) {
         direction.x *= -1;
         if (gamew->player->tg < 0)
@@ -41,7 +41,6 @@ void Bullet::Update() {
                 (*it)->Hit(pos.x + (direction.x / velocity) * i, pos.y + (direction.y / velocity) * i, direction);
             }
     }
-
     if (!flag || ++cnt > 1000 / velocity)
         deleteIt = true;
     else

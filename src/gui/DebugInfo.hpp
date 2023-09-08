@@ -1,25 +1,23 @@
 #pragma once
 #include "../Obj.hpp"
+#include "Label.hpp"
 #include <SFML/Graphics.hpp>
 #include <memory>
-#include "Label.hpp"
 #include <sstream>
-
 
 class Gamew;
 
-class DebugInfo : public Obj
-{
-public:
-    DebugInfo(Gamew* gamew, sf::Font *font, sf::Event *event);
+class DebugInfo : public Obj {
+  public:
+    DebugInfo(Gamew *gamew, sf::Font *font, sf::Event *event);
     void UpdateFps(float fps);
     void Update();
     void Draw() override;
 
-private:
+  private:
     float fps;
     std::wstringstream ss;
-    Gamew* gamew;
+    Gamew *gamew;
     sf::Font *Geologica;
     Label info;
     sf::Event *event;

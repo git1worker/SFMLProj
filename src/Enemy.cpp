@@ -1,7 +1,8 @@
 #include "Enemy.hpp"
 #include "Gamew.hpp"
-
+#include "Player.hpp"
 #include <cmath>
+#include <iostream>
 
 #define IDENTATION_AT_HAND_X 2
 #define IDENTATION_AT_HAND_Y 2
@@ -35,6 +36,15 @@ Enemy::Enemy(Gamew &gamew, sf::Vector2f spawn) : gamew(gamew) {
     gun.GetSprite().setPosition(hand.getPosition());
     bodyRect = body.getTextureRect();
     handRect = hand.getTextureRect();
+
+    hpShell.setOutlineColor(sf::Color::Black);
+    hpShell.setOutlineThickness(1);
+    hpShell.setFillColor(sf::Color(150, 150, 150, 100));
+    hpShell.setSize(sf::Vector2f(bodyRect.width, 3));
+    hpBar.setFillColor(sf::Color(200, 0, 0));
+    hpBar.setSize(sf::Vector2f(hpShell.getSize().x, hpShell.getSize().y));
+    srand(time(NULL));
+    UpdatePosition();
 }
 
 void Enemy::Draw() {
@@ -46,25 +56,77 @@ void Enemy::Draw() {
         gamew.window->draw(gun.GetSprite());
         gamew.window->draw(hand);
         blood->Draw();
+        gamew.window->draw(hpShell);
+        gamew.window->draw(hpBar);
     }
 }
 
 void Enemy::Update() {
     // UpdateRotation();
     // move->Update();
-    UpdatePosition();
-    blood->Update();
-    if (HP <= 0)
-        deleteIt = true;
+    if (IsThisInsideWindow()){
+        UpdatePosition();
+        blood->Update();
+        hpShell.setPosition(sf::Vector2f(posRect.left - IDENTATION_AT_POSRECT_LEFT + gamew.offsetRelativeCenter.x,
+                                        posRect.top - IDENTATION_AT_POSRECT_TOP - 10 + gamew.offsetRelativeCenter.y));
+        hpBar.setPosition(sf::Vector2f(posRect.left - IDENTATION_AT_POSRECT_LEFT + gamew.offsetRelativeCenter.x,
+                                    posRect.top - IDENTATION_AT_POSRECT_TOP - 10 + gamew.offsetRelativeCenter.y));
+        hpBar.setSize(sf::Vector2f((HP * hpShell.getSize().x) / 100, hpShell.getSize().y));
+
+        DetectPlayer();
+        if (HP <= 0)
+            deleteIt = true;
+    }
+    
+    
+}
+
+void Enemy::DetectPlayer() {
+    if (CheckTheRay() && !flipped){
+        sf::Vector2f rayStart = {posRect.left, posRect.top};
+        sf::Vector2f rayEnd = {gamew.player->posRect.left, gamew.player->posRect.top};
+        sf::Vector2f direction = rayEnd - rayStart;
+        double tg = (direction.y / direction.x);
+        float atg = atan(tg);
+        hand.setRotation((atg * 180.0 / 3.1415));
+        gun.GetSprite().setRotation((atg * 180.0 / 3.1415));
+    }
+}
+
+
+
+bool Enemy::CheckTheRay() {
+    // Создаем луч и точку начала луча (позиция бота)
+    sf::Vector2f rayStart = {posRect.left + posRect.width / 2, posRect.top + 10};
+    sf::Vector2f rayEnd = {gamew.player->posRect.left + gamew.player->posRect.width / 2, gamew.player->posRect.top + gamew.player->posRect.height / 2};
+    sf::Vector2f direction = rayEnd - rayStart;
+
+    // Нормализуем направление луча (делаем его единичным)
+    float length = std::sqrt(direction.x * direction.x + direction.y * direction.y);
+    direction /= length;
+
+    // Проверяем пересечение луча с препятствиями
+    for (std::list<std::unique_ptr<Obj>>::iterator it = gamew.ObjVector.begin(); it != gamew.ObjVector.end(); ++it) {
+        if ((*it)->isMovable() && (*it)->isCollidable()){
+            if ((*it)->assumeCollideY(0, sf::FloatRect(rayStart, rayEnd - rayStart))) {
+                // Если есть пересечение, игрок не видим
+                return false;
+            }
+        }
+    }
+    // Если нет пересечений с препятствиями, игрок видим
+    return true;
 }
 
 void Enemy::Hit(float posX, float posY, sf::Vector2f direction) {
     blood->StartSplash(posX, posY, direction);
-    HP -= 25;
+    HP -= 25 + (rand() % 10) - 5;
 }
 
-Enemy::~Enemy() { delete move; delete blood; }
-
+Enemy::~Enemy() {
+    delete move;
+    delete blood;
+}
 void Enemy::UpdateDirection() {
     direction = sf::Vector2f(0, 0);
     direction += sf::Vector2f(0, GetFreeFall());
@@ -224,3 +286,5 @@ void Enemy::UpdateRotation() {
         gun.GetSprite().setRotation(-(atan(tg) * 180 / 3.1415));
     }
 }
+
+

@@ -1,9 +1,8 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 
-class Tile
-{
-public:
+class Tile {
+  public:
     Tile() = default;
     Tile(const Tile &other) = default;
     ~Tile() = default;
@@ -13,5 +12,4 @@ public:
     int id;
     bool canCollide = false;
     sf::FloatRect posRect;
-    
 };

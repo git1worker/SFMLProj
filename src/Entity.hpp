@@ -1,15 +1,9 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 
-class Entity
-{
-public:
-
-    enum Types
-    {
-        armoredAgent,
-        greenAgent
-    };
+class Entity {
+  public:
+    enum Types { armoredAgent, greenAgent };
 
     Entity() = default;
     virtual ~Entity() = default;
@@ -26,14 +20,12 @@ public:
     // Velocity of moving
     float velocity = 3.5;
 
-protected:
-
+  protected:
     bool flipped = false;
     Types type;
     bool deleteIt = false;
-    int HP = 100;
+    float HP = 100;
     int cntFreeFall;
     // Vector of velocity relative X - right and Y - down
     sf::Vector2f direction{};
-    
 };

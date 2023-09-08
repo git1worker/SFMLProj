@@ -1,26 +1,23 @@
 #pragma once
-#include <string>
-#include <SFML/Graphics.hpp>
-#include <memory>
-#include <vector>
-#include "Bullet.hpp"
-#include "gui/DebugInfo.hpp"
-#include "gui/TextBox.hpp"
-#include "TileMap.hpp"
-#include "Entity.hpp"
-#include "HandleEvent.hpp"
 #include "../libs/ThreadPool/ThreadPool.h"
 #include "Animation.hpp"
+#include "Bullet.hpp"
+#include "Entity.hpp"
+#include "HandleEvent.hpp"
+#include "TileMap.hpp"
+#include "gui/DebugInfo.hpp"
+#include "gui/TextBox.hpp"
+#include <SFML/Graphics.hpp>
 #include <list>
-
+#include <memory>
+#include <string>
+#include <vector>
 
 #define DEBUGINFO
 
 #ifndef DEBUG
-#define DEBUG                                           \
-    {                                                   \
-        std::cout << "Line: " << __LINE__ << std::endl; \
-    }
+#define DEBUG                                                                                                                                        \
+    { std::cout << "Line: " << __LINE__ << std::endl; }
 #endif // DEBUG
 
 using sf::Vector2f;
@@ -40,22 +37,18 @@ class Gun;
 class SplashOfBlood;
 class Interface;
 
-
-namespace Windows
-{
-    enum Windows
-    {
-        MainW,
-        Game1,
-        Game2,
-        Game3,
-        Game4,
-    };
+namespace Windows {
+enum Windows {
+    MainW,
+    Game1,
+    Game2,
+    Game3,
+    Game4,
+};
 };
 
-class Gamew
-{
-public:
+class Gamew {
+  public:
     Gamew() = default;
     ~Gamew();
     void Init(const std::wstring title = L"Gamew", const int Style = sf::Style::Close, const int width = 1200, const int height = 800);
@@ -65,7 +58,7 @@ public:
     void Drawing();
     void UpdateFps(float fps);
 
-private:
+  private:
     friend Player;
     friend TileMap;
     friend AnimHuman;
@@ -90,16 +83,16 @@ private:
     std::list<std::list<std::unique_ptr<Obj>>::iterator> ObjToDelete;
     std::list<std::list<std::unique_ptr<Entity>>::iterator> EntitiesToDelete;
     std::list<std::list<std::unique_ptr<Bullet>>::iterator> BulletsToDelete;
-    std::list<Animation*> AnimsToDelete;
+    std::list<Animation *> AnimsToDelete;
     std::list<std::unique_ptr<Obj>> ObjVector;
     std::list<std::unique_ptr<Entity>> EntitiesVector;
     std::list<std::unique_ptr<Bullet>> BulletsVector;
-    std::list<Animation*> AnimsVector;
+    std::list<Animation *> AnimsVector;
 
     TextBox *selectedTextBox = nullptr;
-    TileMap* currTileMap = nullptr;
+    TileMap *currTileMap = nullptr;
     Player *player = nullptr;
-    Interface* interface = nullptr;
+    Interface *interface = nullptr;
     sf::Cursor cursorArrow, cursorText;
     bool cursorSetted = false;
     bool isActive = true;

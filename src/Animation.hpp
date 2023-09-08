@@ -1,14 +1,13 @@
 #pragma once
-#include <SFML/Graphics.hpp>
-#include <string>
-#include <chrono>
 #include "Entity.hpp"
+#include <SFML/Graphics.hpp>
+#include <chrono>
+#include <string>
 
 class Gamew;
 
-class Animation
-{
-public:
+class Animation {
+  public:
     Animation() = default;
     virtual ~Animation() = default;
 
@@ -19,14 +18,18 @@ public:
     virtual void Update();
     virtual void Stop();
     virtual void Draw();
-    virtual void Start() { stop = false; currFrame = 1; animate = false; }
+    virtual void Start() {
+        stop = false;
+        currFrame = 1;
+        animate = false;
+    }
     bool DeleteIt() { return deleteIt; }
     bool getFlipped() { return flipped; };
     bool getAnimated() { return animate; };
     bool getStop() { return stop; }
     sf::Sprite sprite;
 
-protected:
+  protected:
     void Play();
 
     bool deleteIt = false;

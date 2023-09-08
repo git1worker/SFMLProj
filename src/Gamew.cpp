@@ -1,15 +1,15 @@
 #include "Gamew.hpp"
 #include "Background.hpp"
+#include "Debug.hpp"
 #include "Player.hpp"
 #include "gui/Button.hpp"
+#include "gui/Interface.hpp"
 #include "gui/Label.hpp"
 #include <chrono>
 #include <iostream>
 #include <stdio.h>
 #include <string.h>
 #include <type_traits>
-#include "Debug.hpp"
-#include "gui/Interface.hpp"
 
 using std::cerr;
 using std::cout;
@@ -24,29 +24,32 @@ void Gamew::UpdateFps(float fps) {
 }
 
 Gamew::~Gamew() {
-    if (interface != nullptr) delete interface;
+    if (interface != nullptr)
+        delete interface;
 }
 
 void Gamew::Init(const std::wstring title, const int Style, const int width, const int height) {
     window = std::make_unique<sf::RenderWindow>(sf::VideoMode(width, height), title, Style);
+    window->setPosition(sf::Vector2i(30, 30));
     window->setFramerateLimit(fps);
     if (!Geologica.loadFromFile("../assets/fonts/Geologica-Regular.ttf"))
         cerr << "Failed to load font.\n", exit(1);
 
     sf::Image icon;
-    if (icon.loadFromFile("../assets/img/icon.png")) 
+    if (icon.loadFromFile("../assets/img/icon.png"))
         window->setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
-    
+
     InitMainWindow();
-    if (!cursorArrow.loadFromSystem(sf::Cursor::Arrow) || !cursorText.loadFromSystem(sf::Cursor::Text)) 
+    if (!cursorArrow.loadFromSystem(sf::Cursor::Arrow) || !cursorText.loadFromSystem(sf::Cursor::Text))
         cerr << "Failed to load cursor.\n", exit(1);
-    
+
     window->setMouseCursor(cursorArrow);
 #ifdef DEBUGINFO
     this->debugInfo = make_unique<DebugInfo>(this, &Geologica, &event);
     debugInfo->name = Obj::DebugInfo;
 #endif // DEBUGINFO
     view = window->getView();
+    srand(time(NULL));
 }
 
 void Gamew::Polling() {
@@ -108,7 +111,8 @@ void Gamew::Update() {
             else
                 (*it)->Update();
         }
-        if (interface) interface->Update();
+        if (interface)
+            interface->Update();
     });
     auto updateBulletsTask = pool.enqueue([&] {
         for (std::list<std::unique_ptr<Bullet>>::iterator it = BulletsVector.begin(); it != BulletsVector.end(); ++it) {
@@ -123,14 +127,13 @@ void Gamew::Update() {
 #ifdef DEBUGINFO
     debugInfo->Update();
 #endif // DEBUGINFO
-    
 
     CheckToDelete();
 }
 
 void Gamew::Drawing() {
     window->clear(sf::Color::White);
-    
+
     // Drawing inside this ---
     for (std::list<std::unique_ptr<Obj>>::iterator it = ObjVector.begin(); it != ObjVector.end(); ++it)
         (*it)->Draw();
@@ -140,7 +143,8 @@ void Gamew::Drawing() {
         (*it)->Draw();
     for (std::list<Animation *>::iterator it = AnimsVector.begin(); it != AnimsVector.end(); ++it)
         (*it)->Draw();
-    if (interface) interface->Draw();
+    if (interface)
+        interface->Draw();
 #ifdef DEBUGINFO
     debugInfo->Draw();
 #endif // DEBUGINFO
@@ -265,7 +269,10 @@ void Gamew::CheckSwitchWindows() {
         EntitiesVector.clear();
         BulletsVector.clear();
         AnimsVector.clear();
-        if (interface != nullptr) {delete interface; interface = nullptr; }
+        if (interface != nullptr) {
+            delete interface;
+            interface = nullptr;
+        }
         currTileMap = nullptr;
 
         switch (currentWindow) {

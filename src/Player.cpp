@@ -36,6 +36,7 @@ Player::Player(Gamew &gamew, Types type, sf::Vector2f spawn) : gamew(gamew), spa
 
     bodyRect = body.getTextureRect();
     handRect = hand.getTextureRect();
+    srand(time(NULL));
 }
 
 Player::~Player() { delete move; }
@@ -92,7 +93,8 @@ void Player::CollideCheck() {
         }
         if (reduction == actionForX)
             direction.x = 0;
-        else direction.x = reduction + (-actionForX * 2);
+        else
+            direction.x = reduction + (-actionForX * 2);
     }
 
     flag = true;
@@ -117,7 +119,8 @@ void Player::CollideCheck() {
         }
         if (reduction == actionForY)
             direction.y = 0;
-        else direction.y = reduction + (-actionForY * 2);
+        else
+            direction.y = reduction + (-actionForY * 2);
     }
 }
 
@@ -133,11 +136,11 @@ void Player::CheckJump() {
 void Player::UpdateDirection() {
     direction = sf::Vector2f(0, 0);
     direction += sf::Vector2f(0, GetFreeFall());
-    if ((sf::Keyboard::isKeyPressed(sf::Keyboard::W) || (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))) && CheckCanMoveUp()){
+    if ((sf::Keyboard::isKeyPressed(sf::Keyboard::W) || (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))) && CheckCanMoveUp()) {
         currSpeedFall = 2;
-        direction += sf::Vector2f(0, -currSpeedFall -velocity);
+        direction += sf::Vector2f(0, -currSpeedFall - velocity);
     }
-        
+
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) || sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
         move->SetFlipped();
         move->Start();
@@ -148,7 +151,7 @@ void Player::UpdateDirection() {
         move->Start();
         direction += sf::Vector2f(velocity, 0);
     }
-        
+
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && !isFalling)
         StartJump();
 
@@ -212,9 +215,10 @@ void Player::UpdateRotation() {
         }
         tg = ((body.getPosition().y + POINT_HAND_Y) - sf::Mouse::getPosition(*gamew.window).y) /
              (sf::Mouse::getPosition(*gamew.window).x - (body.getPosition().x + abs(bodyRect.width) - POINT_HAND_X));
-        hand.setRotation(-(atan(tg) * 180 / 3.1415));
-        gun.GetSprite().setRotation(-(atan(tg) * 180 / 3.1415));
-    } else if (!sf::Keyboard::isKeyPressed(sf::Keyboard::A)){
+        double atg = atan(tg);
+        hand.setRotation(-(atg * 180 / 3.1415));
+        gun.GetSprite().setRotation(-(atg * 180 / 3.1415));
+    } else if (!sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
         if (flipped) {
             flipped = false;
             bodyRect.width = -bodyRect.width;
@@ -236,10 +240,10 @@ void Player::UpdateRotation() {
         }
         tg = ((body.getPosition().y + POINT_HAND_Y) - sf::Mouse::getPosition(*gamew.window).y) /
              (sf::Mouse::getPosition(*gamew.window).x - (body.getPosition().x + POINT_HAND_X));
-        hand.setRotation(-(atan(tg) * 180 / 3.1415));
-        gun.GetSprite().setRotation(-(atan(tg) * 180 / 3.1415));
-    }
-    else if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) && !flipped){
+        double atg = atan(tg);
+        hand.setRotation(-(atg * 180 / 3.1415));
+        gun.GetSprite().setRotation(-(atg * 180 / 3.1415));
+    } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) && !flipped) {
         flipped = true;
         bodyRect.width = -bodyRect.width;
         bodyRect.left = bodyRect.left + abs(bodyRect.width);
@@ -257,6 +261,5 @@ void Player::UpdateRotation() {
         gun.GetSprite().setOrigin(abs(tmp.width) - IDENTATION_AT_GUN_X, IDENTATION_AT_GUN_Y);
         gun.GetSprite().setPosition(hand.getPosition());
         gun.GetSprite().setTextureRect(tmp);
-    
     }
-} 
+}

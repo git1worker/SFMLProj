@@ -1,6 +1,7 @@
 #include "TileMap.hpp"
 #include "Enemy.hpp"
 #include "Gamew.hpp"
+#include "Player.hpp"
 #include <iostream>
 #include <string>
 
@@ -106,7 +107,6 @@ void TileMap::Draw() {
     }
 }
 
-
 bool TileMap::collide(sf::FloatRect other) {
     bool flag = false;
     for (int i = 0; i < heightInTiles && !flag; ++i) {
@@ -123,9 +123,24 @@ bool TileMap::assumeCollideY(const float y, sf::FloatRect other) {
     for (int i = 0; i < heightInTiles && !flag; ++i) {
         for (int j = 0; j < widthInTiles && !flag; ++j) {
             other.top += y;
-            if (map_Tiles[i][j].canCollide && map_Tiles[i][j].posRect.intersects(other))
+            if (map_Tiles[i][j].canCollide && map_Tiles[i][j].posRect.intersects(other)) {
                 flag = true;
+                if (map_Tiles[i][j].id == 19 || map_Tiles[i][j].id == 18)
+                    gamew.player->HP -= 0.2;
+            }
             other.top -= y;
+        }
+    }
+    return flag;
+}
+
+bool TileMap::collidePoint(sf::Vector2f p) { 
+    bool flag = false;
+    for (int i = 0; i < heightInTiles && !flag; ++i) {
+        for (int j = 0; j < widthInTiles && !flag; ++j) {
+            if (map_Tiles[i][j].canCollide && map_Tiles[i][j].posRect.contains(p)) {
+                flag = true;
+            }
         }
     }
     return flag;
