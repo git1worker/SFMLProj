@@ -9,10 +9,9 @@ public:
     virtual void Update(){};
     virtual void Update(const sf::Vector2f &offsetRelativeCenter){};
     virtual ~Obj() = default;
-    virtual void Zoom(int delta){};
+
     bool isMovable() { return movable; }
     bool DeleteIt() { return deleteIt; }
-    bool isZoomable() { return zoomable; }
     bool isCollidable() { return canCollide; }
     virtual bool collide(sf::FloatRect other){
         return posRect.intersects(other);
@@ -58,7 +57,6 @@ public:
 
 protected:
     bool canCollide = false;
-    bool zoomable = false;
     bool movable = false;
     bool deleteIt = false;
 };

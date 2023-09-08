@@ -133,17 +133,17 @@ void Player::CheckJump() {
 void Player::UpdateDirection() {
     direction = sf::Vector2f(0, 0);
     direction += sf::Vector2f(0, GetFreeFall());
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) && CheckCanMoveUp()){
+    if ((sf::Keyboard::isKeyPressed(sf::Keyboard::W) || (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))) && CheckCanMoveUp()){
         currSpeedFall = 2;
         direction += sf::Vector2f(0, -currSpeedFall -velocity);
     }
         
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) || sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
         move->SetFlipped();
         move->Start();
         direction += sf::Vector2f(-velocity, 0);
     }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) || sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
         move->SetOrigin();
         move->Start();
         direction += sf::Vector2f(velocity, 0);

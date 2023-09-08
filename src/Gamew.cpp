@@ -9,6 +9,7 @@
 #include <string.h>
 #include <type_traits>
 #include "Debug.hpp"
+#include "gui/Interface.hpp"
 
 using std::cerr;
 using std::cout;
@@ -20,6 +21,10 @@ void Gamew::UpdateFps(float fps) {
 #ifdef DEBUGINFO
     debugInfo->UpdateFps(fps);
 #endif // DEBUGINFO
+}
+
+Gamew::~Gamew() {
+    if (interface != nullptr) delete interface;
 }
 
 void Gamew::Init(const std::wstring title, const int Style, const int width, const int height) {
@@ -83,7 +88,7 @@ void Gamew::HandleButton(Button *btn) {
 void Gamew::Update() {
     // Timer a;
     CheckSwitchWindows();
-    //auto updateObjectsTask = pool.enqueue([&] {
+    auto updateObjectsTask = pool.enqueue([&] {
         for (std::list<std::unique_ptr<Obj>>::iterator it = ObjVector.begin(); it != ObjVector.end(); ++it) {
             if ((*it)->isMovable())
                 (*it)->Update(offsetRelativeCenter);
@@ -103,17 +108,18 @@ void Gamew::Update() {
             else
                 (*it)->Update();
         }
-    //});
-    //auto updateBulletsTask = pool.enqueue([&] {
+        if (interface) interface->Update();
+    });
+    auto updateBulletsTask = pool.enqueue([&] {
         for (std::list<std::unique_ptr<Bullet>>::iterator it = BulletsVector.begin(); it != BulletsVector.end(); ++it) {
             (*it)->Update();
             if ((*it)->DeleteIt()) {
                 BulletsToDelete.emplace_back(it);
             }
         }
-    //});
-    //updateObjectsTask.get();
-    //updateBulletsTask.get();
+    });
+    updateObjectsTask.get();
+    updateBulletsTask.get();
 #ifdef DEBUGINFO
     debugInfo->Update();
 #endif // DEBUGINFO
@@ -134,7 +140,7 @@ void Gamew::Drawing() {
         (*it)->Draw();
     for (std::list<Animation *>::iterator it = AnimsVector.begin(); it != AnimsVector.end(); ++it)
         (*it)->Draw();
-
+    if (interface) interface->Draw();
 #ifdef DEBUGINFO
     debugInfo->Draw();
 #endif // DEBUGINFO
@@ -216,6 +222,8 @@ void Gamew::InitWindow1() {
     auto tmp3 = std::make_unique<Player>(*this, Player::Types::armoredAgent, sf::Vector2f(150, 150));
     player = tmp3.get();
     EntitiesVector.emplace_back(std::move(tmp3));
+
+    interface = new Interface(this);
 }
 
 void Gamew::InitWindow2() {
@@ -257,6 +265,7 @@ void Gamew::CheckSwitchWindows() {
         EntitiesVector.clear();
         BulletsVector.clear();
         AnimsVector.clear();
+        if (interface != nullptr) {delete interface; interface = nullptr; }
         currTileMap = nullptr;
 
         switch (currentWindow) {

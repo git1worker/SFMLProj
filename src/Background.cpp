@@ -98,5 +98,4 @@ void Background::SetTexture(const std::string filename) {
     rect.setTexture(&texture);
     rect.setTextureRect(sf::IntRect(sf::Vector2i(0, 0), sf::Vector2i(window->getSize().x, window->getSize().y)));
     movable = true;
-    zoomable = true;
 }

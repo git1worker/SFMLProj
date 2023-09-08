@@ -25,7 +25,6 @@ public:
     TileMap(Gamew &gamew, std::string path);
     void Update(const sf::Vector2f &offsetRelativeCenter) override;
     void Draw() override;
-    void Zoom(int delta) override;
     bool collide(sf::FloatRect other) override;
     bool assumeCollideX(const float x, sf::FloatRect other) override;
     bool assumeCollideY(const float y, sf::FloatRect other) override;

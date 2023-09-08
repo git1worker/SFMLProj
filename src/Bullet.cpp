@@ -4,7 +4,7 @@
 #include <cmath>
 
 Bullet::Bullet(Gamew *gamew, sf::Vector2f pos, Entity *ptrSelf) : gamew(gamew), pos(pos), ptrSelf(ptrSelf) {
-    texture.setFillColor(sf::Color(121, 121, 121));
+    texture.setFillColor(sf::Color(100, 100, 100));
     texture.setOutlineColor(sf::Color(200, 0, 0));
     texture.setSize(sf::Vector2f(3, 1));
     texture.setOutlineThickness(1);

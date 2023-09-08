@@ -52,5 +52,5 @@ private:
     bool jumping = false;
     float energyJump = 0;
     double tg, sin;
-    Gun gun{Gun::Types::AK, gamew};
+    Gun gun{Gun::Types::Pistol, gamew};
 };

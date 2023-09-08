@@ -38,6 +38,7 @@ class Label;
 class Enemy;
 class Gun;
 class SplashOfBlood;
+class Interface;
 
 
 namespace Windows
@@ -56,7 +57,7 @@ class Gamew
 {
 public:
     Gamew() = default;
-    ~Gamew() = default;
+    ~Gamew();
     void Init(const std::wstring title = L"Gamew", const int Style = sf::Style::Close, const int width = 1200, const int height = 800);
     void Polling();
     void Update();
@@ -75,6 +76,7 @@ private:
     friend Bullet;
     friend Animation;
     friend SplashOfBlood;
+    friend Interface;
 
     void HandleButton(Button *btn);
     void InitMainWindow();
@@ -94,31 +96,32 @@ private:
     std::list<std::unique_ptr<Bullet>> BulletsVector;
     std::list<Animation*> AnimsVector;
 
-    ThreadPool pool{3};
-    int currentWindow = Windows::MainW;
+    TextBox *selectedTextBox = nullptr;
+    TileMap* currTileMap = nullptr;
+    Player *player = nullptr;
+    Interface* interface = nullptr;
+    sf::Cursor cursorArrow, cursorText;
+    bool cursorSetted = false;
     bool isActive = true;
     bool switchWindow = false;
+    int currentWindow = Windows::MainW;
+    bool TextBoxContains;
+
+    ThreadPool pool{3};
     sf::Event event;
     HandleEvent handle = HandleEvent(this);
     sf::Font Geologica;
     std::unique_ptr<sf::RenderWindow> window;
-    TextBox *selectedTextBox = nullptr;
     sf::View view;
-    bool cursorSetted = false;
-    bool TextBoxContains;
-    sf::Cursor cursorArrow, cursorText;
-    int screenOffsetX = 0, screenOffsetY = 0;
+
     sf::Vector2f offsetRelativeCenter{};
-    Player *player = nullptr;
-    TileMap* currTileMap = nullptr;
 
     const float fps = 60;
     const float heightTile = 32;
     const float freeFall = 9.8;
     const float pxPerFrameFall = (freeFall * heightTile * (2.f / (fps * fps))) - (freeFall * heightTile * (1.f / (fps * fps)));
-
     int mouseX, mouseY;
-
+    int screenOffsetX = 0, screenOffsetY = 0;
 #ifdef DEBUGINFO
     std::unique_ptr<DebugInfo> debugInfo;
 #endif // DEBUGINFO

@@ -50,7 +50,6 @@ TileMap::TileMap(Gamew &gamew, std::string path) : gamew(gamew), path(path) {
 
     canCollide = true;
     movable = true;
-    zoomable = true;
 }
 
 TileMap::~TileMap() {
@@ -107,7 +106,6 @@ void TileMap::Draw() {
     }
 }
 
-void TileMap::Zoom(int delta) {}
 
 bool TileMap::collide(sf::FloatRect other) {
     bool flag = false;

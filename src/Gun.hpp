@@ -28,6 +28,7 @@ private:
     static std::map<Types, std::shared_ptr<sf::Texture>> mapTextures;
     static bool initTextures;
 
+    int distAnimShoot;
     Gamew& gamew;
     Animation* shoot;
     sf::Sprite sprite;
