@@ -4,11 +4,14 @@
 #include "Gun.hpp"
 #include "SplashOfBlood.hpp"
 #include <SFML/Graphics.hpp>
+#include "Section.hpp"
 
 class Gamew;
 
 class Enemy : public Entity {
   public:
+
+
     Enemy(Gamew &gamew, sf::Vector2f spawn);
     void Draw() override;
     void Update() override;

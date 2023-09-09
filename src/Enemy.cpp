@@ -64,25 +64,23 @@ void Enemy::Draw() {
 void Enemy::Update() {
     // UpdateRotation();
     // move->Update();
-    if (IsThisInsideWindow()){
+    if (IsThisInsideWindow()) {
         UpdatePosition();
         blood->Update();
         hpShell.setPosition(sf::Vector2f(posRect.left - IDENTATION_AT_POSRECT_LEFT + gamew.offsetRelativeCenter.x,
-                                        posRect.top - IDENTATION_AT_POSRECT_TOP - 10 + gamew.offsetRelativeCenter.y));
+                                         posRect.top - IDENTATION_AT_POSRECT_TOP - 10 + gamew.offsetRelativeCenter.y));
         hpBar.setPosition(sf::Vector2f(posRect.left - IDENTATION_AT_POSRECT_LEFT + gamew.offsetRelativeCenter.x,
-                                    posRect.top - IDENTATION_AT_POSRECT_TOP - 10 + gamew.offsetRelativeCenter.y));
+                                       posRect.top - IDENTATION_AT_POSRECT_TOP - 10 + gamew.offsetRelativeCenter.y));
         hpBar.setSize(sf::Vector2f((HP * hpShell.getSize().x) / 100, hpShell.getSize().y));
 
         DetectPlayer();
         if (HP <= 0)
             deleteIt = true;
     }
-    
-    
 }
 
 void Enemy::DetectPlayer() {
-    if (CheckTheRay() && !flipped){
+    if (CheckTheRay()) {
         sf::Vector2f rayStart = {posRect.left, posRect.top};
         sf::Vector2f rayEnd = {gamew.player->posRect.left, gamew.player->posRect.top};
         sf::Vector2f direction = rayEnd - rayStart;
@@ -93,30 +91,31 @@ void Enemy::DetectPlayer() {
     }
 }
 
-
-
 bool Enemy::CheckTheRay() {
     // Создаем луч и точку начала луча (позиция бота)
     sf::Vector2f rayStart = {posRect.left + posRect.width / 2, posRect.top + 10};
-    sf::Vector2f rayEnd = {gamew.player->posRect.left + gamew.player->posRect.width / 2, gamew.player->posRect.top + gamew.player->posRect.height / 2};
+    sf::Vector2f rayEnd = {gamew.player->posRect.left + gamew.player->posRect.width / 2,
+                           gamew.player->posRect.top + gamew.player->posRect.height / 2};
     sf::Vector2f direction = rayEnd - rayStart;
-
-    // Нормализуем направление луча (делаем его единичным)
-    float length = std::sqrt(direction.x * direction.x + direction.y * direction.y);
-    direction /= length;
+    Section a {rayStart.x, rayStart.y, rayEnd.x, rayEnd.y};
 
     // Проверяем пересечение луча с препятствиями
     for (std::list<std::unique_ptr<Obj>>::iterator it = gamew.ObjVector.begin(); it != gamew.ObjVector.end(); ++it) {
-        if ((*it)->isMovable() && (*it)->isCollidable()){
-            if ((*it)->assumeCollideY(0, sf::FloatRect(rayStart, rayEnd - rayStart))) {
+        if ((*it)->isMovable() && (*it)->isCollidable()) {
+            if ((*it)->Intersection(a)) {
                 // Если есть пересечение, игрок не видим
                 return false;
+            }
+            else {
+                bool d = true;
             }
         }
     }
     // Если нет пересечений с препятствиями, игрок видим
     return true;
 }
+
+
 
 void Enemy::Hit(float posX, float posY, sf::Vector2f direction) {
     blood->StartSplash(posX, posY, direction);
@@ -286,5 +285,3 @@ void Enemy::UpdateRotation() {
         gun.GetSprite().setRotation(-(atan(tg) * 180 / 3.1415));
     }
 }
-
-

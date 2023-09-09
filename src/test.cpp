@@ -10,10 +10,7 @@
 
 using namespace rapidxml;
 
-void intersection(){
-    
-
-}
+void intersection() {}
 
 // Функция для определения ориентации точек a, b и c.
 // Возвращает положительное значение, если точки идут по часовой стрелке,
@@ -115,7 +112,38 @@ void TestBlood() {
 
 int main() {
 
-    TestBlood();
+    //TestBlood();
+    sf::RenderWindow window = sf::RenderWindow(sf::VideoMode(1900, 1000), "123");
+    window.setFramerateLimit(60);
+
+     sf::Vertex line1[] = {
+        sf::Vertex(sf::Vector2f(1408, 192)), // Начальная точка линии
+        sf::Vertex(sf::Vector2f(1440, 224))  // Конечная точка линии
+    };
+
+     sf::Vertex line2[] = {
+        sf::Vertex(sf::Vector2f(1424, 142)), // Начальная точка линии
+        sf::Vertex(sf::Vector2f(1419, 513.78))  // Конечная точка линии
+    };
+    sf::Vertex line3[] = {
+        sf::Vertex(sf::Vector2f(1422, 0)), // Начальная точка линии
+        sf::Vertex(sf::Vector2f(1422, 1000))  // Конечная точка линии
+    };
+
+    bool isActive = true;
+    sf::Event e;
+    while (isActive) {
+        window.clear();
+        while (window.pollEvent(e)) {
+            if (e.type == sf::Event::Closed)
+                isActive = false;
+        }
+        
+        window.draw(line1, 2, sf::Lines);
+        window.draw(line2, 2, sf::Lines);
+        
+        window.display();
+    }
 
     return 0;
 }

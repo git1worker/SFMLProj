@@ -118,6 +118,39 @@ bool TileMap::collide(sf::FloatRect other) {
     return flag;
 }
 
+bool TileMap::Intersection(Section a) { 
+    bool flag = false;
+    Section s1 {posRect.left, posRect.top, posRect.left + posRect.width, posRect.top + posRect.height};
+    Section s2 {posRect.left + posRect.width, posRect.top, posRect.left, posRect.top + posRect.height};
+    for (int i = 0; i < heightInTiles && !flag; ++i) {
+        for (int j = 0; j < widthInTiles && !flag; ++j) {
+            if (map_Tiles[i][j].canCollide) {
+                s1.x1 = map_Tiles[i][j].posRect.left;
+                s1.y1 = map_Tiles[i][j].posRect.top;
+                s1.x2 = map_Tiles[i][j].posRect.left + map_Tiles[i][j].posRect.width;
+                s1.y2 = map_Tiles[i][j].posRect.top + map_Tiles[i][j].posRect.height;
+
+                s2.x1 = map_Tiles[i][j].posRect.left + map_Tiles[i][j].posRect.width;
+                s2.y1 = map_Tiles[i][j].posRect.top;
+                s2.x2 = map_Tiles[i][j].posRect.left;
+                s2.y2 = map_Tiles[i][j].posRect.top + map_Tiles[i][j].posRect.height;
+                
+                   
+                if (intersectionSectionAndSection(s1, a) || 
+                    intersectionSectionAndSection(s2, a))
+                    flag = true;
+                else {
+                    if (i == 6 && j == 44) {
+                        bool ac = true;
+                        bool ab = true;
+                    }
+                }
+            }
+        }
+    }
+    return flag;
+}
+
 bool TileMap::assumeCollideY(const float y, sf::FloatRect other) {
     bool flag = false;
     for (int i = 0; i < heightInTiles && !flag; ++i) {
@@ -134,7 +167,7 @@ bool TileMap::assumeCollideY(const float y, sf::FloatRect other) {
     return flag;
 }
 
-bool TileMap::collidePoint(sf::Vector2f p) { 
+bool TileMap::collidePoint(sf::Vector2f p) {
     bool flag = false;
     for (int i = 0; i < heightInTiles && !flag; ++i) {
         for (int j = 0; j < widthInTiles && !flag; ++j) {

@@ -1,5 +1,6 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include "Section.hpp"
 
 class Obj {
   public:
@@ -9,27 +10,16 @@ class Obj {
     virtual void Update(const sf::Vector2f &offsetRelativeCenter){};
     virtual ~Obj() = default;
 
+    virtual bool Intersection(Section a);
     bool isMovable() { return movable; }
     bool DeleteIt() { return deleteIt; }
     bool isCollidable() { return canCollide; }
     virtual bool collide(sf::FloatRect other) { return posRect.intersects(other); }
     virtual bool collidePoint(sf::Vector2f p) { return posRect.contains(p); }
-    virtual bool assumeCollideX(const float x, sf::FloatRect other) {
-        bool flag = false;
-        posRect.left += x;
-        if (posRect.intersects(other))
-            flag = true;
-        posRect.left -= x;
-        return flag;
-    }
-    virtual bool assumeCollideY(const float y, sf::FloatRect other) {
-        bool flag = false;
-        posRect.top += y;
-        if (posRect.intersects(other))
-            flag = true;
-        posRect.top -= y;
-        return flag;
-    }
+    bool isPointOnTheSection(sf::Vector2f point, Section sect);
+    bool intersectionSectionAndSection(const Section sect1, const Section sect2);
+    virtual bool assumeCollideX(const float x, sf::FloatRect other);
+    virtual bool assumeCollideY(const float y, sf::FloatRect other);
 
     enum Names {
         None,

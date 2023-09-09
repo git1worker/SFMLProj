@@ -29,6 +29,7 @@ if (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
         src/AnimHuman.cpp
         src/SplashOfBlood.cpp
         src/gui/Interface.cpp
+        src/Obj.cpp
     ) 
     find_package(SFML REQUIRED COMPONENTS 
         system

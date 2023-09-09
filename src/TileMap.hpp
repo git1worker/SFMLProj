@@ -23,12 +23,14 @@ class TileMap : public Obj {
     void Update(const sf::Vector2f &offsetRelativeCenter) override;
     void Draw() override;
     bool collide(sf::FloatRect other) override;
+    bool Intersection(Section a) override;
     bool assumeCollideX(const float x, sf::FloatRect other) override;
     bool assumeCollideY(const float y, sf::FloatRect other) override;
     bool collidePoint(sf::Vector2f p) override;
     bool IsThereLadNearby(sf::FloatRect &other);
 
   private:
+
     void FillMatrix();
     bool IsThisInsideWindow(const sf::FloatRect &posRect);
     void FillMatrixBackground();
