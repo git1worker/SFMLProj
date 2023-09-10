@@ -3,6 +3,7 @@
 #include "Gamew.hpp"
 #include <cmath>
 #include <iostream>
+#include "SplashOfBlood.hpp"
 
 #define IDENTATION_AT_HAND_X 2
 #define IDENTATION_AT_HAND_Y 2
@@ -20,7 +21,12 @@ Player::Player(Gamew &gamew, Types type, sf::Vector2f spawn) : gamew(gamew), spa
         texHand.loadFromFile("../assets/img/characters/right_hand_green.png");
         move = new AnimHuman(&gamew, "../assets/img/characters/anims_green_agent.png", this);
     }
-
+    blood = new SplashOfBlood(&gamew);
+    if (gun.GetType() == Gun::Types::AK)
+        delayShooting = 9;
+    if (gun.GetType() == Gun::Types::Pistol)
+        delayShooting = 30;
+    gun.GetSprite().setPosition(hand.getPosition());
     body.setTexture(textureBody);
     posRect.left = spawn.x + 3;
     posRect.top = spawn.y + 4;
@@ -32,35 +38,64 @@ Player::Player(Gamew &gamew, Types type, sf::Vector2f spawn) : gamew(gamew), spa
     hand.setTexture(texHand);
     hand.setPosition(body.getPosition().x + POINT_HAND_X, body.getPosition().y + POINT_HAND_Y);
     hand.setOrigin(sf::Vector2f(IDENTATION_AT_HAND_X, IDENTATION_AT_HAND_Y));
-    gun.GetSprite().setPosition(hand.getPosition());
+    
 
     bodyRect = body.getTextureRect();
     handRect = hand.getTextureRect();
     srand(time(NULL));
+    HP = MAX_HP;
 }
 
-Player::~Player() { delete move; }
+Player::~Player() { if (move) delete move; if (blood) delete blood; }
 
-void Player::Shoot() { gun.Shoot(sf::Vector2f(posRect.left + POINT_HAND_X, posRect.top + POINT_HAND_Y - 4), this); }
+void Player::Shoot() { gun.Shoot(sf::Vector2f(posRect.left + POINT_HAND_X, posRect.top + POINT_HAND_Y - 4), tg, this); }
 
 void Player::Draw() {
-
-    if (move->getAnimated())
-        gamew.window->draw(move->sprite);
-    else
-        gamew.window->draw(body);
-    gamew.window->draw(gun.GetSprite());
-    gamew.window->draw(hand);
+    if (!death) {
+        if (move->getAnimated())
+            gamew.window->draw(move->sprite);
+        else
+            gamew.window->draw(body);
+        gamew.window->draw(gun.GetSprite());
+        gamew.window->draw(hand);
+    }
+    
 }
 
 void Player::Update() {
-
-    UpdateRotation();
-    UpdateDirection();
-    move->Update();
+    if (!death){
+        if (sf::Mouse::isButtonPressed(sf::Mouse::Left)){
+            if (gun.GetType() == Gun::Pistol && !mousePress && cntShooting > delayShooting){
+                Shoot();
+                mousePress = true;
+                cntShooting = 0;
+            }
+            else {
+                if (cntShooting > delayShooting){
+                    Shoot();
+                    cntShooting = 0;
+                }
+            }
+            
+        }
+            
+        UpdateRotation();
+        UpdateDirection();
+        move->Update();
+        ++cntShooting;
+        if (HP <= 0){
+            death = true;
+        }
+    }
+    
 }
 
 void Player::MoveStop() { move->Stop(); }
+
+void Player::Hit(float posX, float posY, sf::Vector2f direction) {
+    blood->StartSplash(posX, posY, direction);
+    HP -= 25 + (rand() % 10) - 5;
+}
 
 void Player::StartJump() {
     if (!jumping)

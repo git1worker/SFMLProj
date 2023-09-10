@@ -21,25 +21,6 @@ class Obj {
     virtual bool assumeCollideX(const float x, sf::FloatRect other);
     virtual bool assumeCollideY(const float y, sf::FloatRect other);
 
-    enum Names {
-        None,
-        DebugInfo,
-        titleMainW,
-        butt1MainW,
-        butt2MainW,
-        butt3MainW,
-        butt4MainW,
-        titleW1,
-        titleW2,
-        titleW3,
-        titleW4,
-        textBox1MainW,
-        tileMapW1,
-        backgroundW1,
-        backgroundMW
-    };
-
-    Names name = None;
     sf::FloatRect posRect{};
 
   protected:

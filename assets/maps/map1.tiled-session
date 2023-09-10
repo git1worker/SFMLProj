@@ -23,11 +23,11 @@
             "scaleInEditor": 4
         },
         "untitled.xml": {
-            "scale": 1.5,
+            "scale": 0.33,
             "selectedLayer": 1,
             "viewCenter": {
-                "x": 778.3333333333333,
-                "y": 219.66666666666669
+                "x": 1874.242424242424,
+                "y": 640.909090909091
             }
         }
     },
@@ -39,13 +39,13 @@
     "map.lastUsedFormat": "tmx",
     "map.width": 120,
     "openFiles": [
-        "untitled.xml",
+        "map1.xml",
         "Lvl1.tsx"
     ],
     "project": "map1.tiled-project",
     "recentFiles": [
         "Lvl1.tsx",
-        "untitled.xml"
+        "map1.xml"
     ],
     "tileset.lastUsedFilter": "Tiled tileset files (*.tsx *.xml)",
     "tileset.lastUsedFormat": "tsx",

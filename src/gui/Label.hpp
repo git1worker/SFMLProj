@@ -1,5 +1,5 @@
 #pragma once
-#include "../Obj.hpp"
+#include "Element.hpp"
 #include <SFML/Graphics.hpp>
 #include <memory>
 #include <string>
@@ -9,7 +9,7 @@
     { std::cout << "Line: " << __LINE__ << std::endl; }
 #endif // DEBUG
 
-class Label : public Obj {
+class Label : public Element {
   public:
     enum Align { Center, Left };
 

@@ -3,23 +3,23 @@
 #include "Player.hpp"
 #include <cmath>
 
-Bullet::Bullet(Gamew *gamew, sf::Vector2f pos, Entity *ptrSelf) : gamew(gamew), pos(pos), ptrSelf(ptrSelf) {
+Bullet::Bullet(Gamew *gamew, sf::Vector2f pos, float tg, Entity *ptrSelf) : gamew(gamew), pos(pos), ptrSelf(ptrSelf) {
     texture.setFillColor(sf::Color(100, 100, 100));
     texture.setOutlineColor(sf::Color(200, 0, 0));
     texture.setSize(sf::Vector2f(3, 1));
     texture.setOutlineThickness(1);
     texture.setPosition(pos);
-    texture.setRotation(-(atan(gamew->player->tg) * 180 / 3.1415));
-    cos = sqrt(1 / (1 + gamew->player->tg * gamew->player->tg));
+    texture.setRotation(-(atan(tg) * 180 / 3.1415));
+    cos = sqrt(1 / (1 + tg * tg));
     sin = sqrt(1 - cos * cos);
     direction.x = velocity * cos + (rand() % 4) - 2;
     direction.y = velocity * sin + (rand() % 4) - 2;
-    if (gamew->player->flipped) {
+    if (ptrSelf->flipped) {
         direction.x *= -1;
-        if (gamew->player->tg < 0)
+        if (tg < 0)
             direction.y *= -1;
     } else {
-        if (gamew->player->tg > 0)
+        if (tg > 0)
             direction.y *= -1;
     }
     // std::cout << direction.x << ' ' << direction.y << std::endl;
@@ -35,11 +35,20 @@ void Bullet::Update() {
                     flag = false;
             }
         }
-        for (std::list<std::unique_ptr<Entity>>::iterator it = gamew->EntitiesVector.begin(); it != gamew->EntitiesVector.end() && flag; ++it)
-            if ((*it)->posRect.contains(pos.x + (direction.x / velocity) * i, pos.y + (direction.y / velocity) * i) && (*it).get() != ptrSelf) {
+        if (ptrSelf == gamew->player){
+            for (std::list<std::unique_ptr<Entity>>::iterator it = gamew->EntitiesVector.begin(); it != gamew->EntitiesVector.end() && flag; ++it)
+                if ((*it)->posRect.contains(pos.x + (direction.x / velocity) * i, pos.y + (direction.y / velocity) * i) && (*it).get() != ptrSelf) {
+                    flag = false;
+                    (*it)->Hit(pos.x + (direction.x / velocity) * i, pos.y + (direction.y / velocity) * i, direction);
+                }
+        }
+        else {
+            if (gamew->player->posRect.contains(pos.x + (direction.x / velocity) * i, pos.y + (direction.y / velocity) * i)) {
                 flag = false;
-                (*it)->Hit(pos.x + (direction.x / velocity) * i, pos.y + (direction.y / velocity) * i, direction);
+                gamew->player->Hit(pos.x + (direction.x / velocity) * i, pos.y + (direction.y / velocity) * i, direction);
             }
+        }
+        
     }
     if (!flag || ++cnt > 1000 / velocity)
         deleteIt = true;

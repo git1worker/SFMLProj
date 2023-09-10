@@ -1,12 +1,12 @@
 #pragma once
 #include "../Gamew.hpp"
-#include "../Obj.hpp"
+#include "Element.hpp"
 #include "Label.hpp"
 #include <SFML/Graphics.hpp>
 
 #define PADDING 20
 
-class Interface : public Obj {
+class Interface : public Element {
   public:
     Interface(Gamew *gamew);
     ~Interface();

@@ -159,7 +159,7 @@ bool TileMap::assumeCollideY(const float y, sf::FloatRect other) {
             if (map_Tiles[i][j].canCollide && map_Tiles[i][j].posRect.intersects(other)) {
                 flag = true;
                 if (map_Tiles[i][j].id == 19 || map_Tiles[i][j].id == 18)
-                    gamew.player->HP -= 0.2;
+                    gamew.player->HP -= 5;
             }
             other.top -= y;
         }
@@ -230,7 +230,7 @@ bool TileMap::IsThisInsideWindow(const sf::FloatRect &posRect) {
 
 void TileMap::FillMatrixBackground() {
     int posBuff = 0, posMatrix = 0;
-    char buffer[10];
+    char buffer[4];
 
     for (int i = 0; map2[i] != '\0'; ++i) {
         if (map2[i] == ',') {

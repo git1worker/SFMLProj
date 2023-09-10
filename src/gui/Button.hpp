@@ -1,6 +1,6 @@
 #pragma once
 #include "../Gamew.hpp"
-#include "../Obj.hpp"
+#include "Element.hpp"
 #include "Label.hpp"
 #include <SFML/Graphics.hpp>
 #include <functional>
@@ -13,9 +13,9 @@
     { std::cout << "Line: " << __LINE__ << std::endl; }
 #endif // DEBUG
 
-class Button : public Obj {
+class Button : public Element {
   public:
-    Button(sf::RenderWindow *window, sf::Font *font, const float x = 500, const float y = 500, std::wstring str = L"Button");
+    Button(sf::RenderWindow *window, sf::Font *font, const float x = 500, const float y = 500, std::wstring str = L"Button", const float width = 150, const float height = 50);
 
     sf::RectangleShape &getRect();
     Label *getLabel();

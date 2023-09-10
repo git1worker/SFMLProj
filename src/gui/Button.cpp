@@ -3,12 +3,12 @@
 
 int Button::counter = 0;
 
-Button::Button(sf::RenderWindow *window, sf::Font *font, const float x, const float y, std::wstring stri)
+Button::Button(sf::RenderWindow *window, sf::Font *font, const float x, const float y, std::wstring stri, const float width, const float height)
     : str(stri), window(window), Geologica(font) {
     ++counter;
     posRect.left = x;
     posRect.top = y;
-    posRect.width = 150, posRect.height = 50;
+    posRect.width = width, posRect.height = height;
     rect = sf::RectangleShape(sf::Vector2f(posRect.width, posRect.height));
     rect.setOrigin(sf::Vector2f(rect.getGlobalBounds().width / 2, rect.getGlobalBounds().height / 2));
     rect.setPosition(sf::Vector2f(x, y));

@@ -1,6 +1,10 @@
 #include "Animation.hpp"
 #include "Debug.hpp"
 
+Animation::~Animation() {
+    gamew->AnimsVector.remove(this);
+}
+
 Animation::Animation(Gamew *gamew, std::string path, int speed, int offset, bool infinity)
     : gamew(gamew), speed(speed), offset(offset), infinity(infinity) {
 
@@ -29,9 +33,13 @@ void Animation::SetFlipped() {
     }
 }
 
-void Animation::Update() { Play(); }
+void Animation::Update() { Play(); sprite.setPosition(sf::Vector2f(pos.x + gamew->offsetRelativeCenter.x, pos.y + gamew->offsetRelativeCenter.y)); }
 
 void Animation::Draw() { gamew->window->draw(sprite); }
+
+void Animation::setPosition(sf::Vector2f pos) {
+    this->pos = pos;
+}
 
 void Animation::Stop() {
     animate = false;

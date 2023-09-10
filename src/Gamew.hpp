@@ -12,6 +12,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include "gui/Element.hpp"
 
 #define DEBUGINFO
 
@@ -83,10 +84,12 @@ class Gamew {
     std::list<std::list<std::unique_ptr<Obj>>::iterator> ObjToDelete;
     std::list<std::list<std::unique_ptr<Entity>>::iterator> EntitiesToDelete;
     std::list<std::list<std::unique_ptr<Bullet>>::iterator> BulletsToDelete;
+    std::list<std::list<std::unique_ptr<Element>>::iterator> ElementsToDelete;
     std::list<Animation *> AnimsToDelete;
     std::list<std::unique_ptr<Obj>> ObjVector;
     std::list<std::unique_ptr<Entity>> EntitiesVector;
     std::list<std::unique_ptr<Bullet>> BulletsVector;
+    std::list<std::unique_ptr<Element>> ElementsVector;
     std::list<Animation *> AnimsVector;
 
     TextBox *selectedTextBox = nullptr;
@@ -97,8 +100,10 @@ class Gamew {
     bool cursorSetted = false;
     bool isActive = true;
     bool switchWindow = false;
+    bool selectionMenu = false;
     int currentWindow = Windows::MainW;
     bool TextBoxContains;
+    int delay = 60;
 
     ThreadPool pool{3};
     sf::Event event;

@@ -21,12 +21,15 @@ class Gun {
     Gun(Types type, Gamew &gamew);
     ~Gun();
     sf::Sprite &GetSprite();
-    void Shoot(sf::Vector2f pos, Entity *ptrSelf);
+    void Shoot(sf::Vector2f pos, float tg, Entity *ptrSelf);
     Types GetType() { return type; };
+    void ChangeType(Types type);
     static sf::Texture *GetTexture(Types type);
 
   private:
     friend Interface;
+    friend Entity;
+    friend Enemy;
 
     static std::map<Types, std::shared_ptr<sf::Texture>> mapTextures;
     static bool initTextures;

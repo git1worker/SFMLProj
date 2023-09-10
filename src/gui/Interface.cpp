@@ -40,6 +40,6 @@ void Interface::Draw() {
 }
 
 void Interface::Update() {
-    hpBar.setSize(sf::Vector2f((gamew->player->HP * hpShell.getSize().x) / 100, hpShell.getSize().y));
+    hpBar.setSize(sf::Vector2f((gamew->player->HP * hpShell.getSize().x) / MAX_HP, hpShell.getSize().y));
     ammo.ChangeText(std::to_wstring(gamew->player->gun.ammo));
 }

@@ -20,7 +20,7 @@ class Entity {
     // Velocity of moving
     float velocity = 3.5;
 
-  protected:
+  
     bool flipped = false;
     Types type;
     bool deleteIt = false;

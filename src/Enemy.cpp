@@ -11,8 +11,10 @@
 #define IDENTATION_AT_POSRECT_LEFT 3
 #define IDENTATION_AT_POSRECT_TOP 4
 
-Enemy::Enemy(Gamew &gamew, sf::Vector2f spawn) : gamew(gamew) {
+int Enemy::randCnt = 0;
 
+Enemy::Enemy(Gamew &gamew, sf::Vector2f spawn) : gamew(gamew) {
+    srand(time(NULL) + (++randCnt));
     type = Types::greenAgent;
     if (type == Types::armoredAgent) {
         textureBody.loadFromFile("../assets/img/characters/agent_2.png");
@@ -24,6 +26,7 @@ Enemy::Enemy(Gamew &gamew, sf::Vector2f spawn) : gamew(gamew) {
         move = new AnimHuman(&gamew, "../assets/img/characters/anims_green_agent.png", this);
     }
     blood = new SplashOfBlood(&gamew);
+    gun.ChangeType(static_cast<Gun::Types>(rand() % 2));
     body.setTexture(textureBody);
     posRect.left = spawn.x + IDENTATION_AT_POSRECT_LEFT;
     posRect.top = spawn.y + IDENTATION_AT_POSRECT_TOP;
@@ -43,12 +46,16 @@ Enemy::Enemy(Gamew &gamew, sf::Vector2f spawn) : gamew(gamew) {
     hpShell.setSize(sf::Vector2f(bodyRect.width, 3));
     hpBar.setFillColor(sf::Color(200, 0, 0));
     hpBar.setSize(sf::Vector2f(hpShell.getSize().x, hpShell.getSize().y));
-    srand(time(NULL));
+    
     UpdatePosition();
+    if (gun.GetType() == Gun::Types::AK)
+        maxDelayShooting = 35;
+    else if (gun.GetType() == Gun::Types::Pistol)
+        maxDelayShooting = 60;
 }
 
 void Enemy::Draw() {
-    if (IsThisInsideWindow()) {
+    if (IsThisInsideWindow() && wasUpdated) {
         if (move->getAnimated())
             gamew.window->draw(move->sprite);
         else
@@ -58,6 +65,7 @@ void Enemy::Draw() {
         blood->Draw();
         gamew.window->draw(hpShell);
         gamew.window->draw(hpBar);
+        
     }
 }
 
@@ -65,6 +73,7 @@ void Enemy::Update() {
     // UpdateRotation();
     // move->Update();
     if (IsThisInsideWindow()) {
+        wasUpdated = true;
         UpdatePosition();
         blood->Update();
         hpShell.setPosition(sf::Vector2f(posRect.left - IDENTATION_AT_POSRECT_LEFT + gamew.offsetRelativeCenter.x,
@@ -72,8 +81,8 @@ void Enemy::Update() {
         hpBar.setPosition(sf::Vector2f(posRect.left - IDENTATION_AT_POSRECT_LEFT + gamew.offsetRelativeCenter.x,
                                        posRect.top - IDENTATION_AT_POSRECT_TOP - 10 + gamew.offsetRelativeCenter.y));
         hpBar.setSize(sf::Vector2f((HP * hpShell.getSize().x) / 100, hpShell.getSize().y));
-
         DetectPlayer();
+        
         if (HP <= 0)
             deleteIt = true;
     }
@@ -84,10 +93,60 @@ void Enemy::DetectPlayer() {
         sf::Vector2f rayStart = {posRect.left, posRect.top};
         sf::Vector2f rayEnd = {gamew.player->posRect.left, gamew.player->posRect.top};
         sf::Vector2f direction = rayEnd - rayStart;
+        float length = sqrt(direction.x * direction.x + direction.y * direction.y);
+        if (length > 450) return;
         double tg = (direction.y / direction.x);
         float atg = atan(tg);
+        if (direction.x >= 0) {
+            if (flipped) {
+                flipped = false;
+                bodyRect.width = -bodyRect.width;
+                bodyRect.left = bodyRect.left - abs(bodyRect.width);
+                body.setTextureRect(bodyRect);
+
+                handRect.width = -handRect.width;
+                handRect.left = handRect.left - abs(handRect.width);
+                hand.setOrigin(IDENTATION_AT_HAND_X, IDENTATION_AT_HAND_Y);
+                hand.setPosition(body.getPosition().x + POINT_HAND_X, body.getPosition().y + POINT_HAND_Y);
+                hand.setTextureRect(handRect);
+
+                auto tmp = gun.GetSprite().getTextureRect();
+                tmp.width = -tmp.width;
+                tmp.left = tmp.left - abs(tmp.width);
+                gun.GetSprite().setOrigin(IDENTATION_AT_GUN_X, IDENTATION_AT_GUN_Y);
+                gun.GetSprite().setPosition(hand.getPosition());
+                gun.GetSprite().setTextureRect(tmp);
+            }
+        }
+        else {
+            if (!flipped) {
+                flipped = true;
+                bodyRect.width = -bodyRect.width;
+                bodyRect.left = bodyRect.left + abs(bodyRect.width);
+                body.setTextureRect(bodyRect);
+
+                handRect.width = -handRect.width;
+                handRect.left = handRect.left + abs(handRect.width);
+                hand.setOrigin(abs(handRect.width) - IDENTATION_AT_HAND_X, IDENTATION_AT_HAND_Y);
+                hand.setPosition((body.getPosition().x + abs(bodyRect.width)) - POINT_HAND_X, body.getPosition().y + POINT_HAND_Y);
+                hand.setTextureRect(handRect);
+
+                auto tmp = gun.GetSprite().getTextureRect();
+                tmp.width = -tmp.width;
+                tmp.left = tmp.left + abs(tmp.width);
+                gun.GetSprite().setOrigin(abs(tmp.width) - IDENTATION_AT_GUN_X, IDENTATION_AT_GUN_Y);
+                gun.GetSprite().setPosition(hand.getPosition());
+                gun.GetSprite().setTextureRect(tmp);
+            }
+        }
         hand.setRotation((atg * 180.0 / 3.1415));
         gun.GetSprite().setRotation((atg * 180.0 / 3.1415));
+        if (delayShooting > maxDelayShooting){
+            gun.Shoot(sf::Vector2f(posRect.left + POINT_HAND_X, posRect.top + POINT_HAND_Y - 4), -tg, this);
+            delayShooting = 0;
+        }
+        else
+            ++delayShooting;
     }
 }
 
@@ -146,7 +205,10 @@ void Enemy::UpdateDirection() {
 void Enemy::UpdatePosition() {
     body.setPosition(posRect.left - IDENTATION_AT_POSRECT_LEFT + gamew.offsetRelativeCenter.x,
                      posRect.top - IDENTATION_AT_POSRECT_TOP + gamew.offsetRelativeCenter.y);
-    hand.setPosition(body.getPosition().x + POINT_HAND_X, body.getPosition().y + POINT_HAND_Y);
+    if (!flipped)
+        hand.setPosition(body.getPosition().x + POINT_HAND_X, body.getPosition().y + POINT_HAND_Y);
+    else 
+        hand.setPosition(body.getPosition().x + std::abs(bodyRect.width) - POINT_HAND_X, body.getPosition().y + POINT_HAND_Y);
     gun.GetSprite().setPosition(hand.getPosition());
 }
 

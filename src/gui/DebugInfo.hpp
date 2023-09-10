@@ -1,5 +1,5 @@
 #pragma once
-#include "../Obj.hpp"
+#include "Element.hpp"
 #include "Label.hpp"
 #include <SFML/Graphics.hpp>
 #include <memory>
@@ -7,7 +7,7 @@
 
 class Gamew;
 
-class DebugInfo : public Obj {
+class DebugInfo : public Element {
   public:
     DebugInfo(Gamew *gamew, sf::Font *font, sf::Event *event);
     void UpdateFps(float fps);

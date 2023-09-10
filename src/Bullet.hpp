@@ -6,7 +6,7 @@ class Entity;
 
 class Bullet {
   public:
-    Bullet(Gamew *gamew, sf::Vector2f pos, Entity *ptrSelf);
+    Bullet(Gamew *gamew, sf::Vector2f pos, float tg, Entity *ptrSelf);
     void Update();
     virtual void Draw();
     bool DeleteIt() { return deleteIt; }

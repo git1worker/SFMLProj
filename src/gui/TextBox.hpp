@@ -1,11 +1,11 @@
 #pragma once
-#include "../Obj.hpp"
+#include "Element.hpp"
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <memory>
 #include <string>
 
-class TextBox : public Obj {
+class TextBox : public Element {
   public:
     TextBox(sf::RenderWindow *window, sf::Font *font, const float x, const float y, const unsigned int fSize = 30, const float w = 200,
             const float h = 60);

@@ -14,6 +14,14 @@ Background::Background(sf::RenderWindow *window, sf::Font *font, bool isStaticGr
     V_A.append(sf::Vertex(Vector2f(window->getSize().x, 0), lDown));
 }
 
+Background::Background(sf::RenderWindow *window, sf::Font *font, sf::Color color) 
+    : window(window), Geologica(font) {
+    isTextured = true;
+    isStaticGradient = true;
+    rect = sf::RectangleShape(sf::Vector2f(window->getSize().x, window->getSize().y));
+    rect.setFillColor(color);
+}
+
 void Background::SetGradient(sf::Color lUp, sf::Color rUp, sf::Color rDown, sf::Color lDown) {
     this->lUp = lUp, this->rUp = rUp, this->rDown = rDown, this->lDown = lDown;
     V_A[0] = (sf::Vertex(Vector2f(0, 0), lUp));
@@ -29,6 +37,7 @@ void Background::SetRandomGradient() {
 }
 
 void Background::Update() {
+    
     if (!isStaticGradient) {
         if (delay.getElapsedTime().asMilliseconds() < 100)
             return;

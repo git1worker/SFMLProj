@@ -9,7 +9,7 @@ class Gamew;
 class Animation {
   public:
     Animation() = default;
-    virtual ~Animation() = default;
+    virtual ~Animation();
 
     Animation(Gamew *gamew, std::string path, int speed = 110, int offset = 32, bool infinity = 1);
 
@@ -18,6 +18,7 @@ class Animation {
     virtual void Update();
     virtual void Stop();
     virtual void Draw();
+    virtual void setPosition(sf::Vector2f pos);
     virtual void Start() {
         stop = false;
         currFrame = 1;
@@ -32,6 +33,7 @@ class Animation {
   protected:
     void Play();
 
+    sf::Vector2f pos{};
     bool deleteIt = false;
     sf::Texture tAnim;
     int speed, offset, numFrames;

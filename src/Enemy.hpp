@@ -36,11 +36,15 @@ class Enemy : public Entity {
     sf::Texture texHand;
     sf::IntRect bodyRect, handRect;
 
+    bool wasUpdated = false;
     sf::RectangleShape hpBar, hpShell;
     SplashOfBlood *blood;
     AnimHuman *move;
     bool animated = false;
+    int delayShooting = 0;
     float currSpeedFall = 2;
     bool isFalling = false;
     Gun gun{Gun::Types::Pistol, gamew};
+    static int randCnt;
+    int maxDelayShooting;
 };

@@ -28,36 +28,46 @@ Gun::Gun(Types type, Gamew &gamew) : type(type), gamew(gamew) {
 
 Gun::~Gun() { delete shoot; }
 
+void Gun::ChangeType(Types type)
+{
+   
+    this->type = type;
+    if (type == Types::AK)
+        distAnimShoot = 41;
+    else if (type == Types::Pistol)
+        distAnimShoot = 31;
+    sprite.setTexture(*mapTextures.at(type));
+}
+
 sf::Sprite &Gun::GetSprite() { return sprite; }
 
-void Gun::Shoot(sf::Vector2f pos, Entity *ptrSelf) {
+void Gun::Shoot(sf::Vector2f pos, float tg, Entity *ptrSelf) {
     // std::cout << "---" << std::endl;
     if (ammo > 0) {
         --ammo;
         int hyp = distAnimShoot;
-        if (gamew.player->flipped)
+        if (ptrSelf->flipped)
             hyp = distAnimShoot + 13;
-        double cos = sqrt(1 / (1 + gamew.player->tg * gamew.player->tg));
+        double cos = sqrt(1 / (1 + tg * tg));
         double addX = cos * hyp;
         double addY = sqrt(hyp * hyp - addX * addX);
-
-        if (gamew.player->flipped) {
+        if (ptrSelf->flipped) {
             addX *= -1;
-            if (gamew.player->tg < 0)
+            if (tg < 0)
                 addY *= -1;
         } else {
-            if (gamew.player->tg > 0)
+            if (tg > 0)
                 addY *= -1;
         }
         addY -= 5;
-        shoot->sprite.setPosition(sf::Vector2f(pos.x + gamew.offsetRelativeCenter.x + addX, pos.y + gamew.offsetRelativeCenter.y + addY + 3));
-        shoot->sprite.setRotation(-(atan(gamew.player->tg) * 180 / 3.1415));
-        if (gamew.player->flipped)
+        shoot->setPosition(sf::Vector2f(pos.x + addX, pos.y + addY + 3));
+        shoot->sprite.setRotation(-(atan(tg) * 180 / 3.1415));
+        if (ptrSelf->flipped)
             shoot->SetFlipped();
         else
             shoot->SetOrigin();
         shoot->Start();
-        gamew.BulletsVector.emplace_back(std::make_unique<Bullet>(&gamew, pos, ptrSelf));
+        gamew.BulletsVector.emplace_back(std::make_unique<Bullet>(&gamew, pos, tg, ptrSelf));
         gamew.AnimsVector.push_back(shoot);
     }
 }
