@@ -17,7 +17,7 @@
 #include "Player.hpp"
 #include "gui/Interface.hpp"
 
-#define DEBUGINFO
+//#define DEBUGINFO
 
 #ifndef DEBUG
 #define DEBUG                                                                                                                                        \

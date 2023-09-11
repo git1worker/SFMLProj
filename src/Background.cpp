@@ -2,6 +2,8 @@
 #include <iostream>
 #include "Gamew.hpp"
 
+#pragma GCC optimize("O0")
+
 using sf::Vector2f;
 
 Background::Background(Gamew* gamew, bool isStaticGradient)
@@ -106,3 +108,5 @@ void Background::SetTexture(const std::string filename) {
     rect.setTextureRect(sf::IntRect(sf::Vector2i(0, 0), sf::Vector2i(gamew->window->getSize().x, gamew->window->getSize().y)));
     movable = true;
 }
+
+#pragma GCC optimize("O3")
