@@ -1,10 +1,12 @@
 #include "SplashOfBlood.hpp"
 #include "Debug.hpp"
 #include "Gamew.hpp"
+#include <random>
 
 SplashOfBlood::SplashOfBlood(Gamew *gamew) {
     this->gamew = gamew;
     speed = 110;
+    std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<int> distribution1(100, 355);
     std::uniform_int_distribution<int> distribution2(50, 300);

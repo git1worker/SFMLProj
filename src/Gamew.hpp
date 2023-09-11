@@ -13,6 +13,9 @@
 #include <string>
 #include <vector>
 #include "gui/Element.hpp"
+#include <chrono>
+#include "Player.hpp"
+#include "gui/Interface.hpp"
 
 #define DEBUGINFO
 
@@ -28,7 +31,7 @@ using std::shared_ptr;
 using std::unique_ptr;
 using std::vector;
 
-class Player;
+
 class Button;
 class AnimHuman;
 class Obj;
@@ -36,7 +39,7 @@ class Label;
 class Enemy;
 class Gun;
 class SplashOfBlood;
-class Interface;
+class Background;
 
 namespace Windows {
 enum Windows {
@@ -71,6 +74,7 @@ class Gamew {
     friend Animation;
     friend SplashOfBlood;
     friend Interface;
+    friend Background;
 
     void HandleButton(Button *btn);
     void InitMainWindow();
@@ -80,6 +84,7 @@ class Gamew {
     void InitWindow4();
     void CheckSwitchWindows();
     void CheckToDelete();
+    void SelectionMenu();
 
     std::list<std::list<std::unique_ptr<Obj>>::iterator> ObjToDelete;
     std::list<std::list<std::unique_ptr<Entity>>::iterator> EntitiesToDelete;
@@ -94,18 +99,19 @@ class Gamew {
 
     TextBox *selectedTextBox = nullptr;
     TileMap *currTileMap = nullptr;
-    Player *player = nullptr;
-    Interface *interface = nullptr;
+    Player* player;
+    std::unique_ptr<Interface> interface;
     sf::Cursor cursorArrow, cursorText;
     bool cursorSetted = false;
     bool isActive = true;
     bool switchWindow = false;
     bool selectionMenu = false;
+    bool leftMouseButtonPrerssed = false;
     int currentWindow = Windows::MainW;
     bool TextBoxContains;
     int delay = 60;
 
-    ThreadPool pool{3};
+    ThreadPool pool{2};
     sf::Event event;
     HandleEvent handle = HandleEvent(this);
     sf::Font Geologica;

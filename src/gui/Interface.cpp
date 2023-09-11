@@ -4,6 +4,9 @@
 #include "../Player.hpp"
 
 Interface::Interface(Gamew *gamew) : gamew(gamew) {
+    hpL = Label{gamew->window.get(), &gamew->Geologica, L"HP", PADDING, PADDING, Label::Align::Left};
+    gunL= Label{gamew->window.get(), &gamew->Geologica, L"GUN", PADDING, PADDING * 3 + 30, Label::Align::Left};
+    ammo = Label{gamew->window.get(), &gamew->Geologica, L"999", 0, 0, Label::Align::Left, 25};
     const int widthShell = 150;
     hpL.getText().setFillColor(sf::Color(60, 60, 60));
     gunL.getText().setFillColor(sf::Color(60, 60, 60));

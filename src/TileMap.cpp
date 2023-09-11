@@ -4,6 +4,7 @@
 #include "Player.hpp"
 #include <iostream>
 #include <string>
+#include "Debug.hpp"
 
 void TileMap::ParseMapToMatrix() {
     file<> xmlFile(path.c_str());
@@ -46,11 +47,15 @@ void TileMap::ParseMapToMatrix() {
     FillMatrixBackground();
 }
 
-TileMap::TileMap(Gamew &gamew, std::string path) : gamew(gamew), path(path) {
+TileMap::TileMap(Gamew *gamew, std::string path) : gamew(gamew), path(path) {
     ParseMapToMatrix();
 
     canCollide = true;
     movable = true;
+}
+
+void TileMap::Update() {
+    offsetRelativeCenter = gamew->offsetRelativeCenter;
 }
 
 TileMap::~TileMap() {
@@ -63,54 +68,52 @@ TileMap::~TileMap() {
     delete[] map_TilesBackground;
 }
 
-void TileMap::Update(const sf::Vector2f &offsetRelativeCenter) {
-
-    for (int i = 0; i < heightInTiles; ++i) {
-        for (int j = 0; j < widthInTiles; ++j) {
-            if (map_Tiles[i][j].id == 19)
-                map_Tiles[i][j].sprite.setPosition(
-                    sf::Vector2f(map_Tiles[i][j].posRect.left + offsetRelativeCenter.x, map_Tiles[i][j].posRect.top - 24 + offsetRelativeCenter.y));
-            else if (map_Tiles[i][j].id != -1)
-                map_Tiles[i][j].sprite.setPosition(
-                    sf::Vector2f(map_Tiles[i][j].posRect.left + offsetRelativeCenter.x, map_Tiles[i][j].posRect.top + offsetRelativeCenter.y));
-        }
-    }
-    for (int i = 0; i < heightInTiles; ++i) {
-        for (int j = 0; j < widthInTiles; ++j) {
-            if (map_TilesBackground[i][j].id != -1)
-                map_TilesBackground[i][j].sprite.setPosition(sf::Vector2f(map_TilesBackground[i][j].posRect.left + offsetRelativeCenter.x,
-                                                                          map_TilesBackground[i][j].posRect.top + offsetRelativeCenter.y));
-        }
-    }
-}
-
 void TileMap::Draw() {
     for (int i = 0; i < heightInTiles; ++i) {
         for (int j = 0; j < widthInTiles; ++j) {
             if (map_TilesBackground[i][j].id != -1 &&
-                IsThisInsideWindow(sf::FloatRect(map_TilesBackground[i][j].sprite.getPosition(),
-                                                 sf::Vector2f(map_TilesBackground[i][j].sprite.getTextureRect().width,
-                                                              map_TilesBackground[i][j].sprite.getTextureRect().height)))) {
-                gamew.window->draw(map_TilesBackground[i][j].sprite);
+                IsThisInsideWindow(map_TilesBackground[i][j].posRect)) {
+                map_TilesBackground[i][j].sprite.setPosition(map_TilesBackground[i][j].posRect.left + offsetRelativeCenter.x, 
+                    map_TilesBackground[i][j].posRect.top + offsetRelativeCenter.y);
                 blackoutTile.setPosition(map_TilesBackground[i][j].sprite.getPosition().x, map_TilesBackground[i][j].sprite.getPosition().y);
-                gamew.window->draw(blackoutTile);
+                gamew->window->draw(map_TilesBackground[i][j].sprite);
+                gamew->window->draw(blackoutTile);
             }
         }
     }
     for (int i = 0; i < heightInTiles; ++i) {
         for (int j = 0; j < widthInTiles; ++j) {
             if (map_Tiles[i][j].id != -1 &&
-                IsThisInsideWindow(sf::FloatRect(map_Tiles[i][j].sprite.getPosition(), sf::Vector2f(map_Tiles[i][j].sprite.getTextureRect().width,
-                                                                                                    map_Tiles[i][j].sprite.getTextureRect().height))))
-                gamew.window->draw(map_Tiles[i][j].sprite);
+                IsThisInsideWindow(map_Tiles[i][j].posRect)) {
+                    if (map_Tiles[i][j].id == 19)
+                        map_Tiles[i][j].sprite.setPosition(
+                            sf::Vector2f(map_Tiles[i][j].posRect.left + offsetRelativeCenter.x, map_Tiles[i][j].posRect.top - 24 + offsetRelativeCenter.y));
+                    else 
+                        map_Tiles[i][j].sprite.setPosition(
+                            sf::Vector2f(map_Tiles[i][j].posRect.left + offsetRelativeCenter.x, map_Tiles[i][j].posRect.top + offsetRelativeCenter.y));
+                    gamew->window->draw(map_Tiles[i][j].sprite);
+                }
+
+                
         }
     }
 }
 
 bool TileMap::collide(sf::FloatRect other) {
+
+    int maxX = other.left + other.width + widthTile * 2;
+    int maxY = other.top + other.height + heightTile * 2;
+    int minX = other.left - widthTile * 2;
+    int minY = other.top - heightTile * 2;
+    if (minX < 0) minX = 0;
+    if (minY < 0) minY = 0;
+    if (maxX > widthTile * widthInTiles) maxX = widthTile * widthInTiles;
+    if (maxY > heightTile * heightInTiles) maxY = heightTile * heightInTiles;
+    int ii = maxY / heightTile;
+    int jj = maxX / widthTile;
     bool flag = false;
-    for (int i = 0; i < heightInTiles && !flag; ++i) {
-        for (int j = 0; j < widthInTiles && !flag; ++j) {
+    for (int i = minY / heightTile; i < ii && !flag; ++i) {
+        for (int j = minX / widthTile; j < jj && !flag; ++j) {
             if (map_Tiles[i][j].canCollide && map_Tiles[i][j].posRect.intersects(other))
                 flag = true;
         }
@@ -118,12 +121,24 @@ bool TileMap::collide(sf::FloatRect other) {
     return flag;
 }
 
-bool TileMap::Intersection(Section a) { 
+bool TileMap::Intersection(const Section& a) { 
     bool flag = false;
+    int maxX = a.x1 > a.x2 ? a.x1 + widthTile : a.x2 + widthTile;
+    int maxY = a.y1 > a.y2 ? a.y1 + heightTile : a.y2 + heightTile;
+    int minX = a.x1 < a.x2 ? a.x1 - widthTile: a.x2 - widthTile;
+    int minY = a.y1 < a.y2 ? a.y1 - heightTile : a.y2 - heightTile;
+    if (minX < 0) minX = 0;
+    if (minY < 0) minY = 0;
+    if (maxX > widthTile * widthInTiles) maxX = widthTile * widthInTiles;
+    if (maxY > heightTile * heightInTiles) maxY = heightTile * heightInTiles;
     Section s1 {posRect.left, posRect.top, posRect.left + posRect.width, posRect.top + posRect.height};
     Section s2 {posRect.left + posRect.width, posRect.top, posRect.left, posRect.top + posRect.height};
-    for (int i = 0; i < heightInTiles && !flag; ++i) {
-        for (int j = 0; j < widthInTiles && !flag; ++j) {
+    int ii = maxY / heightTile;
+    int jj = maxX / widthTile;
+    //int cnt = 0;
+    //Timer t;
+    for (int i = minY / heightTile; i < ii && !flag; ++i) {
+        for (int j = minX / widthTile; j < jj && !flag; ++j) {
             if (map_Tiles[i][j].canCollide) {
                 s1.x1 = map_Tiles[i][j].posRect.left;
                 s1.y1 = map_Tiles[i][j].posRect.top;
@@ -135,31 +150,39 @@ bool TileMap::Intersection(Section a) {
                 s2.x2 = map_Tiles[i][j].posRect.left;
                 s2.y2 = map_Tiles[i][j].posRect.top + map_Tiles[i][j].posRect.height;
                 
-                   
                 if (intersectionSectionAndSection(s1, a) || 
                     intersectionSectionAndSection(s2, a))
                     flag = true;
-                else {
-                    if (i == 6 && j == 44) {
-                        bool ac = true;
-                        bool ab = true;
-                    }
-                }
+                
             }
+            //++cnt;
         }
     }
+    // std::cout << "Done " << t.GetTime() << ' ' << cnt << ' ' <<
+    // minY / heightTile << ' ' << ii << ' '
+    // << minX / widthTile << ' ' << jj << '\n';
     return flag;
 }
 
 bool TileMap::assumeCollideY(const float y, sf::FloatRect other) {
     bool flag = false;
-    for (int i = 0; i < heightInTiles && !flag; ++i) {
-        for (int j = 0; j < widthInTiles && !flag; ++j) {
+    int maxX = other.left + other.width + widthTile * 2;
+    int maxY = other.top + other.height + heightTile * 2;
+    int minX = other.left - widthTile * 2;
+    int minY = other.top - heightTile * 2;
+    if (minX < 0) minX = 0;
+    if (minY < 0) minY = 0;
+    if (maxX > widthTile * widthInTiles) maxX = widthTile * widthInTiles;
+    if (maxY > heightTile * heightInTiles) maxY = heightTile * heightInTiles;
+    int ii = maxY / heightTile;
+    int jj = maxX / widthTile;
+    for (int i = minY / heightTile; i < ii && !flag; ++i) {
+        for (int j = minX / widthTile; j < jj && !flag; ++j) {
             other.top += y;
             if (map_Tiles[i][j].canCollide && map_Tiles[i][j].posRect.intersects(other)) {
                 flag = true;
                 if (map_Tiles[i][j].id == 19 || map_Tiles[i][j].id == 18)
-                    gamew.player->HP -= 5;
+                    gamew->player->HP -= 5;
             }
             other.top -= y;
         }
@@ -169,8 +192,18 @@ bool TileMap::assumeCollideY(const float y, sf::FloatRect other) {
 
 bool TileMap::collidePoint(sf::Vector2f p) {
     bool flag = false;
-    for (int i = 0; i < heightInTiles && !flag; ++i) {
-        for (int j = 0; j < widthInTiles && !flag; ++j) {
+    int maxX = p.x + widthTile * 2;
+    int maxY = p.y + heightTile * 2;
+    int minX = p.x - widthTile * 2;
+    int minY = p.y - heightTile * 2;
+    if (minX < 0) minX = 0;
+    if (minY < 0) minY = 0;
+    if (maxX > widthTile * widthInTiles) maxX = widthTile * widthInTiles;
+    if (maxY > heightTile * heightInTiles) maxY = heightTile * heightInTiles;
+    int ii = maxY / heightTile;
+    int jj = maxX / widthTile;
+    for (int i = minY / heightTile; i < ii && !flag; ++i) {
+        for (int j = minX / widthTile; j < jj && !flag; ++j) {
             if (map_Tiles[i][j].canCollide && map_Tiles[i][j].posRect.contains(p)) {
                 flag = true;
             }
@@ -181,8 +214,18 @@ bool TileMap::collidePoint(sf::Vector2f p) {
 
 bool TileMap::IsThereLadNearby(sf::FloatRect &other) {
     bool flag = false;
-    for (int i = 0; i < heightInTiles && !flag; ++i) {
-        for (int j = 0; j < widthInTiles && !flag; ++j) {
+    int maxX = other.left + other.width + widthTile * 2;
+    int maxY = other.top + other.height + heightTile * 2;
+    int minX = other.left - widthTile * 2;
+    int minY = other.top - heightTile * 2;
+    if (minX < 0) minX = 0;
+    if (minY < 0) minY = 0;
+    if (maxX > widthTile * widthInTiles) maxX = widthTile * widthInTiles;
+    if (maxY > heightTile * heightInTiles) maxY = heightTile * heightInTiles;
+    int ii = maxY / heightTile;
+    int jj = maxX / widthTile;
+    for (int i = minY / heightTile; i < ii && !flag; ++i) {
+        for (int j = minX / widthTile; j < jj && !flag; ++j) {
             if (map_Tiles[i][j].posRect.intersects(other) && map_Tiles[i][j].id == 14)
                 flag = true;
         }
@@ -191,9 +234,19 @@ bool TileMap::IsThereLadNearby(sf::FloatRect &other) {
 }
 
 bool TileMap::assumeCollideX(const float x, sf::FloatRect other) {
+    int maxX = other.left + other.width + widthTile * 2;
+    int maxY = other.top + other.height + heightTile * 2;
+    int minX = other.left - widthTile * 2;
+    int minY = other.top - heightTile * 2;
+    if (minX < 0) minX = 0;
+    if (minY < 0) minY = 0;
+    if (maxX > widthTile * widthInTiles) maxX = widthTile * widthInTiles;
+    if (maxY > heightTile * heightInTiles) maxY = heightTile * heightInTiles;
+    int ii = maxY / heightTile;
+    int jj = maxX / widthTile;
     bool flag = false;
-    for (int i = 0; i < heightInTiles && !flag; ++i) {
-        for (int j = 0; j < widthInTiles && !flag; ++j) {
+    for (int i = minY / heightTile; i < ii && !flag; ++i) {
+        for (int j = minX / widthTile; j < jj && !flag; ++j) {
             other.left += x;
             if (map_Tiles[i][j].canCollide && map_Tiles[i][j].posRect.intersects(other)) {
                 auto t = map_Tiles[i][j];
@@ -221,9 +274,9 @@ void TileMap::FillMatrix() {
 }
 
 bool TileMap::IsThisInsideWindow(const sf::FloatRect &posRect) {
-    if (posRect.left + posRect.width < 0 || posRect.left > gamew.window->getSize().x)
+    if (posRect.left + posRect.width + gamew->offsetRelativeCenter.x < 0 || posRect.left + gamew->offsetRelativeCenter.x > gamew->window->getSize().x)
         return false;
-    if (posRect.top + posRect.height < 0 || posRect.top > gamew.window->getSize().y)
+    if (posRect.top + posRect.height + gamew->offsetRelativeCenter.y < 0 || posRect.top + gamew->offsetRelativeCenter.y > gamew->window->getSize().y)
         return false;
     return true;
 }
@@ -265,7 +318,7 @@ void TileMap::OneTileProcessing(int &posBuff, int &posMatrix, char *buffer) {
     buffer[posBuff] = '\0';
     int idInTiled = atoi(buffer) - 1;
     if (idInTiled == 27) {
-        gamew.EntitiesVector.emplace_back(
+        gamew->EntitiesVector.emplace_back(
             std::make_unique<Enemy>(gamew, sf::Vector2f(widthTile * (posMatrix % widthInTiles), heightTile * (posMatrix / widthInTiles))));
     } else {
         map_Tiles[posMatrix / widthInTiles][posMatrix % widthInTiles] = Tile();

@@ -2,6 +2,7 @@
 #include "Gamew.hpp"
 #include "Player.hpp"
 #include <cmath>
+#include "Debug.hpp"
 #include <iostream>
 
 #define IDENTATION_AT_HAND_X 2
@@ -13,26 +14,26 @@
 
 int Enemy::randCnt = 0;
 
-Enemy::Enemy(Gamew &gamew, sf::Vector2f spawn) : gamew(gamew) {
+Enemy::Enemy(Gamew *gamew, sf::Vector2f spawn) : gamew(gamew) {
     srand(time(NULL) + (++randCnt));
     type = Types::greenAgent;
     if (type == Types::armoredAgent) {
         textureBody.loadFromFile("../assets/img/characters/agent_2.png");
         texHand.loadFromFile("../assets/img/characters/right_hand_gray.png");
-        move = new AnimHuman(&gamew, "../assets/img/characters/anims_gray_agent.png", this);
+        move = AnimHuman(gamew, "../assets/img/characters/anims_gray_agent.png", this);
     } else if (type == Types::greenAgent) {
         textureBody.loadFromFile("../assets/img/characters/agent_1.png");
         texHand.loadFromFile("../assets/img/characters/right_hand_green.png");
-        move = new AnimHuman(&gamew, "../assets/img/characters/anims_green_agent.png", this);
+        move = AnimHuman(gamew, "../assets/img/characters/anims_green_agent.png", this);
     }
-    blood = new SplashOfBlood(&gamew);
+    blood = SplashOfBlood(gamew);
     gun.ChangeType(static_cast<Gun::Types>(rand() % 2));
     body.setTexture(textureBody);
     posRect.left = spawn.x + IDENTATION_AT_POSRECT_LEFT;
     posRect.top = spawn.y + IDENTATION_AT_POSRECT_TOP;
     posRect.width = body.getTextureRect().width - IDENTATION_AT_POSRECT_LEFT * 2;
     posRect.height = body.getTextureRect().height - IDENTATION_AT_POSRECT_TOP;
-    body.setPosition(sf::Vector2f(spawn.x - POINT_HAND_X + gamew.offsetRelativeCenter.x, spawn.y - POINT_HAND_Y + gamew.offsetRelativeCenter.y));
+    body.setPosition(sf::Vector2f(spawn.x - POINT_HAND_X + gamew->offsetRelativeCenter.x, spawn.y - POINT_HAND_Y + gamew->offsetRelativeCenter.y));
     hand.setTexture(texHand);
     hand.setPosition(body.getPosition().x + POINT_HAND_X, body.getPosition().y + POINT_HAND_Y);
     hand.setOrigin(sf::Vector2f(IDENTATION_AT_HAND_X, IDENTATION_AT_HAND_Y));
@@ -56,42 +57,50 @@ Enemy::Enemy(Gamew &gamew, sf::Vector2f spawn) : gamew(gamew) {
 
 void Enemy::Draw() {
     if (IsThisInsideWindow() && wasUpdated) {
-        if (move->getAnimated())
-            gamew.window->draw(move->sprite);
+        if (move.getAnimated())
+            gamew->window->draw(move.sprite);
         else
-            gamew.window->draw(body);
-        gamew.window->draw(gun.GetSprite());
-        gamew.window->draw(hand);
-        blood->Draw();
-        gamew.window->draw(hpShell);
-        gamew.window->draw(hpBar);
+            gamew->window->draw(body);
+        gamew->window->draw(gun.GetSprite());
+        gamew->window->draw(hand);
+        blood.Draw();
+        gamew->window->draw(hpShell);
+        gamew->window->draw(hpBar);
         
     }
 }
+
+//std::chrono::microseconds Entity::total = std::chrono::microseconds(0);
 
 void Enemy::Update() {
     // UpdateRotation();
     // move->Update();
     if (IsThisInsideWindow()) {
+        
         wasUpdated = true;
         UpdatePosition();
-        blood->Update();
-        hpShell.setPosition(sf::Vector2f(posRect.left - IDENTATION_AT_POSRECT_LEFT + gamew.offsetRelativeCenter.x,
-                                         posRect.top - IDENTATION_AT_POSRECT_TOP - 10 + gamew.offsetRelativeCenter.y));
-        hpBar.setPosition(sf::Vector2f(posRect.left - IDENTATION_AT_POSRECT_LEFT + gamew.offsetRelativeCenter.x,
-                                       posRect.top - IDENTATION_AT_POSRECT_TOP - 10 + gamew.offsetRelativeCenter.y));
-        hpBar.setSize(sf::Vector2f((HP * hpShell.getSize().x) / 100, hpShell.getSize().y));
+        blood.Update();
+        hpShell.setPosition(posRect.left - IDENTATION_AT_POSRECT_LEFT + gamew->offsetRelativeCenter.x,
+                                         posRect.top - IDENTATION_AT_POSRECT_TOP - 10 + gamew->offsetRelativeCenter.y);
+        hpBar.setPosition(posRect.left - IDENTATION_AT_POSRECT_LEFT + gamew->offsetRelativeCenter.x,
+                                       posRect.top - IDENTATION_AT_POSRECT_TOP - 10 + gamew->offsetRelativeCenter.y);
+        hpBarSize.x = (HP * hpShell.getSize().x) / 100;
+        hpBarSize.y = hpShell.getSize().y;
+        hpBar.setSize(hpBarSize);
+        
         DetectPlayer();
         
         if (HP <= 0)
             deleteIt = true;
+        
     }
+    
 }
 
 void Enemy::DetectPlayer() {
     if (CheckTheRay()) {
         sf::Vector2f rayStart = {posRect.left, posRect.top};
-        sf::Vector2f rayEnd = {gamew.player->posRect.left, gamew.player->posRect.top};
+        sf::Vector2f rayEnd = {gamew->player->posRect.left, gamew->player->posRect.top};
         sf::Vector2f direction = rayEnd - rayStart;
         float length = sqrt(direction.x * direction.x + direction.y * direction.y);
         if (length > 450) return;
@@ -147,53 +156,53 @@ void Enemy::DetectPlayer() {
         }
         else
             ++delayShooting;
+        
     }
+    
 }
 
 bool Enemy::CheckTheRay() {
+    
+    bool flag = true;
     // Создаем луч и точку начала луча (позиция бота)
     sf::Vector2f rayStart = {posRect.left + posRect.width / 2, posRect.top + 10};
-    sf::Vector2f rayEnd = {gamew.player->posRect.left + gamew.player->posRect.width / 2,
-                           gamew.player->posRect.top + gamew.player->posRect.height / 2};
+    sf::Vector2f rayEnd = {gamew->player->posRect.left + gamew->player->posRect.width / 2,
+                           gamew->player->posRect.top + gamew->player->posRect.height / 2};
     sf::Vector2f direction = rayEnd - rayStart;
     Section a {rayStart.x, rayStart.y, rayEnd.x, rayEnd.y};
 
     // Проверяем пересечение луча с препятствиями
-    for (std::list<std::unique_ptr<Obj>>::iterator it = gamew.ObjVector.begin(); it != gamew.ObjVector.end(); ++it) {
+    for (std::list<std::unique_ptr<Obj>>::iterator it = gamew->ObjVector.begin(); it != gamew->ObjVector.end() && flag; ++it) {
         if ((*it)->isMovable() && (*it)->isCollidable()) {
+            
             if ((*it)->Intersection(a)) {
                 // Если есть пересечение, игрок не видим
-                return false;
+                flag = false;
             }
-            else {
-                bool d = true;
-            }
+            
         }
     }
+    
     // Если нет пересечений с препятствиями, игрок видим
-    return true;
+    return flag;
 }
 
 
 
 void Enemy::Hit(float posX, float posY, sf::Vector2f direction) {
-    blood->StartSplash(posX, posY, direction);
+    blood.StartSplash(posX, posY, direction);
     HP -= 25 + (rand() % 10) - 5;
 }
 
-Enemy::~Enemy() {
-    delete move;
-    delete blood;
-}
 void Enemy::UpdateDirection() {
     direction = sf::Vector2f(0, 0);
     direction += sf::Vector2f(0, GetFreeFall());
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
-        move->SetFlipped();
+        move.SetFlipped();
         direction += sf::Vector2f(-velocity, 0);
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
-        move->SetOrigin();
+        move.SetOrigin();
         direction += sf::Vector2f(velocity, 0);
     }
     CollideCheck();
@@ -203,8 +212,8 @@ void Enemy::UpdateDirection() {
 }
 
 void Enemy::UpdatePosition() {
-    body.setPosition(posRect.left - IDENTATION_AT_POSRECT_LEFT + gamew.offsetRelativeCenter.x,
-                     posRect.top - IDENTATION_AT_POSRECT_TOP + gamew.offsetRelativeCenter.y);
+    body.setPosition(posRect.left - IDENTATION_AT_POSRECT_LEFT + gamew->offsetRelativeCenter.x,
+                     posRect.top - IDENTATION_AT_POSRECT_TOP + gamew->offsetRelativeCenter.y);
     if (!flipped)
         hand.setPosition(body.getPosition().x + POINT_HAND_X, body.getPosition().y + POINT_HAND_Y);
     else 
@@ -213,9 +222,9 @@ void Enemy::UpdatePosition() {
 }
 
 bool Enemy::IsThisInsideWindow() {
-    if (posRect.left + posRect.width + gamew.offsetRelativeCenter.x < 0 || posRect.left + gamew.offsetRelativeCenter.x > gamew.window->getSize().x)
+    if (posRect.left + posRect.width + gamew->offsetRelativeCenter.x < 0 || posRect.left + gamew->offsetRelativeCenter.x > gamew->window->getSize().x)
         return false;
-    if (posRect.top + posRect.height + gamew.offsetRelativeCenter.y < 0 || posRect.top + gamew.offsetRelativeCenter.y > gamew.window->getSize().y)
+    if (posRect.top + posRect.height + gamew->offsetRelativeCenter.y < 0 || posRect.top + gamew->offsetRelativeCenter.y > gamew->window->getSize().y)
         return false;
     return true;
 }
@@ -226,7 +235,7 @@ float Enemy::GetFreeFall() {
         isFalling = true, currSpeedFall = 2;
     else if (isFalling && ff) {
         if (currSpeedFall < 7) {
-            currSpeedFall += gamew.pxPerFrameFall;
+            currSpeedFall += gamew->pxPerFrameFall;
         }
         return currSpeedFall;
     } else
@@ -236,7 +245,7 @@ float Enemy::GetFreeFall() {
 
 bool Enemy::CheckFreeFall() {
     bool flag = true;
-    for (std::list<std::unique_ptr<Obj>>::iterator it = gamew.ObjVector.begin(); it != gamew.ObjVector.end() && flag; ++it) {
+    for (std::list<std::unique_ptr<Obj>>::iterator it = gamew->ObjVector.begin(); it != gamew->ObjVector.end() && flag; ++it) {
         if ((*it)->isMovable() && (*it)->isCollidable()) {
             if ((*it)->assumeCollideY(1, this->posRect)) {
                 flag = false;
@@ -250,7 +259,7 @@ void Enemy::CollideCheck() {
     int actionForX = (direction.x > 0.01 ? 1 : -1);
     int actionForY = (direction.y > 0.01 ? 1 : -1);
     bool flag = true;
-    for (std::list<std::unique_ptr<Obj>>::iterator it = gamew.ObjVector.begin(); it != gamew.ObjVector.end() && flag; ++it) {
+    for (std::list<std::unique_ptr<Obj>>::iterator it = gamew->ObjVector.begin(); it != gamew->ObjVector.end() && flag; ++it) {
         if ((*it)->isMovable()) {
             // Collision check
             if ((*it)->assumeCollideX(direction.x, this->posRect))
@@ -261,7 +270,7 @@ void Enemy::CollideCheck() {
         int reduction = actionForX;
         flag = true;
         for (; abs(reduction) < abs(direction.x) && flag; reduction = reduction + actionForX) {
-            for (std::list<std::unique_ptr<Obj>>::iterator it = gamew.ObjVector.begin(); it != gamew.ObjVector.end() && flag; ++it) {
+            for (std::list<std::unique_ptr<Obj>>::iterator it = gamew->ObjVector.begin(); it != gamew->ObjVector.end() && flag; ++it) {
                 if ((*it)->isMovable()) {
                     // Collision check
                     if ((*it)->assumeCollideX(reduction, this->posRect))
@@ -273,7 +282,7 @@ void Enemy::CollideCheck() {
     }
 
     flag = true;
-    for (std::list<std::unique_ptr<Obj>>::iterator it = gamew.ObjVector.begin(); it != gamew.ObjVector.end() && flag; ++it) {
+    for (std::list<std::unique_ptr<Obj>>::iterator it = gamew->ObjVector.begin(); it != gamew->ObjVector.end() && flag; ++it) {
         if ((*it)->isMovable()) {
             // Collision check
             if ((*it)->assumeCollideY(direction.y, this->posRect))
@@ -284,7 +293,7 @@ void Enemy::CollideCheck() {
         int reduction = actionForY;
         flag = true;
         for (; abs(reduction) < abs(direction.y) && flag; reduction = reduction + actionForY) {
-            for (std::list<std::unique_ptr<Obj>>::iterator it = gamew.ObjVector.begin(); it != gamew.ObjVector.end() && flag; ++it) {
+            for (std::list<std::unique_ptr<Obj>>::iterator it = gamew->ObjVector.begin(); it != gamew->ObjVector.end() && flag; ++it) {
                 if ((*it)->isMovable()) {
                     // Collision check
                     if ((*it)->assumeCollideY(reduction, this->posRect))
@@ -297,7 +306,7 @@ void Enemy::CollideCheck() {
 }
 
 void Enemy::UpdateRotation() {
-    if (sf::Mouse::getPosition(*gamew.window).x - body.getPosition().x - POINT_HAND_X <= 0) {
+    if (sf::Mouse::getPosition(*gamew->window).x - body.getPosition().x - POINT_HAND_X <= 0) {
         if (!flipped) {
             flipped = true;
             bodyRect.width = -bodyRect.width;
@@ -317,8 +326,8 @@ void Enemy::UpdateRotation() {
             gun.GetSprite().setPosition(hand.getPosition());
             gun.GetSprite().setTextureRect(tmp);
         }
-        double tg = ((body.getPosition().y + POINT_HAND_Y) - sf::Mouse::getPosition(*gamew.window).y) /
-                    (sf::Mouse::getPosition(*gamew.window).x - (body.getPosition().x + abs(bodyRect.width) - POINT_HAND_X));
+        double tg = ((body.getPosition().y + POINT_HAND_Y) - sf::Mouse::getPosition(*gamew->window).y) /
+                    (sf::Mouse::getPosition(*gamew->window).x - (body.getPosition().x + abs(bodyRect.width) - POINT_HAND_X));
         hand.setRotation(-(atan(tg) * 180 / 3.1415));
         gun.GetSprite().setRotation(-(atan(tg) * 180 / 3.1415));
     } else {
@@ -341,8 +350,8 @@ void Enemy::UpdateRotation() {
             gun.GetSprite().setPosition(hand.getPosition());
             gun.GetSprite().setTextureRect(tmp);
         }
-        double tg = ((body.getPosition().y + POINT_HAND_Y) - sf::Mouse::getPosition(*gamew.window).y) /
-                    (sf::Mouse::getPosition(*gamew.window).x - (body.getPosition().x + POINT_HAND_X));
+        double tg = ((body.getPosition().y + POINT_HAND_Y) - sf::Mouse::getPosition(*gamew->window).y) /
+                    (sf::Mouse::getPosition(*gamew->window).x - (body.getPosition().x + POINT_HAND_X));
         hand.setRotation(-(atan(tg) * 180 / 3.1415));
         gun.GetSprite().setRotation(-(atan(tg) * 180 / 3.1415));
     }

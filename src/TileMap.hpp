@@ -19,11 +19,11 @@ using namespace rapidxml;
 class TileMap : public Obj {
   public:
     ~TileMap();
-    TileMap(Gamew &gamew, std::string path);
-    void Update(const sf::Vector2f &offsetRelativeCenter) override;
+    TileMap(Gamew *gamew, std::string path);
+    void Update() override;
     void Draw() override;
     bool collide(sf::FloatRect other) override;
-    bool Intersection(Section a) override;
+    bool Intersection(const Section& a) override;
     bool assumeCollideX(const float x, sf::FloatRect other) override;
     bool assumeCollideY(const float y, sf::FloatRect other) override;
     bool collidePoint(sf::Vector2f p) override;
@@ -38,7 +38,7 @@ class TileMap : public Obj {
     void OneTileProcessing(int &posBuff, int &posMatrix, char *buffer);
     void ParseMapToMatrix();
 
-    Gamew &gamew;
+    Gamew *gamew;
     std::map<int, std::unique_ptr<sf::Texture>> ids;
     std::string path;
     rapidxml::xml_document<> tileset, tilemap;
@@ -49,6 +49,7 @@ class TileMap : public Obj {
     // For parsing
     xml_node<> *root;
     xml_node<> *root2;
+    sf::Vector2f offsetRelativeCenter{};
     char *map2;
     char *map;
 };

@@ -7,17 +7,16 @@ class Obj {
     Obj() = default;
     virtual void Draw() = 0;
     virtual void Update(){};
-    virtual void Update(const sf::Vector2f &offsetRelativeCenter){};
     virtual ~Obj() = default;
 
-    virtual bool Intersection(Section a);
+    virtual bool Intersection(const Section& a);
     bool isMovable() { return movable; }
     bool DeleteIt() { return deleteIt; }
     bool isCollidable() { return canCollide; }
     virtual bool collide(sf::FloatRect other) { return posRect.intersects(other); }
     virtual bool collidePoint(sf::Vector2f p) { return posRect.contains(p); }
-    bool isPointOnTheSection(sf::Vector2f point, Section sect);
-    bool intersectionSectionAndSection(const Section sect1, const Section sect2);
+    bool isPointOnTheSection(const sf::Vector2f &point, const Section &sect);
+    bool intersectionSectionAndSection(const Section& sect1, const Section& sect2);
     virtual bool assumeCollideX(const float x, sf::FloatRect other);
     virtual bool assumeCollideY(const float y, sf::FloatRect other);
 

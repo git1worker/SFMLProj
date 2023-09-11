@@ -32,11 +32,8 @@ int main() {
         if (min > fps) min = fps;
         MyGame->Polling();
         MyGame->Update();
-        // debug2 = std::chrono::system_clock::now();
-        // std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(debug2 - debug) << ' ';
         MyGame->Drawing();
-        // std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - debug2) << '\n';
-        // sf::sleep(sf::seconds(1));
+        
     }
 
     return 0;

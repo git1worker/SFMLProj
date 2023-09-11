@@ -2,14 +2,16 @@
 #include "AnimHuman.hpp"
 #include "Entity.hpp"
 #include "Gun.hpp"
+#include "SplashOfBlood.hpp"
 #include <SFML/Graphics.hpp>
 
-#define MAX_HP 2000
+#define MAX_HP 4000
 
-class Gamew;
 class TileMap;
 class Enemy;
-class SplashOfBlood;
+
+class Bullet;
+class Interface;
 
 class Player : public Entity {
     // Physical model for all players are with the rect below
@@ -25,7 +27,7 @@ class Player : public Entity {
     friend Interface;
     friend Enemy;
 
-    Player(Gamew &gamew, Types type, sf::Vector2f spawn);
+    Player(Gamew *gamew, Types type, sf::Vector2f spawn);
     ~Player();
     void Shoot();
     void Draw() override;
@@ -47,15 +49,15 @@ class Player : public Entity {
     void UpdateRotation();
     
 
-    Gamew &gamew;
+    Gamew *gamew;
     std::string name;
     sf::Sprite body, hand;
     sf::Texture textureBody;
-    SplashOfBlood* blood;
+    SplashOfBlood blood;
     sf::Vector2f spawn;
     sf::Texture texHand;
     sf::IntRect bodyRect, handRect;
-    AnimHuman *move;
+    AnimHuman move;
     uint cntShooting, delayShooting;
     bool lyingPosition = false;
     bool animated = false;

@@ -1,4 +1,5 @@
 #pragma once
+#include <chrono>
 #include <SFML/Graphics.hpp>
 
 class Entity {
@@ -28,4 +29,5 @@ class Entity {
     int cntFreeFall;
     // Vector of velocity relative X - right and Y - down
     sf::Vector2f direction{};
+    //static std::chrono::microseconds total;
 };

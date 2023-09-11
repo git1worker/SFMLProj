@@ -29,6 +29,7 @@ template <typename Head, typename... Tail> void Print(Head h, Tail... t);
 class Timer {
   public:
     Timer();
+    std::chrono::microseconds GetTime();
     ~Timer();
 
   private:

@@ -1,13 +1,16 @@
 #include "Obj.hpp"
+#include "Debug.hpp"
+#include <iostream>
 
-bool Obj::Intersection(Section a) { 
+bool Obj::Intersection(const Section& a) {
+	bool flag = false;
     if (intersectionSectionAndSection(Section{posRect.left, posRect.top, posRect.left + posRect.width, posRect.top + posRect.height}, a) ||
         intersectionSectionAndSection(Section{posRect.left + posRect.width, posRect.top, posRect.left, posRect.top + posRect.height}, a))
-        return true;
-    return false;
+        flag = true;
+    return flag;
 }
 
-bool Obj::isPointOnTheSection(sf::Vector2f point, Section sect){
+bool Obj::isPointOnTheSection(const sf::Vector2f& point, const Section& sect){
     // Нужна проверка, если линия вертикальная, то есть если ray.direction.x == 0
     if (std::abs(sect.x1 - sect.x2) <= 0.1 && std::abs(sect.x1 - sect.x2) >= -0.1){
         // Если точка принадлежит прямой
@@ -36,7 +39,7 @@ bool Obj::isPointOnTheSection(sf::Vector2f point, Section sect){
 	
 	return false;
 }
-bool Obj::intersectionSectionAndSection(const Section sect1, const Section sect2){
+bool Obj::intersectionSectionAndSection(const Section& sect1, const Section& sect2){
     // Если отрезок1 и отрезок2 вертикальные
     if (std::abs(sect1.x1 - sect1.x2) <= 0.1 && std::abs(sect1.x1 - sect1.x2) >= -0.1 && 
     std::abs(sect2.x1 - sect2.x2) <= 0.1 && std::abs(sect2.x1 - sect2.x2) >= -0.1)

@@ -1,33 +1,34 @@
 #include "Background.hpp"
 #include <iostream>
+#include "Gamew.hpp"
 
 using sf::Vector2f;
 
-Background::Background(sf::RenderWindow *window, sf::Font *font, bool isStaticGradient)
-    : window(window), Geologica(font), isStaticGradient(isStaticGradient) {
+Background::Background(Gamew* gamew, bool isStaticGradient)
+    : gamew(gamew), isStaticGradient(isStaticGradient) {
     V_A.setPrimitiveType(sf::Quads);
     if (!isStaticGradient)
         GenerateRandom();
     V_A.append(sf::Vertex(Vector2f(0, 0), lUp));
-    V_A.append(sf::Vertex(Vector2f(0, window->getSize().y), rUp));
-    V_A.append(sf::Vertex(Vector2f(window->getSize().x, window->getSize().y), rDown));
-    V_A.append(sf::Vertex(Vector2f(window->getSize().x, 0), lDown));
+    V_A.append(sf::Vertex(Vector2f(0, gamew->window->getSize().y), rUp));
+    V_A.append(sf::Vertex(Vector2f(gamew->window->getSize().x, gamew->window->getSize().y), rDown));
+    V_A.append(sf::Vertex(Vector2f(gamew->window->getSize().x, 0), lDown));
 }
 
-Background::Background(sf::RenderWindow *window, sf::Font *font, sf::Color color) 
-    : window(window), Geologica(font) {
+Background::Background(Gamew* gamew, sf::Color color) 
+    : gamew(gamew) {
     isTextured = true;
     isStaticGradient = true;
-    rect = sf::RectangleShape(sf::Vector2f(window->getSize().x, window->getSize().y));
+    rect = sf::RectangleShape(sf::Vector2f(gamew->window->getSize().x, gamew->window->getSize().y));
     rect.setFillColor(color);
 }
 
 void Background::SetGradient(sf::Color lUp, sf::Color rUp, sf::Color rDown, sf::Color lDown) {
     this->lUp = lUp, this->rUp = rUp, this->rDown = rDown, this->lDown = lDown;
     V_A[0] = (sf::Vertex(Vector2f(0, 0), lUp));
-    V_A[1] = (sf::Vertex(Vector2f(0, window->getSize().y), rUp));
-    V_A[2] = (sf::Vertex(Vector2f(window->getSize().x, window->getSize().y), rDown));
-    V_A[3] = (sf::Vertex(Vector2f(window->getSize().x, 0), lDown));
+    V_A[1] = (sf::Vertex(Vector2f(0, gamew->window->getSize().y), rUp));
+    V_A[2] = (sf::Vertex(Vector2f(gamew->window->getSize().x, gamew->window->getSize().y), rDown));
+    V_A[3] = (sf::Vertex(Vector2f(gamew->window->getSize().x, 0), lDown));
 }
 
 void Background::SetRandomGradient() {
@@ -37,7 +38,9 @@ void Background::SetRandomGradient() {
 }
 
 void Background::Update() {
-    
+    rect.setTextureRect(sf::IntRect(sf::Vector2i(-gamew->offsetRelativeCenter.x, -gamew->offsetRelativeCenter.y),
+                                    sf::Vector2i(rect.getTextureRect().width, rect.getTextureRect().height)));
+
     if (!isStaticGradient) {
         if (delay.getElapsedTime().asMilliseconds() < 100)
             return;
@@ -67,11 +70,6 @@ void Background::Update() {
     // std::cout << (int)V_A[0].color.r << std::endl;
 }
 
-void Background::Update(const sf::Vector2f &offsetRelativeCenter) {
-    rect.setTextureRect(sf::IntRect(sf::Vector2i(-offsetRelativeCenter.x, -offsetRelativeCenter.y),
-                                    sf::Vector2i(rect.getTextureRect().width, rect.getTextureRect().height)));
-}
-
 void Background::GenerateRandom() {
     std::mt19937 gen(rd());
     std::uniform_int_distribution<int> dis(min, max);
@@ -84,17 +82,17 @@ void Background::GenerateRandom() {
 
 void Background::Draw() {
     if (!isTextured)
-        window->draw(V_A);
+        gamew->window->draw(V_A);
     else
-        window->draw(rect);
+        gamew->window->draw(rect);
 }
 
 void Background::SetSingleColor(sf::Color color) {
     isStaticGradient = true;
     V_A.append(sf::Vertex(Vector2f(0, 0), color));
-    V_A.append(sf::Vertex(Vector2f(0, window->getSize().y), color));
-    V_A.append(sf::Vertex(Vector2f(window->getSize().x, window->getSize().y), color));
-    V_A.append(sf::Vertex(Vector2f(window->getSize().x, 0), color));
+    V_A.append(sf::Vertex(Vector2f(0, gamew->window->getSize().y), color));
+    V_A.append(sf::Vertex(Vector2f(gamew->window->getSize().x, gamew->window->getSize().y), color));
+    V_A.append(sf::Vertex(Vector2f(gamew->window->getSize().x, 0), color));
 }
 
 void Background::SetTexture(const std::string filename) {
@@ -103,8 +101,8 @@ void Background::SetTexture(const std::string filename) {
     texture = sf::Texture();
     if (!texture.loadFromFile(filename))
         std::cerr << "Could not load texture of background.", exit(1);
-    rect = sf::RectangleShape(sf::Vector2f(window->getSize().x, window->getSize().y));
+    rect = sf::RectangleShape(sf::Vector2f(gamew->window->getSize().x, gamew->window->getSize().y));
     rect.setTexture(&texture);
-    rect.setTextureRect(sf::IntRect(sf::Vector2i(0, 0), sf::Vector2i(window->getSize().x, window->getSize().y)));
+    rect.setTextureRect(sf::IntRect(sf::Vector2i(0, 0), sf::Vector2i(gamew->window->getSize().x, gamew->window->getSize().y)));
     movable = true;
 }

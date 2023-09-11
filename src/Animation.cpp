@@ -1,17 +1,41 @@
 #include "Animation.hpp"
 #include "Debug.hpp"
 
+Animation::Animation() {
+}
+
 Animation::~Animation() {
     gamew->AnimsVector.remove(this);
 }
 
 Animation::Animation(Gamew *gamew, std::string path, int speed, int offset, bool infinity)
     : gamew(gamew), speed(speed), offset(offset), infinity(infinity) {
-
+    
     tAnim.loadFromFile(path);
     sprite.setTexture(tAnim);
+    
     numFrames = sprite.getTextureRect().width / offset;
     sprite.setTextureRect(sf::IntRect(0, 0, offset, sprite.getTextureRect().height));
+    //RTDrawing(gamew->window.get(), sprite);
+}
+
+Animation &Animation::operator=(const Animation &o) {
+    animate = o.animate;
+    pos = o.pos;
+    sprite = o.sprite;
+    deleteIt = o.deleteIt;
+    tAnim = o.tAnim;
+    speed = o.speed;
+    offset = o.offset;
+    numFrames = o.numFrames;
+    start = o.start;
+    currFrame = o.currFrame;
+    infinity = o.infinity;
+    stop = o.stop;
+    gamew = o.gamew;
+    flipped = o.flipped;
+    sprite.setTexture(tAnim);
+    return *this;
 }
 
 void Animation::SetOrigin() {
@@ -35,10 +59,18 @@ void Animation::SetFlipped() {
 
 void Animation::Update() { Play(); sprite.setPosition(sf::Vector2f(pos.x + gamew->offsetRelativeCenter.x, pos.y + gamew->offsetRelativeCenter.y)); }
 
-void Animation::Draw() { gamew->window->draw(sprite); }
+void Animation::Draw() { 
+    gamew->window->draw(sprite); }
 
 void Animation::setPosition(sf::Vector2f pos) {
     this->pos = pos;
+}
+
+void Animation::Start() {
+    gamew->AnimsVector.push_back(this);
+    stop = false;
+    currFrame = 1;
+    animate = false;
 }
 
 void Animation::Stop() {

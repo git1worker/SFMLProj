@@ -12,11 +12,11 @@ class Enemy : public Entity {
   public:
 
 
-    Enemy(Gamew &gamew, sf::Vector2f spawn);
+    Enemy(Gamew *gamew, sf::Vector2f spawn);
     void Draw() override;
     void Update() override;
     void Hit(float posX, float posY, sf::Vector2f direction) override;
-    ~Enemy();
+    
 
   private:
     void UpdateDirection();
@@ -29,7 +29,7 @@ class Enemy : public Entity {
     void DetectPlayer();
     bool CheckTheRay();
 
-    Gamew &gamew;
+    Gamew *gamew;
     sf::Sprite body, hand;
     sf::Texture textureBody;
 
@@ -38,13 +38,15 @@ class Enemy : public Entity {
 
     bool wasUpdated = false;
     sf::RectangleShape hpBar, hpShell;
-    SplashOfBlood *blood;
-    AnimHuman *move;
+    SplashOfBlood blood;
+    AnimHuman move;
     bool animated = false;
     int delayShooting = 0;
     float currSpeedFall = 2;
     bool isFalling = false;
+    sf::Vector2f hpBarSize{};
     Gun gun{Gun::Types::Pistol, gamew};
     static int randCnt;
     int maxDelayShooting;
+    
 };

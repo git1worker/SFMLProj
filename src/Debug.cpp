@@ -11,4 +11,8 @@ template <typename Head, typename... Tail> void Print(Head h, Tail... t) {
 
 Timer::Timer() { start = sc::now(); }
 
-Timer::~Timer() { std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(sc::now() - start) << std::endl; }
+std::chrono::microseconds Timer::GetTime() { return std::chrono::duration_cast<std::chrono::microseconds>(sc::now() - start); }
+
+Timer::~Timer() { 
+    // std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(sc::now() - start) << ' '; 
+}
