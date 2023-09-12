@@ -91,11 +91,11 @@ class Gamew {
     std::list<std::list<std::unique_ptr<Bullet>>::iterator> BulletsToDelete;
     std::list<std::list<std::unique_ptr<Element>>::iterator> ElementsToDelete;
     std::list<Animation *> AnimsToDelete;
-    std::list<std::unique_ptr<Obj>> ObjVector;
-    std::list<std::unique_ptr<Entity>> EntitiesVector;
-    std::list<std::unique_ptr<Bullet>> BulletsVector;
-    std::list<std::unique_ptr<Element>> ElementsVector;
-    std::list<Animation *> AnimsVector;
+    std::list<std::unique_ptr<Obj>> ObjList;
+    std::list<std::unique_ptr<Entity>> EntitiesList;
+    std::list<std::unique_ptr<Bullet>> BulletsList;
+    std::list<std::unique_ptr<Element>> ElementsList;
+    std::list<Animation *> AnimsList;
 
     TextBox *selectedTextBox = nullptr;
     TileMap *currTileMap = nullptr;

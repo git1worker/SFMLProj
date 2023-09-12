@@ -24,7 +24,7 @@ void Gamew::UpdateFps(float fps) {
 }
 
 Gamew::~Gamew() {
-    AnimsVector.clear();
+    AnimsList.clear();
 }
 
 void Gamew::Init(const std::wstring title, const int Style, const int width, const int height) {
@@ -109,7 +109,7 @@ void Gamew::HandleButton(Button *btn) {
 void Gamew::Update() {
     CheckSwitchWindows();
     auto updateEntitiesTask = pool.enqueue([&] {
-        for (std::list<std::unique_ptr<Entity>>::iterator it = EntitiesVector.begin(); it != EntitiesVector.end(); ++it) {
+        for (std::list<std::unique_ptr<Entity>>::iterator it = EntitiesList.begin(); it != EntitiesList.end(); ++it) {
             (*it)->Update();
             if ((*it)->DeleteIt())
                 EntitiesToDelete.emplace_back(it);
@@ -118,7 +118,7 @@ void Gamew::Update() {
             if (!player->isDead()){
                 if (interface)
                     interface->Update();
-                if (EntitiesVector.size() == 1 && currentWindow != Windows::MainW){
+                if (EntitiesList.size() == 1 && currentWindow != Windows::MainW){
                     SelectionMenu();
                 }
             }
@@ -128,25 +128,25 @@ void Gamew::Update() {
         }
     }); 
     auto updateOtherTask = pool.enqueue([&] {
-        for (std::list<std::unique_ptr<Obj>>::iterator it = ObjVector.begin(); it != ObjVector.end(); ++it) {
+        for (std::list<std::unique_ptr<Obj>>::iterator it = ObjList.begin(); it != ObjList.end(); ++it) {
             (*it)->Update();
             if ((*it)->DeleteIt())
                 ObjToDelete.emplace_back(it);
         }
-        for (std::list<std::unique_ptr<Bullet>>::iterator it = BulletsVector.begin(); it != BulletsVector.end(); ++it) {
+        for (std::list<std::unique_ptr<Bullet>>::iterator it = BulletsList.begin(); it != BulletsList.end(); ++it) {
             (*it)->Update();
             if ((*it)->DeleteIt()) {
                 BulletsToDelete.emplace_back(it);
             }
         }
-        for (std::list<Animation *>::iterator it = AnimsVector.begin(); it != AnimsVector.end(); ++it) {
+        for (std::list<Animation *>::iterator it = AnimsList.begin(); it != AnimsList.end(); ++it) {
             if ((*it)->getStop())
                 AnimsToDelete.emplace_back(*it);
             else
                 (*it)->Update();
         }
         
-        for (std::list<std::unique_ptr<Element>>::iterator it = ElementsVector.begin(); it != ElementsVector.end(); ++it) {
+        for (std::list<std::unique_ptr<Element>>::iterator it = ElementsList.begin(); it != ElementsList.end(); ++it) {
             (*it)->Update();
             if ((*it)->DeleteIt())
                 ElementsToDelete.emplace_back(it);
@@ -167,17 +167,17 @@ void Gamew::Drawing() {
     window->clear(sf::Color::White);
 
     // Drawing inside this ---
-    for (std::list<std::unique_ptr<Obj>>::iterator it = ObjVector.begin(); it != ObjVector.end(); ++it)
+    for (std::list<std::unique_ptr<Obj>>::iterator it = ObjList.begin(); it != ObjList.end(); ++it)
         (*it)->Draw();
-    for (std::list<std::unique_ptr<Entity>>::iterator it = EntitiesVector.begin(); it != EntitiesVector.end(); ++it)
+    for (std::list<std::unique_ptr<Entity>>::iterator it = EntitiesList.begin(); it != EntitiesList.end(); ++it)
         (*it)->Draw();
-    for (std::list<std::unique_ptr<Bullet>>::iterator it = BulletsVector.begin(); it != BulletsVector.end(); ++it)
+    for (std::list<std::unique_ptr<Bullet>>::iterator it = BulletsList.begin(); it != BulletsList.end(); ++it)
         (*it)->Draw();
-    for (std::list<Animation *>::iterator it = AnimsVector.begin(); it != AnimsVector.end(); ++it)
+    for (std::list<Animation *>::iterator it = AnimsList.begin(); it != AnimsList.end(); ++it)
         (*it)->Draw();
     if (interface)
         interface->Draw();
-    for (std::list<std::unique_ptr<Element>>::iterator it = ElementsVector.begin(); it != ElementsVector.end(); ++it){
+    for (std::list<std::unique_ptr<Element>>::iterator it = ElementsList.begin(); it != ElementsList.end(); ++it){
         (*it)->Draw();
     }
 #ifdef DEBUGINFO
@@ -194,11 +194,11 @@ void Gamew::InitMainWindow() {
     // Background
     auto bg = std::make_unique<Background>(this, true);
     bg->SetGradient(sf::Color(153, 153, 255), sf::Color(0, 102, 204), sf::Color(192, 192, 192), sf::Color(224, 224, 224));
-    ObjVector.emplace_back(std::move(bg));
+    ObjList.emplace_back(std::move(bg));
     // Title
-    ElementsVector.emplace_back(std::make_unique<Label>(window.get(), &Geologica, L"Gamew", window->getSize().x / 2, window->getSize().y / 12,
+    ElementsList.emplace_back(std::make_unique<Label>(window.get(), &Geologica, L"Gamew", window->getSize().x / 2, window->getSize().y / 12,
                                                    Label::Align::Center, 60, 400));
-    ElementsVector.back()->name = Element::titleMainW;
+    ElementsList.back()->name = Element::titleMainW;
     // Buttons
     int numButtons = 4;
     float buttonWidth = 150.0f;                                                            // Ширина каждой кнопки
@@ -218,11 +218,11 @@ void Gamew::InitMainWindow() {
             b->name = Element::butt3MainW;
         else if (i == 3)
             b->name = Element::butt4MainW;
-        ElementsVector.emplace_back(std::move(b));
+        ElementsList.emplace_back(std::move(b));
     }
     // TextBox
-    ElementsVector.emplace_back(std::make_unique<TextBox>(window.get(), &Geologica, window->getSize().x / 2, window->getSize().y / 2, 30, 200, 3));
-    ElementsVector.back()->name = Element::textBox1MainW;
+    ElementsList.emplace_back(std::make_unique<TextBox>(window.get(), &Geologica, window->getSize().x / 2, window->getSize().y / 2, 30, 200, 3));
+    ElementsList.back()->name = Element::textBox1MainW;
 }
 
 void Gamew::InitWindow1() {
@@ -231,21 +231,21 @@ void Gamew::InitWindow1() {
     // Background
     auto tmp1 = std::make_unique<Background>(this);
     tmp1->SetTexture("../assets/img/background1.jpg");
-    ObjVector.emplace_back(std::move(tmp1));
+    ObjList.emplace_back(std::move(tmp1));
     // TileMap
     auto tmp4 = std::make_unique<TileMap>(this, std::string("../assets/maps/map1.xml"));
     currTileMap = tmp4.get();
-    ObjVector.emplace_back(std::move(tmp4));
+    ObjList.emplace_back(std::move(tmp4));
     // Title that appears
     auto tmp2 = std::make_unique<Label>(window.get(), &Geologica, L"Уровень 1", window->getSize().x / 2, window->getSize().y / 12,
                                         Label::Align::Center, 55, 600);
     tmp2->name = Element::titleW1;
     tmp2->SetAnimation(Label::Anims::AppearanceDecay);
-    ElementsVector.emplace_back(std::move(tmp2));
+    ElementsList.emplace_back(std::move(tmp2));
     // Player
     auto tmp3 = std::make_unique<Player>(this, Player::Types::armoredAgent, sf::Vector2f(150, 150));
     player = tmp3.get();
-    EntitiesVector.emplace_back(std::move(tmp3));
+    EntitiesList.emplace_back(std::move(tmp3));
 
     interface = make_unique<Interface>(this);
 }
@@ -255,11 +255,11 @@ void Gamew::InitWindow2() {
 
     auto tmp1 = std::make_unique<Background>(this);
     tmp1->SetTexture("../assets/img/background2.jpg");
-    ObjVector.emplace_back(std::move(tmp1));
+    ObjList.emplace_back(std::move(tmp1));
 
-    ElementsVector.emplace_back(std::make_unique<Label>(window.get(), &Geologica, L"Уровень 2", window->getSize().x / 2, window->getSize().y / 12,
+    ElementsList.emplace_back(std::make_unique<Label>(window.get(), &Geologica, L"Уровень 2", window->getSize().x / 2, window->getSize().y / 12,
                                                    Label::Align::Center, 55, 600));
-    ElementsVector.back()->name = Element::titleW2;
+    ElementsList.back()->name = Element::titleW2;
     currentWindow = Windows::Game2;
 }
 
@@ -268,11 +268,11 @@ void Gamew::InitWindow3() {
     
     auto tmp1 = std::make_unique<Background>(this);
     tmp1->SetTexture("../assets/img/background3.jpg");
-    ObjVector.emplace_back(std::move(tmp1));
+    ObjList.emplace_back(std::move(tmp1));
 
-    ElementsVector.emplace_back(std::make_unique<Label>(window.get(), &Geologica, L"Уровень 3", window->getSize().x / 2, window->getSize().y / 12,
+    ElementsList.emplace_back(std::make_unique<Label>(window.get(), &Geologica, L"Уровень 3", window->getSize().x / 2, window->getSize().y / 12,
                                                    Label::Align::Center, 55, 600));
-    ElementsVector.back()->name = Element::titleW3;
+    ElementsList.back()->name = Element::titleW3;
     currentWindow = Windows::Game3;
 }
 
@@ -282,21 +282,21 @@ void Gamew::InitWindow4() {
 
     auto tmp1 = std::make_unique<Background>(this);
     tmp1->SetTexture("../assets/img/background4.jpg");
-    ObjVector.emplace_back(std::move(tmp1));
+    ObjList.emplace_back(std::move(tmp1));
 
-    ElementsVector.emplace_back(std::make_unique<Label>(window.get(), &Geologica, L"Уровень 4", window->getSize().x / 2, window->getSize().y / 12,
+    ElementsList.emplace_back(std::make_unique<Label>(window.get(), &Geologica, L"Уровень 4", window->getSize().x / 2, window->getSize().y / 12,
                                                    Label::Align::Center, 55, 600));
-    ElementsVector.back()->name = Element::titleW4;
+    ElementsList.back()->name = Element::titleW4;
     currentWindow = Windows::Game4;
 }
 
 void Gamew::CheckSwitchWindows() {
     if (switchWindow) {
-        ObjVector.clear();
-        EntitiesVector.clear();
-        BulletsVector.clear();
-        AnimsVector.clear();
-        ElementsVector.clear();
+        ObjList.clear();
+        EntitiesList.clear();
+        BulletsList.clear();
+        AnimsList.clear();
+        ElementsList.clear();
         if (interface)
             interface.reset();
         player = nullptr;
@@ -329,19 +329,19 @@ void Gamew::CheckSwitchWindows() {
 
 void Gamew::CheckToDelete() {
     for (const auto &i : ObjToDelete)
-        ObjVector.erase(i);
+        ObjList.erase(i);
     ObjToDelete.clear();
     for (const auto &i : EntitiesToDelete)
-        EntitiesVector.erase(i);
+        EntitiesList.erase(i);
     EntitiesToDelete.clear();
     for (const auto &i : BulletsToDelete)
-        BulletsVector.erase(i);
+        BulletsList.erase(i);
     BulletsToDelete.clear();
     for (const auto &i : ElementsToDelete)
-        ElementsVector.erase(i);
+        ElementsList.erase(i);
     ElementsToDelete.clear();
     for (const auto &i : AnimsToDelete)
-        AnimsVector.remove(i);
+        AnimsList.remove(i);
     AnimsToDelete.clear();
 }
 
@@ -351,7 +351,7 @@ void Gamew::SelectionMenu() {
         // Black backgroung
         selectionMenu = true;
         auto t = make_unique<Background>(this, sf::Color(0, 0, 0, 100));
-        ElementsVector.emplace_back(std::move(t));
+        ElementsList.emplace_back(std::move(t));
         // Buttons
         int numButtons = 3;
         float buttonWidth = 200.0f;                                                            // Ширина каждой кнопки
@@ -375,7 +375,7 @@ void Gamew::SelectionMenu() {
                 b->name = Element::butt3SelectionM;
                 b->ChangeText(L"След. уровень");
             }
-            ElementsVector.emplace_back(std::move(b));
+            ElementsList.emplace_back(std::move(b));
         }
     }
 }

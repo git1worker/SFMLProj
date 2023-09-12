@@ -69,7 +69,7 @@ void Gun::Shoot(sf::Vector2f pos, float tg, Entity *ptrSelf) {
         else
             shoot.SetOrigin();
         shoot.Start();
-        gamew->BulletsVector.emplace_back(std::make_unique<Bullet>(gamew, pos, tg, ptrSelf));
+        gamew->BulletsList.emplace_back(std::make_unique<Bullet>(gamew, pos, tg, ptrSelf));
     }
 }
 

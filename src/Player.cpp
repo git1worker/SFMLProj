@@ -115,7 +115,7 @@ void Player::CollideCheck() {
     int actionForX = (direction.x > 0.01 ? 1 : -1);
     int actionForY = (direction.y > 0.01 ? 1 : -1);
     bool flag = true;
-    for (std::list<std::unique_ptr<Obj>>::iterator it = gamew->ObjVector.begin(); it != gamew->ObjVector.end() && flag; ++it) {
+    for (std::list<std::unique_ptr<Obj>>::iterator it = gamew->ObjList.begin(); it != gamew->ObjList.end() && flag; ++it) {
         if ((*it)->isMovable()) {
             // Collision check
             if ((*it)->assumeCollideX(direction.x, this->posRect))
@@ -126,7 +126,7 @@ void Player::CollideCheck() {
         int reduction = actionForX;
         flag = true;
         for (; abs(reduction) < abs(direction.x) && flag; reduction = reduction + actionForX) {
-            for (std::list<std::unique_ptr<Obj>>::iterator it = gamew->ObjVector.begin(); it != gamew->ObjVector.end() && flag; ++it) {
+            for (std::list<std::unique_ptr<Obj>>::iterator it = gamew->ObjList.begin(); it != gamew->ObjList.end() && flag; ++it) {
                 if ((*it)->isMovable()) {
                     // Collision check
                     if ((*it)->assumeCollideX(reduction, this->posRect))
@@ -141,7 +141,7 @@ void Player::CollideCheck() {
     }
 
     flag = true;
-    for (std::list<std::unique_ptr<Obj>>::iterator it = gamew->ObjVector.begin(); it != gamew->ObjVector.end() && flag; ++it) {
+    for (std::list<std::unique_ptr<Obj>>::iterator it = gamew->ObjList.begin(); it != gamew->ObjList.end() && flag; ++it) {
         if ((*it)->isMovable()) {
             // Collision check
             if ((*it)->assumeCollideY(direction.y, this->posRect))
@@ -152,7 +152,7 @@ void Player::CollideCheck() {
         int reduction = actionForY;
         flag = true;
         for (; abs(reduction) < abs(direction.y) && flag; reduction = reduction + actionForY) {
-            for (std::list<std::unique_ptr<Obj>>::iterator it = gamew->ObjVector.begin(); it != gamew->ObjVector.end() && flag; ++it) {
+            for (std::list<std::unique_ptr<Obj>>::iterator it = gamew->ObjList.begin(); it != gamew->ObjList.end() && flag; ++it) {
                 if ((*it)->isMovable()) {
                     // Collision check
                     if ((*it)->assumeCollideY(reduction, this->posRect))
@@ -225,7 +225,7 @@ float Player::GetFreeFall() {
 
 bool Player::CheckFreeFall() {
     bool flag = true;
-    for (std::list<std::unique_ptr<Obj>>::iterator it = gamew->ObjVector.begin(); it != gamew->ObjVector.end() && flag; ++it) {
+    for (std::list<std::unique_ptr<Obj>>::iterator it = gamew->ObjList.begin(); it != gamew->ObjList.end() && flag; ++it) {
         if ((*it)->isMovable() && (*it)->isCollidable()) {
             if ((*it)->assumeCollideY(1, this->posRect)) {
                 flag = false;

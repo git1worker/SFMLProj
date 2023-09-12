@@ -37,7 +37,7 @@ void Bullet::Update() {
     
     for (int i = 1; i < velocity; i += 10) {
         
-        for (std::list<std::unique_ptr<Obj>>::iterator it = gamew->ObjVector.begin(); it != gamew->ObjVector.end() && flag; ++it) {
+        for (std::list<std::unique_ptr<Obj>>::iterator it = gamew->ObjList.begin(); it != gamew->ObjList.end() && flag; ++it) {
             if ((*it)->isMovable() && (*it)->isCollidable()) {
                 if ((*it)->collide(sf::FloatRect(pos.x + (direction.x / velocity) * i, pos.y + (direction.y / velocity) * i, texture.getSize().x,
                                                  texture.getSize().y)))
@@ -46,7 +46,7 @@ void Bullet::Update() {
         }
         
         if (ptrSelf == gamew->player){
-            for (std::list<std::unique_ptr<Entity>>::iterator it = gamew->EntitiesVector.begin(); it != gamew->EntitiesVector.end() && flag; ++it)
+            for (std::list<std::unique_ptr<Entity>>::iterator it = gamew->EntitiesList.begin(); it != gamew->EntitiesList.end() && flag; ++it)
                 if ((*it)->posRect.contains(pos.x + (direction.x / velocity) * i, pos.y + (direction.y / velocity) * i) && (*it).get() != ptrSelf) {
                     flag = false;
                     (*it)->Hit(pos.x + (direction.x / velocity) * i, pos.y + (direction.y / velocity) * i, direction);

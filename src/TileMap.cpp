@@ -318,7 +318,7 @@ void TileMap::OneTileProcessing(int &posBuff, int &posMatrix, char *buffer) {
     buffer[posBuff] = '\0';
     int idInTiled = atoi(buffer) - 1;
     if (idInTiled == 27) {
-        gamew->EntitiesVector.emplace_back(
+        gamew->EntitiesList.emplace_back(
             std::make_unique<Enemy>(gamew, sf::Vector2f(widthTile * (posMatrix % widthInTiles), heightTile * (posMatrix / widthInTiles))));
     } else {
         map_Tiles[posMatrix / widthInTiles][posMatrix % widthInTiles] = Tile();

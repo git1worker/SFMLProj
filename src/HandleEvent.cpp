@@ -29,7 +29,7 @@ void HandleEvent::eventMouseMoved(const sf::Event &event) {
     gamew->mouseX = event.mouseMove.x;
     gamew->mouseY = event.mouseMove.y;
     gamew->TextBoxContains = false;
-    for (const auto &i : gamew->ElementsVector) {
+    for (const auto &i : gamew->ElementsList) {
 
         if (auto *b = dynamic_cast<Button *>(i.get());
             b && b->getRect().getGlobalBounds().contains(
@@ -58,7 +58,7 @@ void HandleEvent::eventMouseMoved(const sf::Event &event) {
 void HandleEvent::eventMouseButtonPressed(const sf::Event &event) {
     if (event.mouseButton.button == sf::Mouse::Button::Left)
         gamew->leftMouseButtonPrerssed = true;
-    for (const auto &i : gamew->ElementsVector) {
+    for (const auto &i : gamew->ElementsList) {
         if (gamew->selectedTextBox)
             gamew->selectedTextBox->SetDrawCursor(false), gamew->selectedTextBox = nullptr;
         if (auto *b = dynamic_cast<Button *>(i.get());
@@ -76,7 +76,7 @@ void HandleEvent::eventMouseButtonPressed(const sf::Event &event) {
 void HandleEvent::eventMouseButtonReleased(const sf::Event &event) {
     if (event.mouseButton.button == sf::Mouse::Button::Left)
         gamew->leftMouseButtonPrerssed = false;
-    for (const auto &i : gamew->ElementsVector) {
+    for (const auto &i : gamew->ElementsList) {
         if (auto *b = dynamic_cast<Button *>(i.get()); b && b->getWasClicked())
             b->Release();
     }

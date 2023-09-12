@@ -5,7 +5,7 @@ Animation::Animation() {
 }
 
 Animation::~Animation() {
-    gamew->AnimsVector.remove(this);
+    gamew->AnimsList.remove(this);
 }
 
 Animation::Animation(Gamew *gamew, std::string path, int speed, int offset, bool infinity)
@@ -67,7 +67,7 @@ void Animation::setPosition(sf::Vector2f pos) {
 }
 
 void Animation::Start() {
-    gamew->AnimsVector.push_back(this);
+    gamew->AnimsList.push_back(this);
     stop = false;
     currFrame = 1;
     animate = false;
